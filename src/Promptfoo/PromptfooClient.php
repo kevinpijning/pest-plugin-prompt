@@ -9,6 +9,9 @@ use Pest\Prompt\Contracts\EvaluatorClient;
 
 class PromptfooClient implements EvaluatorClient
 {
+    /**
+     * @param  array<string,mixed>  $options
+     */
     public function __construct(private string $promptfooCommand, private array $options = []) {}
 
     public function evaluate(Evaluation $evaluationBuilder): EvaluationResult
