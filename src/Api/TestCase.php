@@ -14,10 +14,29 @@ class TestCase
     /** @var Assertion[] */
     private array $assertions = [];
 
+    /**
+     * @param  array<string,mixed>  $variables
+     */
     public function __construct(
-        public readonly array $variables,
+        private readonly array $variables,
         private readonly Evaluation $evaluation,
     ) {}
+
+    /**
+     * @return Assertion[]
+     */
+    public function assertions(): array
+    {
+        return $this->assertions;
+    }
+
+    /**
+     * @return array<string,mixed>
+     */
+    public function variables(): array
+    {
+        return $this->variables;
+    }
 
     public function assert(Assertion $assertion): self
     {
