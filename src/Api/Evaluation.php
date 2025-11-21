@@ -4,25 +4,30 @@ declare(strict_types=1);
 
 namespace Pest\Prompt\Api;
 
-use Pest\Prompt\Contracts\EvaluatorClient;
-use Pest\Prompt\Promptfoo\EvaluationResult;
-
-class EvaluationBuilder
+class Evaluation
 {
+    private ?string $description = null;
+
     /** @var string[] */
     private array $prompts = [];
 
     /** @var string[] */
     private array $providers = [];
 
-    /** @var TestCaseBuilder[] */
+    /** @var TestCase[] */
     private array $testCases = [];
 
     public function __construct(
-        private readonly EvaluatorClient $evaluatorClient,
         array $prompts
     ) {
         $this->prompts = $prompts;
+    }
+
+    public function describe(string $description): self
+    {
+        $this->description = $description;
+
+        return $this;
     }
 
     public function usingProvider(string ...$providers): self
@@ -37,16 +42,18 @@ class EvaluationBuilder
     /**
      * @param  array<string,mixed>  $variables
      */
-    public function expect(array $variables = []): AssertionBuilder
+    public function expect(array $variables = []): TestCase
     {
-        $testCase = new TestCaseBuilder($variables);
+        $testCase = new TestCase($variables, $this);
         $this->testCases[] = $testCase;
 
-        return new AssertionBuilder($testCase, $this);
+        return $testCase;
     }
 
-    public function evaluate(): EvaluationResult
+    public function clearTests(): self
     {
-        return $this->evaluatorClient->evaluate($this);
+        $this->testCases = [];
+
+        return $this;
     }
 }

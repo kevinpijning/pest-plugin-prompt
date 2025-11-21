@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace Pest\Prompt;
 
-use Pest\Prompt\Api\EvaluationBuilder;
-use Pest\Prompt\Promptfoo\Promptfoo;
+use Pest\Prompt\Api\Evaluation;
 
 /**
  * @internal
@@ -15,15 +14,8 @@ trait Promptable // @phpstan-ignore-line
     /**
      * Example description.
      */
-    public function prompt(string ...$prompts): EvaluationBuilder
+    public function prompt(string ...$prompts): Evaluation
     {
-        $evaluation = new EvaluationBuilder(
-            Promptfoo::initialize(),
-            $prompts
-        );
-
-        TestContext::addEvaluation($evaluation);
-
-        return $evaluation;
+        return $this->prompt(...$prompts);
     }
 }

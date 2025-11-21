@@ -4,22 +4,22 @@ declare(strict_types=1);
 
 namespace Pest\Prompt;
 
-use Pest\Prompt\Api\EvaluationBuilder;
+use Pest\Prompt\Api\Evaluation;
 
 class TestContext
 {
-    /** @var EvaluationBuilder[] */
+    /** @var Evaluation[] */
     private static array $evaluations = [];
 
     /**
-     * @return EvaluationBuilder[]
+     * @return Evaluation[]
      */
     public static function getCurrentEvaluations(): array
     {
         return self::$evaluations;
     }
 
-    public static function addEvaluation(EvaluationBuilder $evaluation): void
+    public static function addEvaluation(Evaluation $evaluation): void
     {
         self::$evaluations[] = $evaluation;
     }

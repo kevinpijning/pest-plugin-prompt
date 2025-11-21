@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Pest\Prompt;
 
 use Pest\Prompt\Promptfoo\EvaluationResult;
+use Pest\Prompt\Promptfoo\Promptfoo;
 
 class TestLifecycle
 {
@@ -16,10 +17,9 @@ class TestLifecycle
             $evaluation = array_shift($evaluations);
 
             expect(true)->toBeTrue();
-            self::handleEvaluationResult($evaluation->evaluate());
-        }
 
-        TestContext::clear();
+            self::handleEvaluationResult(Promptfoo::evaluate($evaluation));
+        }
     }
 
     private static function handleEvaluationResult(EvaluationResult $evaluationResult): void {}

@@ -6,33 +6,44 @@ namespace Pest\Prompt\Api;
 
 use Pest\Prompt\Promptfoo\Assertion;
 
-class AssertionBuilder
+/**
+ * @mixin Assertion
+ */
+class TestCase
 {
+    /** @var Assertion[] */
+    private array $assertions = [];
+
     public function __construct(
-        private readonly TestCaseBuilder $testCaseBuilder,
-        private readonly EvaluationBuilder $evaluationBuilder,
+        public readonly array $variables,
+        private readonly Evaluation $evaluation,
     ) {}
+
+    public function assert(Assertion $assertion): self
+    {
+        $this->assertions[] = $assertion;
+
+        return $this;
+    }
 
     /**
      * @param  array<string,mixed>  $options
      */
     public function toContain(string $contains, bool $strict = false, ?float $threshold = null, array $options = []): self
     {
-        $this->testCaseBuilder->assert(new Assertion(
+        return $this->assert(new Assertion(
             $strict ? 'contains' : 'icontain',
             $contains,
             $threshold,
             $options,
         ));
-
-        return $this;
     }
 
     /**
      * @param  array<string,mixed>  $variables
      */
-    public function and(array $variables): AssertionBuilder
+    public function and(array $variables): self
     {
-        return $this->evaluationBuilder->expect($variables);
+        return $this->evaluation->expect($variables);
     }
 }
