@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Pest\Prompt\Promptfoo;
 
+use Pest\Prompt\Promptfoo\Results\Result;
+
 class EvaluationResult
 {
-    /** @param array<int, array<string, mixed>> $results */
-    public function __construct(private readonly array $results, /** @var array<string, mixed> */ private array $stats = []) {}
+    /** @param array<int, Result> $results */
+    public function __construct(public readonly array $results) {}
 }

@@ -14,7 +14,8 @@
     "require": {
         "php": "^8.3",
         "pestphp/pest": "^4.0.0",
-        "pestphp/pest-plugin": "^4.0.0"
+        "pestphp/pest-plugin": "^4.0.0",
+        "symfony/yaml": "^7.3"
     },
     "autoload": {
         "psr-4": {

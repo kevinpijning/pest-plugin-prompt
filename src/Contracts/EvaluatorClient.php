@@ -7,5 +7,5 @@ use Pest\Prompt\Promptfoo\EvaluationResult;
 
 interface EvaluatorClient
 {
-    public function evaluate(Evaluation $evaluationBuilder): EvaluationResult;
+    public function evaluate(Evaluation $evaluation): EvaluationResult;
 }

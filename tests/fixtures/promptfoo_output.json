@@ -1,0 +1,366 @@
+{
+    "evalId": "eval-m5F-2025-11-23T12:37:57",
+    "results": {
+        "version": 3,
+        "timestamp": "2025-11-23T12:37:57.310Z",
+        "prompts": [
+            {
+                "raw": "translate {{message}} to {{language}}",
+                "label": "translate {{message}} to {{language}}",
+                "id": "c66eeb08d0abd527a917d6422bee292409d7d6a3750e1ab3bc80a386cd9971bd",
+                "provider": "openai:gpt-4o-mini",
+                "metrics": {
+                    "score": 0.5,
+                    "testPassCount": 0,
+                    "testFailCount": 1,
+                    "testErrorCount": 0,
+                    "assertPassCount": 1,
+                    "assertFailCount": 1,
+                    "totalLatencyMs": 8,
+                    "tokenUsage": {
+                        "prompt": 0,
+                        "completion": 0,
+                        "cached": 26,
+                        "total": 26,
+                        "numRequests": 1,
+                        "completionDetails": {
+                            "reasoning": 0,
+                            "acceptedPrediction": 0,
+                            "rejectedPrediction": 0
+                        },
+                        "assertions": {
+                            "total": 0,
+                            "prompt": 0,
+                            "completion": 0,
+                            "cached": 0,
+                            "numRequests": 0,
+                            "completionDetails": {
+                                "reasoning": 0,
+                                "acceptedPrediction": 0,
+                                "rejectedPrediction": 0
+                            }
+                        }
+                    },
+                    "namedScores": {},
+                    "namedScoresCount": {
+                    },
+                    "cost": 0.00000975
+                }
+            },
+            {
+                "raw": "Convert {{message}} to {{language}}",
+                "label": "Convert {{message}} to {{language}}",
+                "id": "735d2fe28b382f612e01c72f5fb79c23111c2fd0df94280ae5764dd7fa83ea0d",
+                "provider": "openai:gpt-4o-mini",
+                "metrics": {
+                    "score": 0.5,
+                    "testPassCount": 0,
+                    "testFailCount": 1,
+                    "testErrorCount": 0,
+                    "assertPassCount": 1,
+                    "assertFailCount": 1,
+                    "totalLatencyMs": 14,
+                    "tokenUsage": {
+                        "prompt": 0,
+                        "completion": 0,
+                        "cached": 25,
+                        "total": 25,
+                        "numRequests": 1,
+                        "completionDetails": {
+                            "reasoning": 0,
+                            "acceptedPrediction": 0,
+                            "rejectedPrediction": 0
+                        },
+                        "assertions": {
+                            "total": 0,
+                            "prompt": 0,
+                            "completion": 0,
+                            "cached": 0,
+                            "numRequests": 0,
+                            "completionDetails": {
+                                "reasoning": 0,
+                                "acceptedPrediction": 0,
+                                "rejectedPrediction": 0
+                            }
+                        }
+                    },
+                    "namedScores": {
+                    },
+                    "namedScoresCount": {
+                    },
+                    "cost": 0.000009149999999999999
+                }
+            }
+        ],
+        "results": [
+            {
+                "cost": 0.00000975,
+                "error": "Expected output to contain \"muda\"",
+                "gradingResult": {
+                    "pass": false,
+                    "score": 0.5,
+                    "reason": "Expected output to contain \"muda\"",
+                    "namedScores": {},
+                    "tokensUsed": {
+                        "total": 0,
+                        "prompt": 0,
+                        "completion": 0,
+                        "cached": 0,
+                        "numRequests": 0
+                    },
+                    "componentResults": [
+                        {
+                            "pass": true,
+                            "score": 1,
+                            "reason": "Assertion passed",
+                            "assertion": {
+                                "type": "icontains",
+                                "value": "Hola"
+                            }
+                        },
+                        {
+                            "pass": false,
+                            "score": 0,
+                            "reason": "Expected output to contain \"muda\"",
+                            "assertion": {
+                                "type": "icontains",
+                                "value": "muda"
+                            }
+                        }
+                    ]
+                },
+                "id": "31ce3910-d3c3-418e-9de7-e50e1e2f54bc",
+                "latencyMs": 8,
+                "namedScores": {},
+                "prompt": {
+                    "raw": "translate Hello World! to es",
+                    "label": "translate {{message}} to {{language}}"
+                },
+                "promptId": "c66eeb08d0abd527a917d6422bee292409d7d6a3750e1ab3bc80a386cd9971bd",
+                "promptIdx": 0,
+                "provider": {
+                    "id": "openai:gpt-4o-mini",
+                    "label": ""
+                },
+                "response": {
+                    "output": "\"Hello World!\" in Spanish is \"¡Hola, Mundo!\"",
+                    "tokenUsage": {
+                        "cached": 26,
+                        "total": 26
+                    },
+                    "cached": true,
+                    "latencyMs": 959,
+                    "finishReason": "stop",
+                    "cost": 0.00000975,
+                    "guardrails": {
+                        "flagged": false
+                    }
+                },
+                "score": 0.5,
+                "success": false,
+                "testCase": {
+                    "vars": {
+                        "message": "Hello World!",
+                        "language": "es"
+                    },
+                    "assert": [
+                        {
+                            "type": "icontains",
+                            "value": "Hola"
+                        },
+                        {
+                            "type": "icontains",
+                            "value": "muda"
+                        }
+                    ],
+                    "options": {
+                    },
+                    "metadata": {}
+                },
+                "testIdx": 0,
+                "vars": {
+                    "message": "Hello World!",
+                    "language": "es"
+                },
+                "metadata": {
+                    "_promptfooFileMetadata": {
+                    }
+                },
+                "failureReason": 1
+            },
+            {
+                "cost": 0.000009149999999999999,
+                "error": "Expected output to contain \"muda\"",
+                "gradingResult": {
+                    "pass": false,
+                    "score": 0.5,
+                    "reason": "Expected output to contain \"muda\"",
+                    "namedScores": {},
+                    "tokensUsed": {
+                        "total": 0,
+                        "prompt": 0,
+                        "completion": 0,
+                        "cached": 0,
+                        "numRequests": 0
+                    },
+                    "componentResults": [
+                        {
+                            "pass": true,
+                            "score": 1,
+                            "reason": "Assertion passed",
+                            "assertion": {
+                                "type": "icontains",
+                                "value": "Hola"
+                            }
+                        },
+                        {
+                            "pass": false,
+                            "score": 0,
+                            "reason": "Expected output to contain \"muda\"",
+                            "assertion": {
+                                "type": "icontains",
+                                "value": "muda"
+                            }
+                        }
+                    ]
+                },
+                "id": "e2ff8ae3-fdc4-4851-9e2f-739d5f57a416",
+                "latencyMs": 14,
+                "namedScores": {},
+                "prompt": {
+                    "raw": "Convert Hello World! to es",
+                    "label": "Convert {{message}} to {{language}}"
+                },
+                "promptId": "735d2fe28b382f612e01c72f5fb79c23111c2fd0df94280ae5764dd7fa83ea0d",
+                "promptIdx": 1,
+                "provider": {
+                    "id": "openai:gpt-4o-mini",
+                    "label": ""
+                },
+                "response": {
+                    "output": "\"Hello World!\" in Spanish is \"¡Hola Mundo!\"",
+                    "tokenUsage": {
+                        "cached": 25,
+                        "total": 25
+                    },
+                    "cached": true,
+                    "latencyMs": 1165,
+                    "finishReason": "stop",
+                    "cost": 0.000009149999999999999,
+                    "guardrails": {
+                        "flagged": false
+                    }
+                },
+                "score": 0.5,
+                "success": false,
+                "testCase": {
+                    "vars": {
+                        "message": "Hello World!",
+                        "language": "es"
+                    },
+                    "assert": [
+                        {
+                            "type": "icontains",
+                            "value": "Hola"
+                        },
+                        {
+                            "type": "icontains",
+                            "value": "muda"
+                        }
+                    ],
+                    "options": {
+                    },
+                    "metadata": {}
+                },
+                "testIdx": 0,
+                "vars": {
+                    "message": "Hello World!",
+                    "language": "es"
+                },
+                "metadata": {
+                    "_promptfooFileMetadata": {
+                    }
+                },
+                "failureReason": 1
+            }
+        ],
+        "stats": {
+            "successes": 0,
+            "failures": 2,
+            "errors": 0,
+            "tokenUsage": {
+                "prompt": 0,
+                "completion": 0,
+                "cached": 51,
+                "total": 51,
+                "numRequests": 2,
+                "completionDetails": {
+                    "reasoning": 0,
+                    "acceptedPrediction": 0,
+                    "rejectedPrediction": 0
+                },
+                "assertions": {
+                    "total": 0,
+                    "prompt": 0,
+                    "completion": 0,
+                    "cached": 0,
+                    "numRequests": 0,
+                    "completionDetails": {
+                        "reasoning": 0,
+                        "acceptedPrediction": 0,
+                        "rejectedPrediction": 0
+                    }
+                }
+            }
+        }
+    },
+    "config": {
+        "tags": {},
+        "description": "testing",
+        "prompts": [
+            "translate {{message}} to {{language}}",
+            "Convert {{message}} to {{language}}"
+        ],
+        "providers": [
+            "openai:gpt-4o-mini"
+        ],
+        "tests": [
+            {
+                "vars": {
+                    "message": "Hello World!",
+                    "language": "es"
+                },
+                "assert": [
+                    {
+                        "type": "icontains",
+                        "value": "Hola"
+                    },
+                    {
+                        "type": "icontains",
+                        "value": "muda"
+                    }
+                ]
+            }
+        ],
+        "scenarios": [],
+        "env": {
+        },
+        "sharing": false,
+        "outputPath": [
+            "/var/folders/my/s6xv90p575xfp307rbv4707c0000gp/T/promptfoo_output_69230021b9c14.json"
+        ],
+        "extensions": [],
+        "metadata": {
+        },
+        "evaluateOptions": {}
+    },
+    "shareableUrl": null,
+    "metadata": {
+        "promptfooVersion": "0.119.9",
+        "nodeVersion": "v22.13.1",
+        "platform": "darwin",
+        "arch": "arm64",
+        "exportedAt": "2025-11-23T12:37:57.350Z",
+        "evaluationCreatedAt": "2025-11-23T12:37:57.310Z"
+    }
+}

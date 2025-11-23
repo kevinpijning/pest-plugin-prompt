@@ -11,19 +11,15 @@ class Evaluation
     private ?string $description = null;
 
     /** @var string[] */
-    private array $prompts = [];
-
-    /** @var string[] */
     private array $providers = [];
 
     /** @var TestCase[] */
     private array $testCases = [];
 
     public function __construct(
-        array $prompts
-    ) {
-        $this->prompts = $prompts;
-    }
+        /** @var string[] */
+        private readonly array $prompts
+    ) {}
 
     public function describe(string $description): self
     {
@@ -41,7 +37,7 @@ class Evaluation
 
     public function usingProvider(string ...$providers): self
     {
-        if (empty($providers)) {
+        if ($providers === []) {
             return $this->addProvider(...Promptfoo::defaultProviders());
         }
 
@@ -68,5 +64,34 @@ class Evaluation
         $this->testCases = [];
 
         return $this;
+    }
+
+    public function description(): ?string
+    {
+        return $this->description;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function prompts(): array
+    {
+        return $this->prompts;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function providers(): array
+    {
+        return $this->providers;
+    }
+
+    /**
+     * @return TestCase[]
+     */
+    public function testCases(): array
+    {
+        return $this->testCases;
     }
 }

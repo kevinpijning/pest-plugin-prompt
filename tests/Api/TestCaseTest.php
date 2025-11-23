@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
+use Pest\Prompt\Api\Assertion;
 use Pest\Prompt\Api\Evaluation;
 use Pest\Prompt\Api\TestCase;
-use Pest\Prompt\Promptfoo\Assertion;
 
 test('it can be instantiated with variables and evaluation', function () {
     $evaluation = new Evaluation(['prompt1', 'prompt2']);

@@ -8,7 +8,7 @@ use Pest\Prompt\Api\Evaluation;
 
 class Promptfoo
 {
-    private static string $promptfooCommand = 'npx playwright@latest';
+    private static string $promptfooCommand = 'npx promptfoo@latest';
 
     /**
      * @var string[]
@@ -20,9 +20,9 @@ class Promptfoo
         return new PromptfooClient(self::$promptfooCommand);
     }
 
-    public static function evaluate(Evaluation $evaluationBuilder): EvaluationResult
+    public static function evaluate(Evaluation $valuation): EvaluationResult
     {
-        return self::initialize()->evaluate($evaluationBuilder);
+        return self::initialize()->evaluate($valuation);
     }
 
     /**
@@ -33,6 +33,9 @@ class Promptfoo
         return self::$defaultProviders;
     }
 
+    /**
+     * @param  string[]  $defaultProviders
+     */
     public static function setDefaultProviders(array $defaultProviders): void
     {
         self::$defaultProviders = $defaultProviders;

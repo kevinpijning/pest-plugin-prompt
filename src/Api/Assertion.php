@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Pest\Prompt\Promptfoo;
+namespace Pest\Prompt\Api;
 
 class Assertion
 {
