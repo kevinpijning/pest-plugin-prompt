@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Pest\Prompt\Api;
 
+use Pest\Prompt\Api\Concerns\CanBeJudged;
 use Pest\Prompt\Api\Concerns\CanContain;
 
 /**
@@ -11,7 +12,7 @@ use Pest\Prompt\Api\Concerns\CanContain;
  */
 class TestCase
 {
-    use CanContain;
+    use CanBeJudged, CanContain;
 
     /** @var Assertion[] */
     private array $assertions = [];
