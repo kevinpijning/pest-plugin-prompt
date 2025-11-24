@@ -37,12 +37,12 @@ class TestLifecycle
 
     private static function assertResult(Result $result): void
     {
-        if ($result->error !== null) {
+        if ($result->error !== null && ! $result->gradingResult instanceof GradingResult) {
             throw new InvalidArgumentException($result->error);
         }
 
         if (! $result->gradingResult instanceof GradingResult) {
-            throw new InvalidArgumentException('Grading result is missing');
+            throw new InvalidArgumentException('No grading result given');
         }
 
         foreach ($result->gradingResult->componentResults as $componentResult) {
