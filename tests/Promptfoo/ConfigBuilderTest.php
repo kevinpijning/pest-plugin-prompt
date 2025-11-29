@@ -31,7 +31,7 @@ test('toArray returns array with all fields when populated', function () {
         ->and($result)->toHaveKey('tests')
         ->and($result['description'])->toBe('Test description')
         ->and($result['prompts'])->toBe(['prompt1', 'prompt2'])
-        ->and($result['providers'])->toBe(['openai:gpt-4', 'anthropic:claude-3'])
+        ->and($result['providers'])->toBe([['id' => 'openai:gpt-4'], ['id' => 'anthropic:claude-3']])
         ->and($result['tests'])->toBeArray()
         ->and($result['tests'])->toHaveCount(1)
         ->and($result['tests'][0])->toHaveKey('vars')

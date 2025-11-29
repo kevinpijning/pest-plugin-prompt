@@ -10,7 +10,7 @@ class Evaluation
 {
     private ?string $description = null;
 
-    /** @var string[] */
+    /** @var Provider[] */
     private array $providers = [];
 
     /** @var TestCase[] */
@@ -28,14 +28,18 @@ class Evaluation
         return $this;
     }
 
-    private function addProvider(string $provider): self
+    private function addProvider(string|Provider $provider): self
     {
+        if (is_string($provider)) {
+            $provider = Provider::id($provider);
+        }
+
         $this->providers[] = $provider;
 
         return $this;
     }
 
-    public function usingProvider(string ...$providers): self
+    public function usingProvider(string|Provider ...$providers): self
     {
         if ($providers === []) {
             return $this->addProvider(...Promptfoo::defaultProviders());
@@ -80,7 +84,7 @@ class Evaluation
     }
 
     /**
-     * @return string[]
+     * @return Provider[]
      */
     public function providers(): array
     {

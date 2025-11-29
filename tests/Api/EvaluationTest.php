@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Pest\Prompt\Api\Evaluation;
+use Pest\Prompt\Api\Provider;
 use Pest\Prompt\Api\TestCase;
 
 test('it can be instantiated with prompts', function () {
@@ -43,7 +44,10 @@ test('usingProvider method adds a single provider and returns self', function ()
 
     $result = $evaluation->usingProvider($provider);
 
-    expect($result)->toBe($evaluation);
+    expect($result)->toBe($evaluation)
+        ->and($result->providers())->toHaveCount(1)
+        ->and($result->providers()[0])->toBeInstanceOf(Provider::class)
+        ->id->toBe('openai:gpt-4');
 });
 
 test('usingProvider method can add multiple providers', function () {
@@ -54,7 +58,10 @@ test('usingProvider method can add multiple providers', function () {
 
     $result = $evaluation->usingProvider($provider1, $provider2, $provider3);
 
-    expect($result)->toBe($evaluation);
+    expect($result)->toBe($evaluation)
+        ->and($result->providers())->toHaveCount(3)
+        ->and($result->providers()[0])->toBeInstanceOf(Provider::class)
+        ->id->toBe('openai:gpt-4');
 });
 
 test('usingProvider method can be called multiple times', function () {
@@ -63,7 +70,10 @@ test('usingProvider method can be called multiple times', function () {
     $evaluation->usingProvider('openai:gpt-4');
     $result = $evaluation->usingProvider('anthropic:claude-3');
 
-    expect($result)->toBe($evaluation);
+    expect($result)->toBe($evaluation)
+        ->and($result->providers())->toHaveCount(2)
+        ->and($result->providers()[0])->toBeInstanceOf(Provider::class)
+        ->id->toBe('openai:gpt-4');
 });
 
 test('usingProvider method can be chained', function () {
@@ -74,7 +84,18 @@ test('usingProvider method can be chained', function () {
         ->usingProvider('anthropic:claude-3')
         ->usingProvider('google:gemini');
 
-    expect($result)->toBe($evaluation);
+    expect($result)->toBe($evaluation)
+        ->and($result->providers())->toHaveCount(3);
+});
+
+test('usingProvider method can accept a Provider class', function () {
+    $evaluation = new Evaluation(['prompt1']);
+
+    $result = $evaluation->usingProvider(Provider::id('openai:gpt-4o-mini'));
+
+    expect($result->providers())->toHaveCount(1)
+        ->and($result->providers()[0])->toBeInstanceOf(Provider::class)
+        ->id->toBe('openai:gpt-4o-mini');
 });
 
 test('expect method creates and returns a TestCase', function () {
