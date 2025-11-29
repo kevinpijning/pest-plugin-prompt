@@ -28,7 +28,8 @@ final readonly class ConfigBuilder
             'description' => $this->evaluation->description(),
             'prompts' => $this->evaluation->prompts(),
             'providers' => $this->mapProviders(),
-            'tests' => $this->mapTests(),
+            'defaultTest' => $this->mapDefaultTests(),
+            'tests' => $this->mapTestCases(),
         ]);
     }
 
@@ -59,14 +60,32 @@ final readonly class ConfigBuilder
     /**
      * @return array<string,mixed>
      */
-    private function mapTests(): array
+    public function mapDefaultTests(): array
+    {
+        return $this->mapTests($this->evaluation->defaultTests());
+    }
+
+    /**
+     * @return array<string,mixed>
+     */
+    public function mapTestCases(): array
+    {
+        return $this->mapTests($this->evaluation->testCases());
+    }
+
+    /**
+     * @param  TestCase[]  $tests
+     * @return array<string,mixed>
+     */
+    private function mapTests(array $tests): array
     {
         $self = $this;
 
         return array_map(static fn (TestCase $testCase): array => array_filter([
+            'description' => $testCase->description(),
             'vars' => $testCase->variables(),
             'assert' => $self->mapAssertions($testCase->assertions()),
-        ]), $this->evaluation->testCases());
+        ]), $tests);
     }
 
     /**
