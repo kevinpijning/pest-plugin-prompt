@@ -64,6 +64,7 @@ final readonly class ConfigBuilder
         $self = $this;
 
         return array_map(static fn (TestCase $testCase): array => array_filter([
+            'description' => $testCase->description(),
             'vars' => $testCase->variables(),
             'assert' => $self->mapAssertions($testCase->assertions()),
         ]), $this->evaluation->testCases());

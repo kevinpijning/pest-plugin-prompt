@@ -17,6 +17,8 @@ class TestCase
     /** @var Assertion[] */
     private array $assertions = [];
 
+    private ?string $description = null;
+
     /**
      * @param  array<string,mixed>  $variables
      */
@@ -51,8 +53,20 @@ class TestCase
     /**
      * @param  array<string,mixed>  $variables
      */
-    public function and(array $variables): self
+    public function and(array $variables = []): self
     {
         return $this->evaluation->expect($variables);
+    }
+
+    public function describe(string $description): self
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function description(): ?string
+    {
+        return $this->description;
     }
 }

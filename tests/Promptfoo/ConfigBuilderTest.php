@@ -19,6 +19,7 @@ test('toArray returns array with all fields when populated', function () {
     $evaluation->usingProvider('openai:gpt-4', 'anthropic:claude-3');
 
     $testCase = $evaluation->expect(['key1' => 'value1']);
+    $testCase->describe('Test description');
     $testCase->assert(new Assertion('contains', 'expected value', 0.8, ['option1' => 'value1']));
 
     $builder = ConfigBuilder::fromEvaluation($evaluation);
@@ -36,6 +37,7 @@ test('toArray returns array with all fields when populated', function () {
         ->and($result['tests'])->toHaveCount(1)
         ->and($result['tests'][0])->toHaveKey('vars')
         ->and($result['tests'][0])->toHaveKey('assert')
+        ->and($result['tests'][0])->toHaveKey('description')
         ->and($result['tests'][0]['vars'])->toBe(['key1' => 'value1'])
         ->and($result['tests'][0]['assert'])->toBeArray()
         ->and($result['tests'][0]['assert'])->toHaveCount(1)
@@ -46,7 +48,8 @@ test('toArray returns array with all fields when populated', function () {
         ->and($result['tests'][0]['assert'][0]['type'])->toBe('contains')
         ->and($result['tests'][0]['assert'][0]['value'])->toBe('expected value')
         ->and($result['tests'][0]['assert'][0]['threshold'])->toBe(0.8)
-        ->and($result['tests'][0]['assert'][0]['options'])->toBe(['option1' => 'value1']);
+        ->and($result['tests'][0]['assert'][0]['options'])->toBe(['option1' => 'value1'])
+        ->and($result['tests'][0]['description'])->toBe('Test description');
 });
 
 test('toArray filters out null description', function () {
