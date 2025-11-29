@@ -67,3 +67,12 @@ test('the presence penalty can be set', function () {
 
     expect($provider->getPresencePenalty())->toBe(.2);
 });
+
+test('custom config can be set', function () {
+    $provider = Provider::id('openai:gpt-4o-mini')
+        ->config([
+            'apiKey' => 'fake-api-key',
+        ]);
+
+    expect($provider->getConfig())->toBe(['apiKey' => 'fake-api-key']);
+});

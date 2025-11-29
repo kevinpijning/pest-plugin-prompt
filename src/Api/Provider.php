@@ -40,6 +40,9 @@ class Provider
      */
     private ?array $stop = null;
 
+    /** @var array<string,mixed> */
+    private array $config = [];
+
     public function __construct(public readonly string $id) {}
 
     public static function id(string $id): self
@@ -99,6 +102,17 @@ class Provider
         return $this;
     }
 
+    /**
+     * @param  array<string,mixed>  $array
+     * @return $this
+     */
+    public function config(array $array): self
+    {
+        $this->config = $array;
+
+        return $this;
+    }
+
     public function getLabel(): ?string
     {
         return $this->label;
@@ -135,5 +149,13 @@ class Provider
     public function getStop(): ?array
     {
         return $this->stop;
+    }
+
+    /**
+     * @return array<string,mixed>
+     */
+    public function getConfig(): array
+    {
+        return $this->config;
     }
 }
