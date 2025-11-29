@@ -44,6 +44,14 @@ final readonly class ConfigBuilder
     {
         return array_map(fn (Provider $provider): array => array_filter([
             'id' => $provider->id,
+            'label' => $provider->getLabel(),
+            'config' => array_filter([
+                'temperature' => $provider->getTemperature(),
+                'top_p' => $provider->getTopP(),
+                'frequency_penalty' => $provider->getFrequencyPenalty(),
+                'presence_penalty' => $provider->getPresencePenalty(),
+                'stop' => $provider->getStop(),
+            ]),
         ]), $this->evaluation->providers());
     }
 
