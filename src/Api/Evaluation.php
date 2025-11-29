@@ -96,6 +96,18 @@ class Evaluation
      */
     public function testCases(): array
     {
-        return $this->testCases;
+        return array_values(array_filter($this->testCases, function (TestCase $case) {
+            return $case->variables() !== [];
+        }));
+    }
+
+    /**
+     * @return TestCase[]
+     */
+    public function defaultTests(): array
+    {
+        return array_values(array_filter($this->testCases, function (TestCase $case) {
+            return $case->variables() === [];
+        }));
     }
 }
