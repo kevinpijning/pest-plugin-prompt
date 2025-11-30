@@ -15,17 +15,20 @@ class TestLifecycle
 {
     public static function evaluate(): void
     {
-        $evaluations = TestContext::getCurrentEvaluations();
+        try {
+            $evaluations = TestContext::getCurrentEvaluations();
 
-        foreach ($evaluations as $evaluation) {
-            if (empty($evaluation->testCases())) {
-                continue;
+            foreach ($evaluations as $evaluation) {
+                if (empty($evaluation->testCases())) {
+                    continue;
+                }
+
+                self::handleEvaluationResult(Promptfoo::evaluate($evaluation));
             }
-
-            self::handleEvaluationResult(Promptfoo::evaluate($evaluation));
+        } finally {
+            // Always clear evaluations, even if an exception was thrown
+            TestContext::clear();
         }
-
-        TestContext::clear();
     }
 
     private static function handleEvaluationResult(EvaluationResult $evaluationResult): void
