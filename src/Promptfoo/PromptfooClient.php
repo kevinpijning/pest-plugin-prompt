@@ -86,16 +86,10 @@ class PromptfooClient implements EvaluatorClient
             '--output', $pendingEvaluation->outputPath,
         ];
 
-        // Add user-specified output path (promptfoo determines format by extension)
-        if (! OutputPath::has()) {
-            return $command;
-        }
-
-        $outputPath = OutputPath::get();
-
-        if ($outputPath !== null) {
+        // Add user-specified output path if provided
+        if ($pendingEvaluation->userOutputPath !== null) {
             $command[] = '--output';
-            $command[] = OutputPath::generate($outputPath);
+            $command[] = OutputPath::generate($pendingEvaluation->userOutputPath);
         }
 
         return $command;
