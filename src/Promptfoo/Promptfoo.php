@@ -52,4 +52,9 @@ class Promptfoo
     {
         return self::$outputFolder;
     }
+
+    public static function shouldOutput(): bool
+    {
+        return self::outputFolder() !== null;
+    }
 }

@@ -23,7 +23,7 @@ final readonly class PendingEvaluation
     {
         $userOutputPath = null;
 
-        if (Promptfoo::outputFolder() !== null) {
+        if (Promptfoo::shouldOutput()) {
             $userOutputPath = OutputPath::from(Promptfoo::outputFolder())->generate();
         }
 
