@@ -46,10 +46,14 @@ final class Plugin implements Bootable, HandlesArguments
 
         OutputPath::set($outputPath);
 
+        // Remove the value if it exists as a separate argument (e.g., 'test-output' in '--output test-output')
+        $arguments = $this->popArgument($outputPath, $arguments);
+        // Remove --output if it exists as a separate argument (e.g., '--output' in '--output test-output')
         $arguments = $this->popArgument('--'.self::OUTPUT_OPTION, $arguments);
+        // Remove --output=path variant if it exists (e.g., '--output=test-output')
+        $arguments = $this->popArgument('--'.self::OUTPUT_OPTION.'='.$outputPath, $arguments);
 
-        // popArgument only removes exact '--output', so remove '--output=path' variant if it exists
-        return $this->popArgument('--'.self::OUTPUT_OPTION.'='.$outputPath, $arguments);
+        return $arguments;
     }
 
     private function in(): string

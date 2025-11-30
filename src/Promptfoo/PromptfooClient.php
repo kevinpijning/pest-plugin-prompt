@@ -87,14 +87,15 @@ class PromptfooClient implements EvaluatorClient
         ];
 
         // Add user-specified output path (promptfoo determines format by extension)
-        if (OutputPath::has()) {
-            $outputPath = OutputPath::get();
+        if (! OutputPath::has()) {
+            return $command;
+        }
 
-            if ($outputPath !== null) {
-                $command[] = '--output';
-                // If no extension, add .html
-                $command[] = OutputPath::withHtmlFallback($outputPath);
-            }
+        $outputPath = OutputPath::get();
+
+        if ($outputPath !== null) {
+            $command[] = '--output';
+            $command[] = OutputPath::withHtmlFallback($outputPath);
         }
 
         return $command;

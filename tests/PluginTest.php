@@ -43,6 +43,16 @@ test('handle arguments sets output path when using equals syntax', function () {
         ->and($result)->not->toContain('--output');
 });
 
+test('handle arguments removes output value from arguments array', function () {
+    $plugin = new Plugin;
+
+    $result = $plugin->handleArguments(['script.php', '--output', 'test-output', 'other-arg']);
+
+    expect($result)->toBe(['script.php', 'other-arg'])
+        ->and($result)->not->toContain('test-output')
+        ->and($result)->not->toContain('--output');
+});
+
 test('handle arguments returns arguments unchanged when --output is not provided', function () {
     $plugin = new Plugin;
 
