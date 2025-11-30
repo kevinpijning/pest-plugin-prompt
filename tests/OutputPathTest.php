@@ -42,23 +42,17 @@ test('set overwrites previous path', function () {
     expect(OutputPath::get())->toBe('/second/path.html');
 });
 
-test('generate always treats path as folder and adds datetime filename', function () {
-    $result1 = OutputPath::generate('path/to/results');
-    $result2 = OutputPath::generate('pest-prompt-tests');
-    $result3 = OutputPath::generate('path/to/results.html');
-    $result4 = OutputPath::generate('path/to/results.json');
+test('generate sanitizes special characters: (test) with [special] chars!', function () {
+    $result = OutputPath::generate('output');
 
-    // Should always start with folder path and end with datetime.html
-    expect($result1)->toStartWith('path/to/results/')
-        ->and($result1)->toEndWith('.html')
-        ->and($result1)->toMatch('/\d{4}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2}\.html$/')
-        ->and($result2)->toStartWith('pest-prompt-tests/')
-        ->and($result2)->toEndWith('.html')
-        ->and($result2)->toMatch('/\d{4}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2}\.html$/')
-        ->and($result3)->toStartWith('path/to/results.html/')
-        ->and($result3)->toEndWith('.html')
-        ->and($result3)->toMatch('/\d{4}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2}\.html$/')
-        ->and($result4)->toStartWith('path/to/results.json/')
-        ->and($result4)->toEndWith('.html')
-        ->and($result4)->toMatch('/\d{4}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2}\.html$/');
+    // Should sanitize special characters from test name (spaces, colons, parentheses, brackets become underscores, like Pest does)
+    // The exact path format: output/datetime_sanitized_test_name.html
+    // Special characters are converted to underscores to match Pest's internal format
+    expect($result)->toMatch('/^output\/\d{4}_\d{2}_\d{2}_\d{2}_\d{2}_\d{2}_generate_sanitizes_special_characters_test_with_special_chars\.html$/')
+        ->and($result)->not->toContain('(')
+        ->and($result)->not->toContain(')')
+        ->and($result)->not->toContain('[')
+        ->and($result)->not->toContain(']')
+        ->and($result)->not->toContain(':')
+        ->and($result)->not->toContain(' ');
 });

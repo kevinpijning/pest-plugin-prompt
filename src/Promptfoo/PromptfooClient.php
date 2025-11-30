@@ -7,7 +7,6 @@ namespace Pest\Prompt\Promptfoo;
 use Pest\Prompt\Api\Evaluation;
 use Pest\Prompt\Contracts\EvaluatorClient;
 use Pest\Prompt\Exceptions\ExecutionException;
-use Pest\Prompt\OutputPath;
 use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\Process;
 
@@ -89,7 +88,7 @@ class PromptfooClient implements EvaluatorClient
         // Add user-specified output path if provided
         if ($pendingEvaluation->userOutputPath !== null) {
             $command[] = '--output';
-            $command[] = OutputPath::generate($pendingEvaluation->userOutputPath);
+            $command[] = $pendingEvaluation->userOutputPath;
         }
 
         return $command;

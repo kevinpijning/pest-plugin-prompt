@@ -18,11 +18,17 @@ class PendingEvaluation
 
     public static function create(Evaluation $evaluation): self
     {
+        $userOutputPath = null;
+
+        if (OutputPath::has() && ($path = OutputPath::get()) !== null) {
+            $userOutputPath = OutputPath::generate($path);
+        }
+
         return new self(
-            $evaluation,
-            sys_get_temp_dir().'/promptfoo_config_'.uniqid().'.yaml',
-            sys_get_temp_dir().'/promptfoo_output_'.uniqid().'.json',
-            OutputPath::has() ? OutputPath::get() : null,
+            evaluation: $evaluation,
+            configPath: sys_get_temp_dir().'/promptfoo_config_'.uniqid().'.yaml',
+            outputPath: sys_get_temp_dir().'/promptfoo_output_'.uniqid().'.json',
+            userOutputPath: $userOutputPath,
         );
     }
 }

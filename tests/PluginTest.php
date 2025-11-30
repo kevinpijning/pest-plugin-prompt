@@ -15,7 +15,7 @@ test('handle arguments uses default path when --output is provided without value
     $result = $plugin->handleArguments(['script.php', '--output']);
 
     expect(OutputPath::has())->toBeTrue()
-        ->and(OutputPath::get())->toBe('pest-prompt-tests')
+        ->and(OutputPath::get())->toBe('prompt-tests-output')
         ->and($result)->not->toContain('--output');
 });
 

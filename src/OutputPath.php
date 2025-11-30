@@ -38,8 +38,18 @@ class OutputPath
 
     private static function generateFilename(): string
     {
-        $datetime = date('Y-m-d-H-i-s');
+        /** @phpstan-ignore-next-line */
+        $testName = (string) test()->name();
+        $datetime = date('Y_m_d_H_i_s');
 
-        return $datetime.'.html';
+        // Remove Pest's internal prefix
+        $testName = str_replace('__pest_evaluable_', '', $testName);
+
+        // Sanitize test name for filename (convert special characters to underscores, like Pest does)
+        $sanitizedTestName = (string) preg_replace('/[^a-zA-Z0-9-_]/', '_', $testName);
+        $sanitizedTestName = (string) preg_replace('/_+/', '_', $sanitizedTestName); // Replace multiple underscores with single underscore
+        $sanitizedTestName = trim($sanitizedTestName, '_'); // Remove leading/trailing underscores
+
+        return $datetime.'_'.$sanitizedTestName.'.html';
     }
 }
