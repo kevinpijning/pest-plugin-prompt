@@ -4,22 +4,20 @@ declare(strict_types=1);
 
 namespace Pest\Prompt;
 
-use Stringable;
-
-readonly class Path implements Stringable
+class Output
 {
     private function __construct(
-        private string $name,
-        private ?string $folder = null,
-        private string $extension = 'html',
-        private bool $includeDatetime = false,
-        private bool $includeUniqueId = false,
+        private readonly string $name,
+        private readonly ?string $folder = null,
+        private readonly string $extension = 'html',
+        private readonly bool $includeDatetime = false,
+        private readonly bool $includeUniqueId = false,
     ) {}
 
     /**
      * Start a fluent builder with a name.
      */
-    public static function withFileName(string $name): self
+    public static function withName(string $name): self
     {
         return new self(name: $name);
     }
@@ -27,7 +25,7 @@ readonly class Path implements Stringable
     /**
      * Set the output folder (fluent builder method).
      */
-    public function inFolder(?string $folder): self
+    public function toFolder(?string $folder): self
     {
         return new self(
             name: $this->name,
@@ -41,7 +39,7 @@ readonly class Path implements Stringable
     /**
      * Set the file extension (fluent builder method).
      */
-    public function withExtension(string $extension): self
+    public function extension(string $extension): self
     {
         return new self(
             name: $this->name,
@@ -83,7 +81,7 @@ readonly class Path implements Stringable
     /**
      * Generate the final output path (fluent builder method).
      */
-    public function toString(): string
+    public function generate(): string
     {
         $filename = $this->generateFilename();
         $folderPath = $this->folder !== null
@@ -112,19 +110,12 @@ readonly class Path implements Stringable
         $parts[] = $sanitizedName;
 
         if ($this->includeUniqueId) {
-            // Use more_entropy=true to prevent race conditions in high-concurrency scenarios
-            // This adds additional entropy based on microseconds, making collisions extremely unlikely
-            $parts[] = uniqid('', true);
+            $parts[] = uniqid();
         }
 
         $filename = implode('_', array_filter($parts));
         $extension = ltrim($this->extension, '.');
 
         return $filename.'.'.$extension;
-    }
-
-    public function __toString(): string
-    {
-        return $this->toString();
     }
 }

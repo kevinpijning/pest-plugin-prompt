@@ -43,7 +43,7 @@ class Promptfoo
         self::$defaultProviders = $defaultProviders;
     }
 
-    public static function setOutputFolder(?string $path): void
+    public static function setOutputFolder(string $path): void
     {
         self::$outputFolder = $path;
     }

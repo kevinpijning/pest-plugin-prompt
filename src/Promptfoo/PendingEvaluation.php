@@ -32,7 +32,7 @@ final readonly class PendingEvaluation
                 ->withExtension('html')
                 ->includeDatetime()
                 ->includeUniqueId()
-                ->generate();
+                ->toString();
         }
 
         return new self(
@@ -41,12 +41,12 @@ final readonly class PendingEvaluation
                 ->inFolder(sys_get_temp_dir())
                 ->withExtension('yaml')
                 ->includeUniqueId()
-                ->generate(),
+                ->toString(),
             outputPath: Path::withFileName('promptfoo_output')
                 ->inFolder(sys_get_temp_dir())
                 ->withExtension('json')
                 ->includeUniqueId()
-                ->generate(),
+                ->toString(),
             userOutputPath: $userOutputPath,
         );
     }

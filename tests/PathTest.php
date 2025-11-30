@@ -11,7 +11,7 @@ test('withFileName creates a new Path instance', function () {
 });
 
 test('generate returns filename with default extension when no folder is set', function () {
-    $result = Path::withFileName('test-name')->generate();
+    $result = Path::withFileName('test-name')->toString();
 
     expect($result)->toBe('test-name.html');
 });
@@ -19,7 +19,7 @@ test('generate returns filename with default extension when no folder is set', f
 test('generate returns full path when folder is set', function () {
     $result = Path::withFileName('test-name')
         ->inFolder('/path/to/output')
-        ->generate();
+        ->toString();
 
     expect($result)->toBe('/path/to/output/test-name.html');
 });
@@ -27,7 +27,7 @@ test('generate returns full path when folder is set', function () {
 test('inFolder handles folder path with trailing slash', function () {
     $result = Path::withFileName('test-name')
         ->inFolder('/path/to/output/')
-        ->generate();
+        ->toString();
 
     expect($result)->toBe('/path/to/output/test-name.html');
 });
@@ -35,7 +35,7 @@ test('inFolder handles folder path with trailing slash', function () {
 test('inFolder handles null folder', function () {
     $result = Path::withFileName('test-name')
         ->inFolder(null)
-        ->generate();
+        ->toString();
 
     expect($result)->toBe('test-name.html');
 });
@@ -43,7 +43,7 @@ test('inFolder handles null folder', function () {
 test('withExtension sets custom extension', function () {
     $result = Path::withFileName('test-name')
         ->withExtension('json')
-        ->generate();
+        ->toString();
 
     expect($result)->toBe('test-name.json');
 });
@@ -51,7 +51,7 @@ test('withExtension sets custom extension', function () {
 test('withExtension handles extension with leading dot', function () {
     $result = Path::withFileName('test-name')
         ->withExtension('.json')
-        ->generate();
+        ->toString();
 
     expect($result)->toBe('test-name.json');
 });
@@ -59,7 +59,7 @@ test('withExtension handles extension with leading dot', function () {
 test('includeDatetime adds datetime prefix to filename', function () {
     $result = Path::withFileName('test-name')
         ->includeDatetime()
-        ->generate();
+        ->toString();
 
     // Should match format: YYYY-MM-DD_HHMMSS_test-name.html
     expect($result)->toMatch('/^\d{4}-\d{2}-\d{2}_\d{6}_test-name\.html$/');
@@ -68,7 +68,7 @@ test('includeDatetime adds datetime prefix to filename', function () {
 test('includeUniqueId adds unique ID suffix to filename', function () {
     $result = Path::withFileName('test-name')
         ->includeUniqueId()
-        ->generate();
+        ->toString();
 
     // Should match format: test-name_<uniqueid>.html
     // uniqid with more_entropy returns: 14 hex chars + dot + 8 decimal digits
@@ -79,7 +79,7 @@ test('includeDatetime and includeUniqueId can be used together', function () {
     $result = Path::withFileName('test-name')
         ->includeDatetime()
         ->includeUniqueId()
-        ->generate();
+        ->toString();
 
     // Should match format: YYYY-MM-DD_HHMMSS_test-name_<uniqueid>.html
     // uniqid with more_entropy returns: 14 hex chars + dot + 8 decimal digits
@@ -88,7 +88,7 @@ test('includeDatetime and includeUniqueId can be used together', function () {
 
 test('generate sanitizes special characters in filename', function () {
     $result = Path::withFileName('test (with) [special] chars!')
-        ->generate();
+        ->toString();
 
     expect($result)->toBe('test_with_special_chars.html')
         ->and($result)->not->toContain('(')
@@ -101,35 +101,35 @@ test('generate sanitizes special characters in filename', function () {
 
 test('generate converts name to lowercase', function () {
     $result = Path::withFileName('TEST-Name-With-Mixed-Case')
-        ->generate();
+        ->toString();
 
     expect($result)->toBe('test-name-with-mixed-case.html');
 });
 
 test('generate removes Pest internal prefix', function () {
     $result = Path::withFileName('__pest_evaluable_test-name')
-        ->generate();
+        ->toString();
 
     expect($result)->toBe('test-name.html');
 });
 
 test('generate collapses multiple underscores', function () {
     $result = Path::withFileName('test___name___with___underscores')
-        ->generate();
+        ->toString();
 
     expect($result)->toBe('test_name_with_underscores.html');
 });
 
 test('generate trims leading and trailing underscores', function () {
     $result = Path::withFileName('___test-name___')
-        ->generate();
+        ->toString();
 
     expect($result)->toBe('test-name.html');
 });
 
 test('generate handles empty sanitized name', function () {
     $result = Path::withFileName('!!!')
-        ->generate();
+        ->toString();
 
     // Should still produce a valid filename, even if name becomes empty after sanitization
     expect($result)->toMatch('/^.*\.html$/');
@@ -141,14 +141,14 @@ test('fluent builder methods can be chained in any order', function () {
         ->withExtension('json')
         ->includeDatetime()
         ->includeUniqueId()
-        ->generate();
+        ->toString();
 
     $result2 = Path::withFileName('test')
         ->includeDatetime()
         ->includeUniqueId()
         ->withExtension('json')
         ->inFolder('/output')
-        ->generate();
+        ->toString();
 
     // Both should produce valid paths with the same components
     // uniqid with more_entropy returns: 14 hex chars + dot + 8 decimal digits
@@ -161,7 +161,7 @@ test('generate creates unique paths when includeUniqueId is used', function () {
     for ($i = 0; $i < 100; $i++) {
         $paths[] = Path::withFileName('test-name')
             ->includeUniqueId()
-            ->generate();
+            ->toString();
     }
 
     // All paths should be unique
@@ -177,7 +177,7 @@ test('generate creates unique paths with datetime and uniqueId in concurrent sce
         $paths[] = Path::withFileName('test-name')
             ->includeDatetime()
             ->includeUniqueId()
-            ->generate();
+            ->toString();
 
         // Small delay to ensure we're in the same second (worst case scenario)
         usleep(1000); // 1ms delay
@@ -190,7 +190,7 @@ test('generate creates unique paths with datetime and uniqueId in concurrent sce
 
 test('generate handles unicode and special characters', function () {
     $result = Path::withFileName('test-ñame-with-émojis-🚀')
-        ->generate();
+        ->toString();
 
     // Unicode characters should be converted to underscores
     expect($result)->toMatch('/^test.*\.html$/')
@@ -202,7 +202,7 @@ test('generate handles unicode and special characters', function () {
 test('generate handles very long filenames', function () {
     $longName = str_repeat('a', 200);
     $result = Path::withFileName($longName)
-        ->generate();
+        ->toString();
 
     expect($result)->toMatch('/^a+\.html$/');
 });
@@ -210,7 +210,7 @@ test('generate handles very long filenames', function () {
 test('generate handles folder with Windows-style path separators', function () {
     $result = Path::withFileName('test-name')
         ->inFolder('C:\\path\\to\\output')
-        ->generate();
+        ->toString();
 
     // Should handle Windows paths correctly
     expect($result)->toContain('test-name.html');
@@ -222,7 +222,7 @@ test('generate with all options produces correct format', function () {
         ->withExtension('html')
         ->includeDatetime()
         ->includeUniqueId()
-        ->generate();
+        ->toString();
 
     // Full format: /output/folder/YYYY-MM-DD_HHMMSS_my-test_<uniqueid>.html
     // uniqid with more_entropy returns: 14 hex chars + dot + 8 decimal digits
