@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Pest\Prompt;
 
-use InvalidArgumentException;
 use Pest\Contracts\Plugins\Bootable;
 use Pest\Contracts\Plugins\HandlesArguments;
 use Pest\Plugins\Concerns\HandleArguments;
@@ -19,6 +18,8 @@ final class Plugin implements Bootable, HandlesArguments
     use HandleArguments;
 
     private const string OUTPUT_OPTION = 'output';
+
+    private const string DEFAULT_OUTPUT_PATH = 'pest-prompt-tests/';
 
     public function boot(): void
     {
@@ -40,8 +41,9 @@ final class Plugin implements Bootable, HandlesArguments
 
         $outputPath = $input->getParameterOption('--'.self::OUTPUT_OPTION);
 
+        // Use default path if --output is provided without a value
         if (! is_string($outputPath) || $outputPath === '') {
-            throw new InvalidArgumentException('The --output option requires a value. Example: --output="path/to/results"');
+            $outputPath = self::DEFAULT_OUTPUT_PATH;
         }
 
         OutputPath::set($outputPath);

@@ -9,18 +9,14 @@ beforeEach(function () {
     OutputPath::clear();
 });
 
-test('handle arguments throws exception when --output is provided without value', function () {
+test('handle arguments uses default path when --output is provided without value', function () {
     $plugin = new Plugin;
 
-    expect(fn () => $plugin->handleArguments(['script.php', '--output']))
-        ->toThrow(InvalidArgumentException::class, 'The --output option requires a value');
-});
+    $result = $plugin->handleArguments(['script.php', '--output']);
 
-test('handle arguments throws exception when --output is provided with empty value', function () {
-    $plugin = new Plugin;
-
-    expect(fn () => $plugin->handleArguments(['script.php', '--output', '']))
-        ->toThrow(InvalidArgumentException::class, 'The --output option requires a value');
+    expect(OutputPath::has())->toBeTrue()
+        ->and(OutputPath::get())->toBe('pest-prompt-tests/')
+        ->and($result)->not->toContain('--output');
 });
 
 test('handle arguments sets output path when valid value is provided', function () {

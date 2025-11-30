@@ -52,6 +52,15 @@ test('with html fallback does not change path when extension already exists', fu
         ->and(OutputPath::withHtmlFallback('path/to/results.csv'))->toBe('path/to/results.csv');
 });
 
-test('with html fallback handles paths with trailing slash', function () {
-    expect(OutputPath::withHtmlFallback('path/to/'))->toBe('path/to/.html');
+test('with html fallback generates filename with datetime for folder paths', function () {
+    $result1 = OutputPath::withHtmlFallback('path/to/');
+    $result2 = OutputPath::withHtmlFallback('pest-prompt-tests/');
+
+    // Should start with folder path and end with datetime.html
+    expect($result1)->toStartWith('path/to/')
+        ->and($result1)->toEndWith('.html')
+        ->and($result1)->toMatch('/\d{4}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2}\.html$/')
+        ->and($result2)->toStartWith('pest-prompt-tests/')
+        ->and($result2)->toEndWith('.html')
+        ->and($result2)->toMatch('/\d{4}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2}\.html$/');
 });
