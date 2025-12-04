@@ -19,6 +19,7 @@ test('toArray returns array with all fields when populated', function () {
     $evaluation->usingProvider('openai:gpt-4', 'anthropic:claude-3');
 
     $testCase = $evaluation->expect(['key1' => 'value1']);
+    $testCase->describe('Test description');
     $testCase->assert(new Assertion('contains', 'expected value', 0.8, ['option1' => 'value1']));
 
     $builder = ConfigBuilder::fromEvaluation($evaluation);
@@ -36,6 +37,7 @@ test('toArray returns array with all fields when populated', function () {
         ->and($result['tests'])->toHaveCount(1)
         ->and($result['tests'][0])->toHaveKey('vars')
         ->and($result['tests'][0])->toHaveKey('assert')
+        ->and($result['tests'][0])->toHaveKey('description')
         ->and($result['tests'][0]['vars'])->toBe(['key1' => 'value1'])
         ->and($result['tests'][0]['assert'])->toBeArray()
         ->and($result['tests'][0]['assert'])->toHaveCount(1)
@@ -46,7 +48,34 @@ test('toArray returns array with all fields when populated', function () {
         ->and($result['tests'][0]['assert'][0]['type'])->toBe('contains')
         ->and($result['tests'][0]['assert'][0]['value'])->toBe('expected value')
         ->and($result['tests'][0]['assert'][0]['threshold'])->toBe(0.8)
-        ->and($result['tests'][0]['assert'][0]['options'])->toBe(['option1' => 'value1']);
+        ->and($result['tests'][0]['assert'][0]['options'])->toBe(['option1' => 'value1'])
+        ->and($result['tests'][0]['description'])->toBe('Test description');
+});
+
+test('toArray includes defaultTest when default tests exist', function () {
+    $evaluation = new Evaluation(['prompt1']);
+    $evaluation->describe('Test description');
+
+    $defaultTest = $evaluation->expect();
+    $defaultTest->describe('Default test description');
+    $defaultTest->assert(new Assertion('contains', 'expected value'));
+
+    $testCase = $evaluation->expect(['key1' => 'value1']);
+    $testCase->assert(new Assertion('contains', 'test value'));
+
+    $builder = ConfigBuilder::fromEvaluation($evaluation);
+    $result = $builder->toArray();
+
+    expect($result)->toHaveKey('defaultTest')
+        ->and($result)->toHaveKey('tests')
+        ->and($result['defaultTest'])->toBeArray()
+        ->and($result['defaultTest'])->toHaveCount(1)
+        ->and($result['defaultTest'][0])->toHaveKey('description')
+        ->and($result['defaultTest'][0])->toHaveKey('assert')
+        ->and($result['defaultTest'][0]['description'])->toBe('Default test description')
+        ->and($result['defaultTest'][0])->not->toHaveKey('vars')
+        ->and($result['tests'])->toBeArray()
+        ->and($result['tests'])->toHaveCount(1);
 });
 
 test('toArray filters out null description', function () {
@@ -126,17 +155,21 @@ test('toArray filters out empty test cases array', function () {
     $builder = ConfigBuilder::fromEvaluation($evaluation);
     $result = $builder->toArray();
 
-    expect($result)->not->toHaveKey('tests');
+    expect($result)->not->toHaveKey('tests')
+        ->and($result)->not->toHaveKey('defaultTest');
 });
 
-test('toArray filters out empty variables array', function () {
+test('toArray filters out empty variables array from test cases', function () {
     $evaluation = new Evaluation(['prompt1']);
     $evaluation->expect([])->toContain('test');
 
     $builder = ConfigBuilder::fromEvaluation($evaluation);
     $result = $builder->toArray();
 
-    expect($result['tests'][0])->not->toHaveKey('vars');
+    // Empty variables should go to defaultTest, not tests
+    expect($result)->toHaveKey('defaultTest')
+        ->and($result)->not->toHaveKey('tests')
+        ->and($result['defaultTest'][0])->not->toHaveKey('vars');
 });
 
 test('toArray handles test case with no assertions', function () {
@@ -243,4 +276,26 @@ test('toArray handles assertion with options but no threshold', function () {
     expect($result['tests'][0]['assert'][0])->not->toHaveKey('threshold')
         ->and($result['tests'][0]['assert'][0])->toHaveKey('options')
         ->and($result['tests'][0]['assert'][0]['options'])->toBe(['key' => 'value']);
+});
+
+test('toArray handles both defaultTest and tests together', function () {
+    $evaluation = new Evaluation(['prompt1']);
+
+    // Add default test
+    $evaluation->expect()->describe('Default')->toContain('default');
+
+    // Add test cases with variables
+    $evaluation->expect(['var1' => 'value1'])->toContain('test1');
+    $evaluation->expect(['var2' => 'value2'])->toContain('test2');
+
+    $builder = ConfigBuilder::fromEvaluation($evaluation);
+    $result = $builder->toArray();
+
+    expect($result)->toHaveKey('defaultTest')
+        ->and($result)->toHaveKey('tests')
+        ->and($result['defaultTest'])->toHaveCount(1)
+        ->and($result['tests'])->toHaveCount(2)
+        ->and($result['defaultTest'][0]['description'])->toBe('Default')
+        ->and($result['tests'][0]['vars'])->toBe(['var1' => 'value1'])
+        ->and($result['tests'][1]['vars'])->toBe(['var2' => 'value2']);
 });

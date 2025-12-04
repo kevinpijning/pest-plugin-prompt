@@ -190,3 +190,76 @@ test('expect method works after clearTests', function () {
         ->and($testCase2)->not->toBe($testCase1)
         ->and($testCase2->variables())->toBe($variables2);
 });
+
+test('testCases returns only test cases with non-empty variables', function () {
+    $evaluation = new Evaluation(['prompt1']);
+
+    $evaluation->expect(['key1' => 'value1']);
+    $evaluation->expect(['key2' => 'value2']);
+    $evaluation->expect(); // Empty variables
+    $evaluation->expect([]); // Empty array
+
+    $testCases = $evaluation->testCases();
+
+    expect($testCases)->toHaveCount(2)
+        ->and($testCases[0]->variables())->toBe(['key1' => 'value1'])
+        ->and($testCases[1]->variables())->toBe(['key2' => 'value2']);
+});
+
+test('testCases returns empty array when no test cases with variables exist', function () {
+    $evaluation = new Evaluation(['prompt1']);
+
+    $evaluation->expect();
+    $evaluation->expect([]);
+
+    $testCases = $evaluation->testCases();
+
+    expect($testCases)->toBeArray()
+        ->and($testCases)->toHaveCount(0);
+});
+
+test('defaultTests returns only test cases with empty variables', function () {
+    $evaluation = new Evaluation(['prompt1']);
+
+    $evaluation->expect(); // Empty variables
+    $evaluation->expect([]); // Empty array
+    $evaluation->expect(['key1' => 'value1']);
+    $evaluation->expect(['key2' => 'value2']);
+
+    $defaultTests = $evaluation->defaultTests();
+
+    expect($defaultTests)->toHaveCount(2)
+        ->and($defaultTests[0]->variables())->toBe([])
+        ->and($defaultTests[1]->variables())->toBe([]);
+});
+
+test('defaultTests returns empty array when no default tests exist', function () {
+    $evaluation = new Evaluation(['prompt1']);
+
+    $evaluation->expect(['key1' => 'value1']);
+    $evaluation->expect(['key2' => 'value2']);
+
+    $defaultTests = $evaluation->defaultTests();
+
+    expect($defaultTests)->toBeArray()
+        ->and($defaultTests)->toHaveCount(0);
+});
+
+test('testCases and defaultTests correctly separate test cases', function () {
+    $evaluation = new Evaluation(['prompt1']);
+
+    $default1 = $evaluation->expect();
+    $default2 = $evaluation->expect([]);
+    $case1 = $evaluation->expect(['key1' => 'value1']);
+    $case2 = $evaluation->expect(['key2' => 'value2']);
+
+    $defaultTests = $evaluation->defaultTests();
+    $testCases = $evaluation->testCases();
+
+    expect($defaultTests)->toHaveCount(2)
+        ->and($testCases)->toHaveCount(2)
+        ->and($defaultTests[0])->toBe($default1)
+        ->and($defaultTests[1])->toBe($default2)
+        ->and($testCases[0])->toBe($case1)
+        ->and($testCases[1])->toBe($case2);
+});
