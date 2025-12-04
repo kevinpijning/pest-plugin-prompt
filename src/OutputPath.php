@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Pest\Prompt;
+namespace KevinPijning\Prompt;
 
 class OutputPath
 {

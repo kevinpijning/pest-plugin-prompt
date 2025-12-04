@@ -1,5 +1,5 @@
 {
-    "name": "pestphp/pest-plugin-prompt",
+    "name": "kevinpijning/pest-plugin-prompt",
     "description": "Pest plugin to evaluate prompts",
     "keywords": [
         "php",
@@ -8,7 +8,8 @@
         "unit",
         "test",
         "testing",
-        "plugin"
+        "plugin",
+        "prompt"
     ],
     "license": "MIT",
     "require": {
@@ -19,7 +20,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Pest\\Prompt\\": "src/"
+            "KevinPijning\\Prompt\\": "src/"
         },
         "files": [
             "src/Autoload.php"
@@ -54,7 +55,7 @@
     "extra": {
         "pest": {
             "plugins": [
-                "Pest\\Prompt\\Plugin"
+                "KevinPijning\\Prompt\\Plugin"
             ]
         }
     }

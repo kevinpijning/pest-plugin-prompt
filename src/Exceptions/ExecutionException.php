@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Pest\Prompt\Exceptions;
+namespace KevinPijning\Prompt\Exceptions;
 
 use Exception;
 

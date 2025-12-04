@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Pest\Prompt\Api;
+namespace KevinPijning\Prompt\Api;
 
-use Pest\Prompt\Api\Concerns\CanBeJudged;
-use Pest\Prompt\Api\Concerns\CanContain;
+use KevinPijning\Prompt\Api\Concerns\CanBeJudged;
+use KevinPijning\Prompt\Api\Concerns\CanContain;
 
 /**
  * @mixin Assertion

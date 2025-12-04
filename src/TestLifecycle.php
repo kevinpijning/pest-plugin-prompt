@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Pest\Prompt;
+namespace KevinPijning\Prompt;
 
 use InvalidArgumentException;
-use Pest\Prompt\Promptfoo\EvaluationResult;
-use Pest\Prompt\Promptfoo\Promptfoo;
-use Pest\Prompt\Promptfoo\Results\ComponentResult;
-use Pest\Prompt\Promptfoo\Results\GradingResult;
-use Pest\Prompt\Promptfoo\Results\Result;
+use KevinPijning\Prompt\Promptfoo\EvaluationResult;
+use KevinPijning\Prompt\Promptfoo\Promptfoo;
+use KevinPijning\Prompt\Promptfoo\Results\ComponentResult;
+use KevinPijning\Prompt\Promptfoo\Results\GradingResult;
+use KevinPijning\Prompt\Promptfoo\Results\Result;
 
 class TestLifecycle
 {

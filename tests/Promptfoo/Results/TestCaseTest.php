@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Pest\Prompt\Promptfoo\Results\TestCase;
+use KevinPijning\Prompt\Promptfoo\Results\TestCase;
 
 test('TestCase can be instantiated with all properties', function () {
     $testCase = new TestCase(

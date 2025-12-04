@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Pest\Prompt\Promptfoo;
+namespace KevinPijning\Prompt\Promptfoo;
 
-use Pest\Prompt\Api\Assertion;
-use Pest\Prompt\Api\Evaluation;
-use Pest\Prompt\Api\Provider;
-use Pest\Prompt\Api\TestCase;
+use KevinPijning\Prompt\Api\Assertion;
+use KevinPijning\Prompt\Api\Evaluation;
+use KevinPijning\Prompt\Api\Provider;
+use KevinPijning\Prompt\Api\TestCase;
 use Symfony\Component\Yaml\Yaml;
 
 final readonly class ConfigBuilder

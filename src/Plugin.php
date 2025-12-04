@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Pest\Prompt;
+namespace KevinPijning\Prompt;
 
+use KevinPijning\Prompt\Promptfoo\Promptfoo;
 use Pest\Contracts\Plugins\Bootable;
 use Pest\Contracts\Plugins\HandlesArguments;
 use Pest\Plugins\Concerns\HandleArguments;
-use Pest\Prompt\Promptfoo\Promptfoo;
 use Pest\TestSuite;
 use Symfony\Component\Console\Input\ArgvInput;
 

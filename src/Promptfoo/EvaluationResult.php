@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Pest\Prompt\Promptfoo;
+namespace KevinPijning\Prompt\Promptfoo;
 
-use Pest\Prompt\Promptfoo\Results\Result;
+use KevinPijning\Prompt\Promptfoo\Results\Result;
 
 class EvaluationResult
 {

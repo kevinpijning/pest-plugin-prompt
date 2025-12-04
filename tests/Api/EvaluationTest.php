@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use Pest\Prompt\Api\Evaluation;
-use Pest\Prompt\Api\Provider;
-use Pest\Prompt\Api\TestCase;
+use KevinPijning\Prompt\Api\Evaluation;
+use KevinPijning\Prompt\Api\Provider;
+use KevinPijning\Prompt\Api\TestCase;
 
 test('it can be instantiated with prompts', function () {
     $prompts = ['prompt1', 'prompt2', 'prompt3'];

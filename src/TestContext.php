@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Pest\Prompt;
+namespace KevinPijning\Prompt;
 
-use Pest\Prompt\Api\Evaluation;
+use KevinPijning\Prompt\Api\Evaluation;
 
 class TestContext
 {

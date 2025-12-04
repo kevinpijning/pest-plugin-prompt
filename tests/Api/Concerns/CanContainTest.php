@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use Pest\Prompt\Api\Assertion;
-use Pest\Prompt\Api\Evaluation;
-use Pest\Prompt\Api\TestCase;
+use KevinPijning\Prompt\Api\Assertion;
+use KevinPijning\Prompt\Api\Evaluation;
+use KevinPijning\Prompt\Api\TestCase;
 
 test('toContainAll creates an assertion with default parameters', function () {
     $evaluation = new Evaluation(['prompt1', 'prompt2']);

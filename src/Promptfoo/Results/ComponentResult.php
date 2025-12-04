@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Pest\Prompt\Promptfoo\Results;
+namespace KevinPijning\Prompt\Promptfoo\Results;
 
-use Pest\Prompt\Api\Assertion;
+use KevinPijning\Prompt\Api\Assertion;
 
 class ComponentResult
 {

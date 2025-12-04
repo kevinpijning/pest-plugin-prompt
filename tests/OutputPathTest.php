@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Pest\Prompt\OutputPath;
+use KevinPijning\Prompt\OutputPath;
 
 beforeEach(function () {
     OutputPath::clear();

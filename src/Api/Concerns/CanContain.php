@@ -1,8 +1,8 @@
 <?php
 
-namespace Pest\Prompt\Api\Concerns;
+namespace KevinPijning\Prompt\Api\Concerns;
 
-use Pest\Prompt\Api\Assertion;
+use KevinPijning\Prompt\Api\Assertion;
 
 trait CanContain
 {

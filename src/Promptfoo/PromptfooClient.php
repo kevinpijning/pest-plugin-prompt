@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Pest\Prompt\Promptfoo;
+namespace KevinPijning\Prompt\Promptfoo;
 
-use Pest\Prompt\Api\Evaluation;
-use Pest\Prompt\Contracts\EvaluatorClient;
-use Pest\Prompt\Exceptions\ExecutionException;
+use KevinPijning\Prompt\Api\Evaluation;
+use KevinPijning\Prompt\Contracts\EvaluatorClient;
+use KevinPijning\Prompt\Exceptions\ExecutionException;
 use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\Process;
 

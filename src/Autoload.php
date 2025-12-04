@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Pest\Prompt;
+namespace KevinPijning\Prompt;
 
+use KevinPijning\Prompt\Api\Evaluation;
 use Pest\Plugin;
-use Pest\Prompt\Api\Evaluation;
 
 Plugin::uses(Promptable::class);
 

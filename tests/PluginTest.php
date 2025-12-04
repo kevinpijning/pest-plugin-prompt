@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Pest\Prompt\Plugin;
-use Pest\Prompt\Promptfoo\Promptfoo;
+use KevinPijning\Prompt\Plugin;
+use KevinPijning\Prompt\Promptfoo\Promptfoo;
 
 beforeEach(function () {
     // Reset output folder before each test

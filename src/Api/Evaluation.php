@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Pest\Prompt\Api;
+namespace KevinPijning\Prompt\Api;
 
-use Pest\Prompt\Promptfoo\Promptfoo;
+use KevinPijning\Prompt\Promptfoo\Promptfoo;
 
 class Evaluation
 {

@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Pest\Prompt\Promptfoo;
+namespace KevinPijning\Prompt\Promptfoo;
 
 use InvalidArgumentException;
-use Pest\Prompt\Api\Assertion;
-use Pest\Prompt\Promptfoo\Results\ComponentResult;
-use Pest\Prompt\Promptfoo\Results\GradingResult;
-use Pest\Prompt\Promptfoo\Results\Prompt;
-use Pest\Prompt\Promptfoo\Results\Provider;
-use Pest\Prompt\Promptfoo\Results\Response;
-use Pest\Prompt\Promptfoo\Results\Result;
-use Pest\Prompt\Promptfoo\Results\TestCase;
+use KevinPijning\Prompt\Api\Assertion;
+use KevinPijning\Prompt\Promptfoo\Results\ComponentResult;
+use KevinPijning\Prompt\Promptfoo\Results\GradingResult;
+use KevinPijning\Prompt\Promptfoo\Results\Prompt;
+use KevinPijning\Prompt\Promptfoo\Results\Provider;
+use KevinPijning\Prompt\Promptfoo\Results\Response;
+use KevinPijning\Prompt\Promptfoo\Results\Result;
+use KevinPijning\Prompt\Promptfoo\Results\TestCase;
 
 class EvaluationResultBuilder
 {

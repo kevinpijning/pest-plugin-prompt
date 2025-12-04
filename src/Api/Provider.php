@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Pest\Prompt\Api;
+namespace KevinPijning\Prompt\Api;
 
 class Provider
 {

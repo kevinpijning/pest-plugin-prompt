@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Pest\Prompt\Promptfoo\EvaluationResult;
-use Pest\Prompt\Promptfoo\EvaluationResultBuilder;
+use KevinPijning\Prompt\Promptfoo\EvaluationResult;
+use KevinPijning\Prompt\Promptfoo\EvaluationResultBuilder;
 
 test('build handles empty results array', function () {
     $data = [

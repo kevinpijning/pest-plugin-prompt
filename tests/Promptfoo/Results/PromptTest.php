@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Pest\Prompt\Promptfoo\Results\Prompt;
+use KevinPijning\Prompt\Promptfoo\Results\Prompt;
 
 test('Prompt can be instantiated with raw and label', function () {
     $prompt = new Prompt(

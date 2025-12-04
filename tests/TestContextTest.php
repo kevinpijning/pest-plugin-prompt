@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use Pest\Prompt\Api\Evaluation;
-use Pest\Prompt\TestContext;
+use KevinPijning\Prompt\Api\Evaluation;
+use KevinPijning\Prompt\TestContext;
 
-use function Pest\Prompt\prompt;
+use function KevinPijning\Prompt\prompt;
 
 beforeEach(function () {
     TestContext::clear();

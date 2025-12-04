@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use Pest\Prompt\Api\Assertion;
-use Pest\Prompt\Api\Evaluation;
-use Pest\Prompt\Promptfoo\ConfigBuilder;
+use KevinPijning\Prompt\Api\Assertion;
+use KevinPijning\Prompt\Api\Evaluation;
+use KevinPijning\Prompt\Promptfoo\ConfigBuilder;
 
 test('fromEvaluation creates a ConfigBuilder instance', function () {
     $evaluation = new Evaluation(['prompt1']);

@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-use Pest\Prompt\Api\Assertion;
-use Pest\Prompt\Promptfoo\EvaluationResult;
-use Pest\Prompt\Promptfoo\EvaluationResultBuilder;
-use Pest\Prompt\Promptfoo\Results\ComponentResult;
-use Pest\Prompt\Promptfoo\Results\GradingResult;
-use Pest\Prompt\Promptfoo\Results\Prompt;
-use Pest\Prompt\Promptfoo\Results\Provider;
-use Pest\Prompt\Promptfoo\Results\Response;
-use Pest\Prompt\Promptfoo\Results\Result;
-use Pest\Prompt\Promptfoo\Results\TestCase;
+use KevinPijning\Prompt\Api\Assertion;
+use KevinPijning\Prompt\Promptfoo\EvaluationResult;
+use KevinPijning\Prompt\Promptfoo\EvaluationResultBuilder;
+use KevinPijning\Prompt\Promptfoo\Results\ComponentResult;
+use KevinPijning\Prompt\Promptfoo\Results\GradingResult;
+use KevinPijning\Prompt\Promptfoo\Results\Prompt;
+use KevinPijning\Prompt\Promptfoo\Results\Provider;
+use KevinPijning\Prompt\Promptfoo\Results\Response;
+use KevinPijning\Prompt\Promptfoo\Results\Result;
+use KevinPijning\Prompt\Promptfoo\Results\TestCase;
 
 test('fromJson creates EvaluationResult from JSON file', function () {
     $result = EvaluationResultBuilder::fromJson(__DIR__.'/../fixtures/promptfoo_output.json');

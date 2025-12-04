@@ -1,9 +1,9 @@
 <?php
 
-namespace Pest\Prompt\Contracts;
+namespace KevinPijning\Prompt\Contracts;
 
-use Pest\Prompt\Api\Evaluation;
-use Pest\Prompt\Promptfoo\EvaluationResult;
+use KevinPijning\Prompt\Api\Evaluation;
+use KevinPijning\Prompt\Promptfoo\EvaluationResult;
 
 interface EvaluatorClient
 {
