@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use KevinPijning\Prompt\Api\Evaluation;
+use KevinPijning\Prompt\Api\Provider;
 use KevinPijning\Prompt\TestContext;
 
 beforeEach(function () {
@@ -16,15 +17,15 @@ test('getCurrentEvaluations returns empty array initially', function () {
         ->and($evaluations)->toBeEmpty();
 });
 
-test('addEvaluation adds an evaluation to the context', function () {
+test('addEvaluation adds an evaluation to the context and returns it', function () {
     $evaluation = new Evaluation(['prompt1', 'prompt2']);
 
-    TestContext::addEvaluation($evaluation);
+    $result = TestContext::addEvaluation($evaluation);
 
-    $evaluations = TestContext::getCurrentEvaluations();
-    expect($evaluations)->toHaveCount(1)
-        ->and($evaluations[0])->toBe($evaluation)
-        ->and($evaluations[0])->toBeInstanceOf(Evaluation::class);
+    expect($result)->toBe($evaluation)
+        ->and(TestContext::getCurrentEvaluations())->toHaveCount(1)
+        ->and(TestContext::getCurrentEvaluations()[0])->toBe($evaluation)
+        ->and(TestContext::getCurrentEvaluations()[0])->toBeInstanceOf(Evaluation::class);
 });
 
 test('addEvaluation can add multiple evaluations', function () {
@@ -103,4 +104,87 @@ test('prompt function can add multiple evaluations to TestContext', function () 
         ->and($evaluations[0])->toBe($evaluation1)
         ->and($evaluations[1])->toBe($evaluation2)
         ->and($evaluations[2])->toBe($evaluation3);
+});
+
+test('addProvider adds a provider to the context and returns it', function () {
+    $provider = new Provider;
+    $provider->id('openai:gpt-4');
+
+    $result = TestContext::addProvider('my-provider', $provider);
+
+    expect($result)->toBe($provider)
+        ->and(TestContext::hasProvider('my-provider'))->toBeTrue()
+        ->and(TestContext::getProvider('my-provider'))->toBe($provider);
+});
+
+test('addProvider can add multiple providers with different names', function () {
+    $provider1 = Provider::create('openai:gpt-4');
+    $provider2 = Provider::create('anthropic:claude-3');
+    $provider3 = Provider::create('google:gemini');
+
+    TestContext::addProvider('openai', $provider1);
+    TestContext::addProvider('anthropic', $provider2);
+    TestContext::addProvider('google', $provider3);
+
+    expect(TestContext::hasProvider('openai'))->toBeTrue()
+        ->and(TestContext::hasProvider('anthropic'))->toBeTrue()
+        ->and(TestContext::hasProvider('google'))->toBeTrue()
+        ->and(TestContext::getProvider('openai'))->toBe($provider1)
+        ->and(TestContext::getProvider('anthropic'))->toBe($provider2)
+        ->and(TestContext::getProvider('google'))->toBe($provider3);
+});
+
+test('hasProvider returns false for non-existent provider', function () {
+    expect(TestContext::hasProvider('non-existent'))->toBeFalse();
+});
+
+test('hasProvider returns true for existing provider', function () {
+    $provider = Provider::create('openai:gpt-4');
+    TestContext::addProvider('my-provider', $provider);
+
+    expect(TestContext::hasProvider('my-provider'))->toBeTrue();
+});
+
+test('getProvider returns the correct provider', function () {
+    $provider = Provider::create('openai:gpt-4')
+        ->label('My Custom Provider')
+        ->temperature(0.7);
+
+    TestContext::addProvider('custom', $provider);
+
+    $retrieved = TestContext::getProvider('custom');
+
+    expect($retrieved)->toBe($provider)
+        ->and($retrieved->getId())->toBe('openai:gpt-4')
+        ->and($retrieved->getLabel())->toBe('My Custom Provider')
+        ->and($retrieved->getTemperature())->toBe(0.7);
+});
+
+test('addProvider overwrites existing provider with same name', function () {
+    $provider1 = Provider::create('openai:gpt-4');
+    $provider2 = Provider::create('anthropic:claude-3');
+
+    TestContext::addProvider('my-provider', $provider1);
+    expect(TestContext::getProvider('my-provider'))->toBe($provider1);
+
+    TestContext::addProvider('my-provider', $provider2);
+    expect(TestContext::getProvider('my-provider'))->toBe($provider2)
+        ->and(TestContext::getProvider('my-provider'))->not->toBe($provider1);
+});
+
+test('clear does not remove providers, only evaluations', function () {
+    $provider = Provider::create('openai:gpt-4');
+    $evaluation = new Evaluation(['test prompt']);
+
+    TestContext::addProvider('my-provider', $provider);
+    TestContext::addEvaluation($evaluation);
+
+    expect(TestContext::hasProvider('my-provider'))->toBeTrue()
+        ->and(TestContext::getCurrentEvaluations())->toHaveCount(1);
+
+    TestContext::clear();
+
+    expect(TestContext::hasProvider('my-provider'))->toBeTrue()
+        ->and(TestContext::getProvider('my-provider'))->toBe($provider)
+        ->and(TestContext::getCurrentEvaluations())->toBeEmpty();
 });

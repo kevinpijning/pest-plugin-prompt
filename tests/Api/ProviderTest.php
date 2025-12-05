@@ -76,3 +76,33 @@ test('custom config can be set', function () {
 
     expect($provider->getConfig())->toBe(['apiKey' => 'fake-api-key']);
 });
+
+test('id method sets the provider id and returns self', function () {
+    $provider = new Provider;
+
+    $result = $provider->id('openai:gpt-4');
+
+    expect($result)->toBe($provider)
+        ->and($provider->getId())->toBe('openai:gpt-4');
+});
+
+test('id method can be chained with other methods', function () {
+    $provider = (new Provider)
+        ->id('openai:gpt-4')
+        ->label('Custom Label')
+        ->temperature(0.7);
+
+    expect($provider->getId())->toBe('openai:gpt-4')
+        ->and($provider->getLabel())->toBe('Custom Label')
+        ->and($provider->getTemperature())->toBe(0.7);
+});
+
+test('id method can be called multiple times to update the id', function () {
+    $provider = new Provider;
+
+    $provider->id('openai:gpt-4');
+    expect($provider->getId())->toBe('openai:gpt-4');
+
+    $provider->id('anthropic:claude-3');
+    expect($provider->getId())->toBe('anthropic:claude-3');
+});
