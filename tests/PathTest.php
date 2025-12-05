@@ -228,3 +228,15 @@ test('generate with all options produces correct format', function () {
     // uniqid with more_entropy returns: 14 hex chars + dot + 8 decimal digits
     expect($result)->toMatch('/^\/output\/folder\/\d{4}-\d{2}-\d{2}_\d{6}_my-test_[a-f0-9]{14}\.[0-9]{8}\.html$/');
 });
+
+test('__toString method calls toString', function () {
+    $path = Path::withFileName('test-name')
+        ->inFolder('/output')
+        ->withExtension('json');
+
+    $stringResult = (string) $path;
+    $toStringResult = $path->toString();
+
+    expect($stringResult)->toBe($toStringResult)
+        ->and($stringResult)->toBe('/output/test-name.json');
+});

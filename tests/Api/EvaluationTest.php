@@ -99,6 +99,15 @@ test('usingProvider method can accept a Provider class', function () {
         ->getId()->toBe('openai:gpt-4o-mini');
 });
 
+test('usingProvider method with empty array uses default providers', function () {
+    $evaluation = new Evaluation(['prompt1']);
+
+    $result = $evaluation->usingProvider();
+
+    // Should use default providers from Promptfoo
+    expect($result->providers())->not->toBeEmpty();
+});
+
 test('expect method creates and returns a TestCase', function () {
     $evaluation = new Evaluation(['prompt1']);
     $variables = ['key1' => 'value1', 'key2' => 'value2'];

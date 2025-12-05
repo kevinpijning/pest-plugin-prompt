@@ -168,7 +168,7 @@ class EvaluationResultBuilder
 
     public static function fromJson(string $filePath): EvaluationResult
     {
-        $contents = file_get_contents($filePath);
+        $contents = @file_get_contents($filePath);
         if ($contents === false) {
             throw new InvalidArgumentException("Failed to read file: {$filePath}");
         }

@@ -59,3 +59,16 @@ test('handle arguments returns arguments unchanged when --output is not provided
     expect($result)->toBe($arguments)
         ->and(Promptfoo::shouldOutput())->toBeFalse();
 });
+
+test('in method returns correct path', function () {
+    $plugin = new Plugin;
+    $reflection = new ReflectionClass($plugin);
+    $method = $reflection->getMethod('in');
+    $method->setAccessible(true);
+
+    $result = $method->invoke($plugin);
+
+    // Should return a path that includes the test path
+    expect($result)->toBeString()
+        ->and($result)->not->toBeEmpty();
+});
