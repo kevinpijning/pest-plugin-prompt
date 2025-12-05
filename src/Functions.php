@@ -4,7 +4,7 @@ use KevinPijning\Prompt\Api\Evaluation;
 use KevinPijning\Prompt\Api\Provider;
 use KevinPijning\Prompt\TestContext;
 
-if (!function_exists('provider')) {
+if (! function_exists('provider')) {
     function provider(string $name, ?callable $config = null): Provider
     {
         if (is_null($config)) {
@@ -15,7 +15,7 @@ if (!function_exists('provider')) {
     }
 }
 
-if (!function_exists('prompt')) {
+if (! function_exists('prompt')) {
     function prompt(string ...$prompts): Evaluation
     {
         return TestContext::addEvaluation(new Evaluation($prompts));
