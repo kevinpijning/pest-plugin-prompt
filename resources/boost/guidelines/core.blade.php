@@ -6,7 +6,7 @@ This package provides LLM prompt testing capabilities for PestPHP, enabling deve
 
 - **Fluent API**: Write tests using a chainable, Pest-style API that feels natural
 - **Multiple Providers**: Test prompts against multiple LLM providers (OpenAI, Anthropic, etc.) in a single test
-- **Variable Interpolation**: Use `{{variable}}` syntax in prompts for dynamic content
+- **Variable Interpolation**: Use `\{\{variable\}\}` syntax in prompts for dynamic content
 - **Content Assertions**: Validate responses with text matching, format validation (JSON, HTML, SQL, XML), and LLM-based evaluation
 - **Provider Configuration**: Configure provider settings like temperature, max tokens, and more
 - **Automatic Cleanup**: Temporary files are managed automatically
@@ -18,7 +18,7 @@ Tests are written using the `prompt()` function which returns an `Evaluation` ob
 @verbatim
 <code-snippet name="Basic prompt test" lang="php">
 test('greeting prompt works correctly', function () {
-    prompt('You are a helpful assistant. Greet {{name}} warmly.')
+    prompt('You are a helpful assistant. Greet \{\{name\}\} warmly.')
         ->usingProvider('openai:gpt-4o-mini')
         ->expect(['name' => 'Alice'])
         ->toContain('Alice');
@@ -30,7 +30,7 @@ test('greeting prompt works correctly', function () {
 
 #### `prompt()`
 
-Create a new evaluation with one or more prompts. Use `{{variable}}` syntax for variable interpolation:
+Create a new evaluation with one or more prompts. Use `\{\{variable\}\}` syntax for variable interpolation:
 
 @verbatim
 <code-snippet name="Single prompt" lang="php">
@@ -49,7 +49,7 @@ prompt(
 
 @verbatim
 <code-snippet name="Prompt with variables" lang="php">
-prompt('Greet {{name}} warmly.');
+prompt('Greet \{\{name\}\} warmly.');
 </code-snippet>
 @endverbatim
 
@@ -137,7 +137,7 @@ Create a test case with variables that will be substituted into your prompt temp
 
 @verbatim
 <code-snippet name="Test case with variables" lang="php">
-prompt('Greet {{name}} warmly.')
+prompt('Greet \{\{name\}\} warmly.')
     ->usingProvider('openai:gpt-4o-mini')
     ->expect(['name' => 'Alice'])
     ->toContain('Alice');
@@ -146,7 +146,7 @@ prompt('Greet {{name}} warmly.')
 
 @verbatim
 <code-snippet name="Multiple variables" lang="php">
-prompt('{{greeting}}, {{name}}!')
+prompt('\{\{greeting\}\}, \{\{name\}\}!')
     ->usingProvider('openai:gpt-4o-mini')
     ->expect(['greeting' => 'Hello', 'name' => 'Bob'])
     ->toContain('Hello')
@@ -169,7 +169,7 @@ Chain multiple test cases for the same evaluation:
 
 @verbatim
 <code-snippet name="Multiple test cases" lang="php">
-prompt('Greet {{name}} warmly.')
+prompt('Greet \{\{name\}\} warmly.')
     ->usingProvider('openai:gpt-4o-mini')
     ->expect(['name' => 'Alice'])
     ->toContain('Alice')
@@ -327,7 +327,7 @@ $provider = Provider::create('openai:gpt-4')
 2. **Chain assertions**: Multiple assertions can be chained together for comprehensive validation
 3. **Use `describe()` for clarity**: Add descriptions to help identify which evaluation failed
 4. **Test multiple providers**: Compare responses across different LLM providers to ensure consistency
-5. **Use variable interpolation**: Leverage `{{variable}}` syntax to test prompts with different inputs
+5. **Use variable interpolation**: Leverage `\{\{variable\}\}` syntax to test prompts with different inputs
 6. **Combine assertion types**: Mix content assertions with format validators and LLM-based evaluation for thorough testing
 
 ### Common Patterns
@@ -335,8 +335,8 @@ $provider = Provider::create('openai:gpt-4')
 @verbatim
 <code-snippet name="Multiple prompts and providers" lang="php">
 prompt(
-    'You are a customer support agent. Help the customer with: {{issue}}',
-    'As a support agent, assist with: {{issue}}'
+    'You are a customer support agent. Help the customer with: \{\{issue\}\}',
+    'As a support agent, assist with: \{\{issue\}\}'
 )
     ->describe('Customer service prompt evaluation')
     ->usingProvider('openai:gpt-4', 'anthropic:claude-3')
@@ -369,6 +369,6 @@ prompt('Generate a user profile as JSON with name, email, and age.')
 - The plugin automatically registers with Pest via package discovery
 - Temporary files are automatically cleaned up after evaluation
 - Use `--output` CLI option to save promptfoo evaluation results: `vendor/bin/pest --output=my-results/`
-- Variable interpolation uses `{{variable}}` syntax (double curly braces)
+- Variable interpolation uses `\{\{variable\}\}` syntax (double curly braces)
 - All methods return the same object instance for fluent chaining
 
