@@ -5,11 +5,17 @@ declare(strict_types=1);
 namespace KevinPijning\Prompt;
 
 use KevinPijning\Prompt\Api\Evaluation;
+use KevinPijning\Prompt\Api\Provider;
 
 class TestContext
 {
     /** @var Evaluation[] */
     private static array $evaluations = [];
+
+    /**
+     * @var array<string, Provider>
+     */
+    private static array $providers = [];
 
     /**
      * @return Evaluation[]
@@ -27,5 +33,22 @@ class TestContext
     public static function clear(): void
     {
         self::$evaluations = [];
+    }
+
+    public static function addProvider(string $name, Provider $provider): Provider
+    {
+        self::$providers[$name] = $provider;
+
+        return self::$providers[$name];
+    }
+
+    public static function hasProvider(string $name): bool
+    {
+        return isset(self::$providers[$name]);
+    }
+
+    public static function getProvider(string $name): Provider
+    {
+        return self::$providers[$name];
     }
 }

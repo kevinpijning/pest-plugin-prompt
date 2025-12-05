@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace KevinPijning\Prompt\Api;
 
 use KevinPijning\Prompt\Promptfoo\Promptfoo;
+use KevinPijning\Prompt\TestContext;
 
 class Evaluation
 {
@@ -31,7 +32,7 @@ class Evaluation
     private function addProvider(string|Provider $provider): self
     {
         if (is_string($provider)) {
-            $provider = Provider::id($provider);
+            $provider = (new Provider)->id($provider);
         }
 
         $this->providers[] = $provider;
@@ -39,14 +40,30 @@ class Evaluation
         return $this;
     }
 
-    public function usingProvider(string|Provider ...$providers): self
+    public function usingProvider(string|Provider|callable ...$providers): self
     {
-        if ($providers === []) {
-            return $this->addProvider(...Promptfoo::defaultProviders());
+        foreach ($providers as $provider) {
+            if ($provider instanceof Provider) {
+                $this->addProvider($provider);
+
+                continue;
+            }
+
+            if (is_callable($provider)) {
+                $this->addProvider($provider(new Provider));
+
+                continue;
+            }
+
+            if (TestContext::hasProvider($provider)) {
+                $this->addProvider(TestContext::getProvider($provider));
+
+                continue;
+            }
         }
 
-        foreach ($providers as $provider) {
-            $this->addProvider($provider);
+        if ($providers === []) {
+            return $this->addProvider(...Promptfoo::defaultProviders());
         }
 
         return $this;
