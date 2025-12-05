@@ -6,6 +6,8 @@ namespace KevinPijning\Prompt\Api;
 
 class Provider
 {
+    private ?string $id = null;
+
     private ?string $label = null;
 
     /**
@@ -43,11 +45,16 @@ class Provider
     /** @var array<string,mixed> */
     private array $config = [];
 
-    public function __construct(public readonly string $id) {}
-
-    public static function id(string $id): self
+    public static function create(string $id): self
     {
-        return new self($id);
+        return (new self)->id($id);
+    }
+
+    public function id(string $id): self
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     public function label(string $label): self
@@ -111,6 +118,11 @@ class Provider
         $this->config = $array;
 
         return $this;
+    }
+
+    public function getId(): ?string
+    {
+        return $this->id;
     }
 
     public function getLabel(): ?string

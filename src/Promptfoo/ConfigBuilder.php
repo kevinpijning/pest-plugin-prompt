@@ -43,7 +43,7 @@ final readonly class ConfigBuilder
     private function mapProviders(): array
     {
         return array_map(fn (Provider $provider): array => array_filter([
-            'id' => $provider->id,
+            'id' => $provider->getId(),
             'label' => $provider->getLabel(),
             'config' => array_filter([
                 ...array_filter($provider->getConfig()),

@@ -23,7 +23,8 @@
             "KevinPijning\\Prompt\\": "src/"
         },
         "files": [
-            "src/Autoload.php"
+            "src/Autoload.php",
+            "src/Functions.php"
         ]
     },
     "require-dev": {

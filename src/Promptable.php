@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace KevinPijning\Prompt;
 
 use KevinPijning\Prompt\Api\Evaluation;
+use KevinPijning\Prompt\Api\Provider;
 
 /**
  * @internal
@@ -17,5 +18,10 @@ trait Promptable // @phpstan-ignore-line
     public function prompt(string ...$prompts): Evaluation
     {
         return prompt(...$prompts);
+    }
+
+    public function provider(string $name, ?callable $config = null): Provider
+    {
+        return provider($name, $config);
     }
 }
