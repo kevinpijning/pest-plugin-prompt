@@ -12,7 +12,8 @@ beforeEach(function () {
 });
 
 test('Promptable trait provides prompt method that delegates to global prompt function', function () {
-    $testObject = new class {
+    $testObject = new class
+    {
         use Promptable;
     };
 
@@ -24,7 +25,8 @@ test('Promptable trait provides prompt method that delegates to global prompt fu
 });
 
 test('Promptable trait provides provider method that delegates to global provider function', function () {
-    $testObject = new class {
+    $testObject = new class
+    {
         use Promptable;
     };
 
@@ -43,7 +45,8 @@ test('Promptable trait provides provider method that delegates to global provide
 });
 
 test('Promptable trait provider method works without config', function () {
-    $testObject = new class {
+    $testObject = new class
+    {
         use Promptable;
     };
 
@@ -55,7 +58,8 @@ test('Promptable trait provider method works without config', function () {
 });
 
 test('Promptable trait methods can be chained in test context', function () {
-    $testObject = new class {
+    $testObject = new class
+    {
         use Promptable;
     };
 
@@ -67,4 +71,3 @@ test('Promptable trait methods can be chained in test context', function () {
         ->and($evaluation->providers())->toHaveCount(1)
         ->and($evaluation->providers()[0])->toBe($provider);
 });
-

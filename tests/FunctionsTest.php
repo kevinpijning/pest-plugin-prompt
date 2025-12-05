@@ -63,4 +63,3 @@ test('provider function returns the same instance that is stored in TestContext'
 
     expect($provider)->toBe($stored);
 });
-
