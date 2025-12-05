@@ -32,7 +32,7 @@ class Evaluation
     private function addProvider(string|Provider $provider): self
     {
         if (is_string($provider)) {
-            $provider = (new Provider)->id($provider);
+            $provider = Provider::create($provider);
         }
 
         $this->providers[] = $provider;
@@ -60,6 +60,8 @@ class Evaluation
 
                 continue;
             }
+
+            $this->addProvider($provider);
         }
 
         if ($providers === []) {

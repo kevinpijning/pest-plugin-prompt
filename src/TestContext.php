@@ -25,9 +25,11 @@ class TestContext
         return self::$evaluations;
     }
 
-    public static function addEvaluation(Evaluation $evaluation): void
+    public static function addEvaluation(Evaluation $evaluation): Evaluation
     {
         self::$evaluations[] = $evaluation;
+
+        return $evaluation;
     }
 
     public static function clear(): void

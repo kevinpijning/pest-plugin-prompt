@@ -47,7 +47,7 @@ test('usingProvider method adds a single provider and returns self', function ()
     expect($result)->toBe($evaluation)
         ->and($result->providers())->toHaveCount(1)
         ->and($result->providers()[0])->toBeInstanceOf(Provider::class)
-        ->id->toBe('openai:gpt-4');
+        ->getId()->toBe('openai:gpt-4');
 });
 
 test('usingProvider method can add multiple providers', function () {
@@ -61,7 +61,7 @@ test('usingProvider method can add multiple providers', function () {
     expect($result)->toBe($evaluation)
         ->and($result->providers())->toHaveCount(3)
         ->and($result->providers()[0])->toBeInstanceOf(Provider::class)
-        ->id->toBe('openai:gpt-4');
+        ->getId()->toBe('openai:gpt-4');
 });
 
 test('usingProvider method can be called multiple times', function () {
@@ -73,7 +73,7 @@ test('usingProvider method can be called multiple times', function () {
     expect($result)->toBe($evaluation)
         ->and($result->providers())->toHaveCount(2)
         ->and($result->providers()[0])->toBeInstanceOf(Provider::class)
-        ->id->toBe('openai:gpt-4');
+        ->getId()->toBe('openai:gpt-4');
 });
 
 test('usingProvider method can be chained', function () {
@@ -91,11 +91,11 @@ test('usingProvider method can be chained', function () {
 test('usingProvider method can accept a Provider class', function () {
     $evaluation = new Evaluation(['prompt1']);
 
-    $result = $evaluation->usingProvider(Provider::id('openai:gpt-4o-mini'));
+    $result = $evaluation->usingProvider(Provider::create('openai:gpt-4o-mini'));
 
     expect($result->providers())->toHaveCount(1)
         ->and($result->providers()[0])->toBeInstanceOf(Provider::class)
-        ->id->toBe('openai:gpt-4o-mini');
+        ->getId()->toBe('openai:gpt-4o-mini');
 });
 
 test('expect method creates and returns a TestCase', function () {

@@ -5,8 +5,6 @@ declare(strict_types=1);
 use KevinPijning\Prompt\Api\Evaluation;
 use KevinPijning\Prompt\TestContext;
 
-use function KevinPijning\Prompt\prompt;
-
 beforeEach(function () {
     TestContext::clear();
 });

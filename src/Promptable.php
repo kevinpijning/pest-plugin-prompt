@@ -20,7 +20,7 @@ trait Promptable // @phpstan-ignore-line
         return prompt(...$prompts);
     }
 
-    public function provider(?string $name = null, ?callable $config = null): Provider
+    public function provider(string $name, ?callable $config = null): Provider
     {
         return provider($name, $config);
     }
