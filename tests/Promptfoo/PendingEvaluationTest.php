@@ -6,6 +6,8 @@ use KevinPijning\Prompt\Api\Evaluation;
 use KevinPijning\Prompt\Promptfoo\PendingEvaluation;
 use KevinPijning\Prompt\Promptfoo\Promptfoo;
 
+covers(PendingEvaluation::class);
+
 beforeEach(function () {
     Promptfoo::setOutputFolder(null);
 });

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 use KevinPijning\Prompt\Output;
 
+covers(Output::class);
+
 test('withName creates a new Output instance', function () {
     $output = Output::withName('test-name');
 

@@ -6,6 +6,8 @@ use KevinPijning\Prompt\Api\Assertion;
 use KevinPijning\Prompt\Api\Evaluation;
 use KevinPijning\Prompt\Api\TestCase;
 
+covers(TestCase::class);
+
 test('it can be instantiated with variables and evaluation', function () {
     $evaluation = new Evaluation(['prompt1', 'prompt2']);
     $variables = ['key1' => 'value1', 'key2' => 'value2'];

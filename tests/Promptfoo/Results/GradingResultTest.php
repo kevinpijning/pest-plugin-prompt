@@ -6,6 +6,8 @@ use KevinPijning\Prompt\Api\Assertion;
 use KevinPijning\Prompt\Promptfoo\Results\ComponentResult;
 use KevinPijning\Prompt\Promptfoo\Results\GradingResult;
 
+covers(GradingResult::class);
+
 test('GradingResult can be instantiated with all properties', function () {
     $componentResult = new ComponentResult(
         pass: true,

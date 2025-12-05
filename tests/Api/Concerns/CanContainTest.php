@@ -3,8 +3,11 @@
 declare(strict_types=1);
 
 use KevinPijning\Prompt\Api\Assertion;
+use KevinPijning\Prompt\Api\Concerns\CanContain;
 use KevinPijning\Prompt\Api\Evaluation;
 use KevinPijning\Prompt\Api\TestCase;
+
+covers(CanContain::class);
 
 test('toContainAll creates an assertion with default parameters', function () {
     $evaluation = new Evaluation(['prompt1', 'prompt2']);

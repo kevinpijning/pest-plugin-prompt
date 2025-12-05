@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 use KevinPijning\Prompt\Exceptions\ExecutionException;
 
+covers(ExecutionException::class);
+
 test('ExecutionException can be instantiated with message, command, output, and exit code', function () {
     $exception = new ExecutionException(
         'Test error message',

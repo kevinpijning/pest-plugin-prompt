@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 use KevinPijning\Prompt\Promptfoo\Results\Response;
 
+covers(Response::class);
+
 test('Response can be instantiated with all properties', function () {
     $response = new Response(
         output: 'test output',

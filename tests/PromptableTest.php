@@ -7,6 +7,8 @@ use KevinPijning\Prompt\Api\Provider;
 use KevinPijning\Prompt\Promptable;
 use KevinPijning\Prompt\TestContext;
 
+covers(Promptable::class);
+
 beforeEach(function () {
     TestContext::clear();
 });

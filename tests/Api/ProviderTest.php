@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 use KevinPijning\Prompt\Api\Provider;
+
+covers(Provider::class);
 
 test('a complete provider object', function () {
     $provider = Provider::create('openai:gpt-4o-mini')

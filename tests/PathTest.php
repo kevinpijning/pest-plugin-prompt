@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 use KevinPijning\Prompt\Path;
 
+covers(Path::class);
+
 test('withFileName creates a new Path instance', function () {
     $path = Path::withFileName('test-name');
 

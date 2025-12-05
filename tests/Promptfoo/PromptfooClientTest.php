@@ -6,6 +6,8 @@ use KevinPijning\Prompt\Api\Evaluation;
 use KevinPijning\Prompt\Promptfoo\PendingEvaluation;
 use KevinPijning\Prompt\Promptfoo\PromptfooClient;
 
+covers(PromptfooClient::class);
+
 beforeEach(function () {
     // Clean up any test files
     $tempDir = sys_get_temp_dir();

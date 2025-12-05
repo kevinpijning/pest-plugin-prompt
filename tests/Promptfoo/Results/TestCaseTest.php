@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 use KevinPijning\Prompt\Promptfoo\Results\TestCase;
 
+covers(TestCase::class);
+
 test('TestCase can be instantiated with all properties', function () {
     $testCase = new TestCase(
         vars: ['message' => 'Hello World!', 'language' => 'es'],

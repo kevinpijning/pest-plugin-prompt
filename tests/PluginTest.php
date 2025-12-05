@@ -5,6 +5,8 @@ declare(strict_types=1);
 use KevinPijning\Prompt\Plugin;
 use KevinPijning\Prompt\Promptfoo\Promptfoo;
 
+covers(Plugin::class);
+
 beforeEach(function () {
     // Reset output folder before each test
     Promptfoo::setOutputFolder(null);

@@ -16,6 +16,8 @@ use KevinPijning\Prompt\Promptfoo\Results\TestCase;
 use KevinPijning\Prompt\TestContext;
 use KevinPijning\Prompt\TestLifecycle;
 
+covers(TestLifecycle::class);
+
 beforeEach(function () {
     TestContext::clear();
 });

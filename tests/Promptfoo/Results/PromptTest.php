@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 use KevinPijning\Prompt\Promptfoo\Results\Prompt;
 
+covers(Prompt::class);
+
 test('Prompt can be instantiated with raw and label', function () {
     $prompt = new Prompt(
         raw: 'translate Hello World! to es',

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 use KevinPijning\Prompt\OutputPath;
 
+covers(OutputPath::class);
+
 beforeEach(function () {
     OutputPath::clear();
 });

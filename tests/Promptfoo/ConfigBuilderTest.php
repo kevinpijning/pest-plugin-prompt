@@ -6,6 +6,8 @@ use KevinPijning\Prompt\Api\Assertion;
 use KevinPijning\Prompt\Api\Evaluation;
 use KevinPijning\Prompt\Promptfoo\ConfigBuilder;
 
+covers(ConfigBuilder::class);
+
 test('fromEvaluation creates a ConfigBuilder instance', function () {
     $evaluation = new Evaluation(['prompt1']);
     $builder = ConfigBuilder::fromEvaluation($evaluation);

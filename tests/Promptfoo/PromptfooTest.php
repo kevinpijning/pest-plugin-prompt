@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 use KevinPijning\Prompt\Promptfoo\Promptfoo;
 
+covers(Promptfoo::class);
+
 beforeEach(function () {
     // Reset to defaults before each test
     Promptfoo::setDefaultProviders(['openai:gpt-4o-mini']);

@@ -9,6 +9,8 @@ use KevinPijning\Prompt\Promptfoo\Results\Response;
 use KevinPijning\Prompt\Promptfoo\Results\Result;
 use KevinPijning\Prompt\Promptfoo\Results\TestCase;
 
+covers(Result::class);
+
 test('Result can be instantiated with all properties', function () {
     $gradingResult = new GradingResult(
         pass: true,

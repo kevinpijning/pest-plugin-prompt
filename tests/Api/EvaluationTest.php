@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use KevinPijning\Prompt\Api\Evaluation;
+
+covers(Evaluation::class);
 use KevinPijning\Prompt\Api\Provider;
 use KevinPijning\Prompt\Api\TestCase;
 use KevinPijning\Prompt\TestContext;

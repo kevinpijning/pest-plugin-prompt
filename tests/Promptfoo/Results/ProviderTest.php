@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 use KevinPijning\Prompt\Promptfoo\Results\Provider;
 
+covers(Provider::class);
+
 test('Provider can be instantiated with id and label', function () {
     $provider = new Provider(
         id: 'openai:gpt-4o-mini',

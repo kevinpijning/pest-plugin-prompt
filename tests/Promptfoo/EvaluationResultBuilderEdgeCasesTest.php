@@ -5,6 +5,8 @@ declare(strict_types=1);
 use KevinPijning\Prompt\Promptfoo\EvaluationResult;
 use KevinPijning\Prompt\Promptfoo\EvaluationResultBuilder;
 
+covers(EvaluationResultBuilder::class);
+
 test('build handles empty results array', function () {
     $data = [
         'results' => [

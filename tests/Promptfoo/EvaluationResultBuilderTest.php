@@ -13,6 +13,8 @@ use KevinPijning\Prompt\Promptfoo\Results\Response;
 use KevinPijning\Prompt\Promptfoo\Results\Result;
 use KevinPijning\Prompt\Promptfoo\Results\TestCase;
 
+covers(EvaluationResultBuilder::class);
+
 test('fromJson creates EvaluationResult from JSON file', function () {
     $result = EvaluationResultBuilder::fromJson(__DIR__.'/../fixtures/promptfoo_output.json');
 

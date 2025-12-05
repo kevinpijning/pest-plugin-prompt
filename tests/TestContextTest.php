@@ -6,6 +6,8 @@ use KevinPijning\Prompt\Api\Evaluation;
 use KevinPijning\Prompt\Api\Provider;
 use KevinPijning\Prompt\TestContext;
 
+covers(TestContext::class);
+
 beforeEach(function () {
     TestContext::clear();
 });
