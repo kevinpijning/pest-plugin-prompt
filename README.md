@@ -132,7 +132,6 @@ prompt('Greet {{name}} warmly.');
 Register a global provider like Pest datasets that can be reused across multiple tests. Providers registered with this function can be referenced by name in `usingProvider()`.
 
 ```php
-use \KevinPijning\Prompt\Api\Provider;
 // Register a simple provider
 provider('openai-gpt4')->id('openai:gpt-4');
 
@@ -169,8 +168,6 @@ prompt('You are a helpful assistant.')
 Specify which LLM provider(s) to use for evaluation. You can pass provider IDs, `Provider` instances, callables, or registered provider names.
 
 ```php
-use \KevinPijning\Prompt\Api\Provider;
-
 // Single provider by ID
 prompt('Hello')
     ->usingProvider('openai:gpt-4o-mini')
