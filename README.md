@@ -1,8 +1,8 @@
 # Pest Plugin for Prompt Testing
 
-[![Tests](https://img.shields.io/github/actions/workflow/status/kevinpijning/pest-plugin-prompt/tests.yml?label=tests&style=flat-square)](https://github.com/pestphp/pest-plugin-prompt/actions)
-[![PHP Version](https://img.shields.io/packagist/php-v/kevinpijning/pest-plugin-prompt?style=flat-square)](https://packagist.org/packages/pestphp/pest-plugin-prompt)
-[![License](https://img.shields.io/packagist/l/kevinpijning/pest-plugin-prompt?style=flat-square)](https://github.com/pestphp/pest-plugin-prompt/blob/main/LICENSE)
+[![Tests](https://img.shields.io/github/actions/workflow/status/kevinpijning/pest-plugin-prompt/tests.yml?label=tests&style=flat-square)](https://github.com/kevinpijning/pest-plugin-prompt/actions)
+[![PHP Version](https://img.shields.io/packagist/php-v/kevinpijning/pest-plugin-prompt?style=flat-square)](https://packagist.org/packages/kevinpijning/pest-plugin-prompt)
+[![License](https://img.shields.io/packagist/l/kevinpijning/pest-plugin-prompt?style=flat-square)](https://github.com/kevinpijning/pest-plugin-prompt/blob/main/LICENSE)
 [![Pest](https://img.shields.io/badge/Pest-4.0+-ff69b4?style=flat-square)](https://pestphp.com)
 
 **Test your AI prompts with confidence using Pest's elegant syntax.**
@@ -648,7 +648,7 @@ The output directory will contain HTML reports and JSON data from promptfoo eval
 
 **License:** MIT License
 
-See the [LICENSE](LICENSE) file for full details.
+See the [LICENSE](LICENSE.md) file for full details.
 
 ---
 
