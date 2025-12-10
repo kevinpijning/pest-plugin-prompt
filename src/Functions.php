@@ -2,6 +2,7 @@
 
 use KevinPijning\Prompt\Api\Evaluation;
 use KevinPijning\Prompt\Api\Provider;
+use KevinPijning\Prompt\AssertionTemplates;
 use KevinPijning\Prompt\TestContext;
 
 if (! function_exists('provider')) {
@@ -18,6 +19,9 @@ if (! function_exists('provider')) {
 if (! function_exists('prompt')) {
     function prompt(string ...$prompts): Evaluation
     {
-        return TestContext::addEvaluation(new Evaluation($prompts));
+        $evaluation = TestContext::addEvaluation(new Evaluation($prompts));
+        AssertionTemplates::apply($evaluation);
+
+        return $evaluation;
     }
 }
