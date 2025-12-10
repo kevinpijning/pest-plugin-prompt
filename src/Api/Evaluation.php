@@ -17,6 +17,11 @@ class Evaluation
     /** @var TestCase[] */
     private array $testCases = [];
 
+    /**
+     * @var array<string, Assertion>
+     */
+    private array $assertionTemplates = [];
+
     public function __construct(
         /** @var string[] */
         private readonly array $prompts
@@ -82,6 +87,26 @@ class Evaluation
         return $testCase;
     }
 
+    /**
+     * @param  array<string,mixed>|null  $options
+     */
+    public function template(string $name, string $type, mixed $value = null, ?float $threshold = null, ?array $options = null): self
+    {
+        return $this->defineTemplate($name, new Assertion(
+            type: $type,
+            value: $value,
+            threshold: $threshold,
+            options: $options,
+        ));
+    }
+
+    public function defineTemplate(string $name, Assertion $assertion): self
+    {
+        $this->assertionTemplates[$name] = $assertion;
+
+        return $this;
+    }
+
     public function clearTests(): self
     {
         $this->testCases = [];
@@ -116,5 +141,13 @@ class Evaluation
     public function testCases(): array
     {
         return $this->testCases;
+    }
+
+    /**
+     * @return array<string, Assertion>
+     */
+    public function assertionTemplates(): array
+    {
+        return $this->assertionTemplates;
     }
 }

@@ -28,6 +28,7 @@ final readonly class ConfigBuilder
             'description' => $this->evaluation->description(),
             'prompts' => $this->evaluation->prompts(),
             'providers' => $this->mapProviders(),
+            'assertionTemplates' => $this->mapAssertionTemplates(),
             'tests' => $this->mapTests(),
         ]);
     }
@@ -75,11 +76,26 @@ final readonly class ConfigBuilder
      */
     private function mapAssertions(array $assertions): array
     {
+        return array_map(static fn (Assertion $assertion): array => $assertion->templateName !== null
+            ? ['$ref' => '#/assertionTemplates/'.$assertion->templateName]
+            : array_filter([
+                'type' => $assertion->type,
+                'value' => $assertion->value,
+                'threshold' => $assertion->threshold,
+                'options' => $assertion->options,
+            ]), $assertions);
+    }
+
+    /**
+     * @return array<string,array<string,mixed>>
+     */
+    private function mapAssertionTemplates(): array
+    {
         return array_map(static fn (Assertion $assertion): array => array_filter([
             'type' => $assertion->type,
             'value' => $assertion->value,
             'threshold' => $assertion->threshold,
             'options' => $assertion->options,
-        ]), $assertions);
+        ]), $this->evaluation->assertionTemplates());
     }
 }
