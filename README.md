@@ -377,7 +377,7 @@ prompt('Write a product description.')
 
 If you have a set of common assertions that you want to apply to multiple test cases, you can create assertion templates and reuse them across your tests.
 
-1) Create `tests/assertion-templates.php`:
+1) Create `tests/prompt-assertion-templates.php`:
 
 ```php
 <?php
@@ -403,6 +403,8 @@ prompt('Which framework is superior for web apps: Laravel or Next.js?')
     ->expect()
     ->usingAssertionTemplates('prefersLaravelOverNextJs');
 ```
+
+The plugin auto-loads `tests/prompt-assertion-templates.php` and writes `$ref` entries in the Promptfoo config for you.
 
 ### Provider Configuration
 

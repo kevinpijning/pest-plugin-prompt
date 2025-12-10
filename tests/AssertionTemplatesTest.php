@@ -7,7 +7,7 @@ use KevinPijning\Prompt\TestContext;
 
 beforeEach(function () {
     AssertionTemplates::resetForTests();
-    AssertionTemplates::setTestPath(__DIR__.'/fixtures/assertion-templates.php');
+    AssertionTemplates::setTestPath(__DIR__.'/fixtures/prompt-assertion-templates.php');
 });
 
 afterEach(function () {

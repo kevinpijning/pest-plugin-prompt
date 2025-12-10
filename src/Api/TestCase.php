@@ -55,7 +55,7 @@ class TestCase
             if (! isset($this->evaluation->assertionTemplates()[$template])) {
                 throw new InvalidArgumentException(
                     sprintf(
-                        "Assertion template '%s' was not found. Define it in tests/assertion-templates.php before using it.",
+                        "Assertion template '%s' was not found. Define it in tests/prompt-assertion-templates.php before using it.",
                         $template
                     )
                 );

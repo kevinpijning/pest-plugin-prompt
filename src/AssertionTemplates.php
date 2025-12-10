@@ -84,6 +84,6 @@ final class AssertionTemplates
             return null;
         }
 
-        return rtrim($root, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'tests'.DIRECTORY_SEPARATOR.'assertion-templates.php';
+        return rtrim($root, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'tests'.DIRECTORY_SEPARATOR.'prompt-assertion-templates.php';
     }
 }
