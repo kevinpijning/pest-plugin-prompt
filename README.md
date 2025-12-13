@@ -375,7 +375,7 @@ prompt('Write a product description.')
 
 #### `not` Modifier
 
-Negate any assertion by using the `not` modifier. This works just like Pest's `not` modifier.
+Negate any assertion by using the `not` modifier.
 
 ```php
 prompt('Write a happy birthday message.')
