@@ -6,6 +6,7 @@ namespace KevinPijning\Prompt\Api;
 
 use KevinPijning\Prompt\Api\Concerns\CanBeJudged;
 use KevinPijning\Prompt\Api\Concerns\CanContain;
+use RuntimeException;
 
 /**
  * @mixin Assertion
@@ -16,6 +17,8 @@ class TestCase
 
     /** @var Assertion[] */
     private array $assertions = [];
+
+    private bool $shouldNegateNextAssertion = false;
 
     /**
      * @param  array<string,mixed>  $variables
@@ -43,9 +46,44 @@ class TestCase
 
     public function assert(Assertion $assertion): self
     {
-        $this->assertions[] = $assertion;
+        if (! $this->shouldNegateNextAssertion) {
+            $this->assertions[] = $assertion;
+
+            return $this;
+        }
+
+        $this->shouldNegateNextAssertion = false;
+
+        $this->assertions[] = new Assertion(
+            type: $this->negateAssertionType($assertion->type),
+            value: $assertion->value,
+            threshold: $assertion->threshold,
+            options: $assertion->options,
+        );
 
         return $this;
+    }
+
+    public function __get(string $name): mixed
+    {
+        if ($name === 'not') {
+            $this->shouldNegateNextAssertion = ! $this->shouldNegateNextAssertion;
+
+            return $this;
+        }
+
+        throw new RuntimeException(sprintf('Undefined property: %s::$%s', static::class, $name));
+    }
+
+    private function negateAssertionType(string $type): string
+    {
+        $prefix = 'not-';
+
+        if (str_starts_with($type, $prefix)) {
+            return substr($type, strlen($prefix));
+        }
+
+        return $prefix.$type;
     }
 
     /**
