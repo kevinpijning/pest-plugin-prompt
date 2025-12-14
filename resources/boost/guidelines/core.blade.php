@@ -63,6 +63,8 @@ prompt('Greet \{\{name\}\}.')
 
 **Format validators**: `toContainJson()`, `toContainHtml()`, `toContainSql()`, `toContainXml()`.
 
+**`toEqual(mixed $value)`**: Assert response exactly equals expected value (string, int, float, bool, array, etc.). Useful for deterministic outputs.
+
 **`toBeJudged(string $rubric, ?float $threshold = null, array $options = [])`**: LLM-based evaluation with natural language rubric.
 
 @verbatim
