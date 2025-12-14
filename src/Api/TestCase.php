@@ -6,13 +6,14 @@ namespace KevinPijning\Prompt\Api;
 
 use KevinPijning\Prompt\Api\Concerns\CanBeJudged;
 use KevinPijning\Prompt\Api\Concerns\CanContain;
+use KevinPijning\Prompt\Api\Concerns\CanEqual;
 
 /**
  * @mixin Assertion
  */
 class TestCase
 {
-    use CanBeJudged, CanContain;
+    use CanBeJudged, CanContain, CanEqual;
 
     /** @var Assertion[] */
     private array $assertions = [];
