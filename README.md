@@ -32,6 +32,7 @@ This plugin brings LLM prompt testing to your Pest test suite, powered by [promp
     - [`toContainHtml()`](#tocontainhtml)
     - [`toContainSql()`](#tocontainsql)
     - [`toContainXml()`](#tocontainxml)
+    - [`toEqual()`](#toequal)
     - [`toBeJudged()`](#tobejudged)
   - [Provider Configuration](#provider-configuration)
   - [Usage Examples](#usage-examples)
@@ -347,6 +348,17 @@ prompt('Generate XML for a product catalog')
     ->usingProvider('openai:gpt-4o-mini')
     ->expect()
     ->toContainXml();
+```
+
+#### `toEqual()`
+
+Assert that the response exactly equals the expected string value. This is useful for deterministic outputs where you expect an exact match.
+
+```php
+prompt('What is 2+2?')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toEqual('4');
 ```
 
 #### `toBeJudged()`
