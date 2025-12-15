@@ -334,3 +334,128 @@ test('build handles assertion with optional threshold and options', function () 
     expect($assertion->threshold)->toBe(0.8)
         ->and($assertion->options)->toBe(['key' => 'value']);
 });
+
+test('build handles assertion without value key (e.g., toBeJson)', function () {
+    $data = [
+        'results' => [
+            'results' => [
+                [
+                    'cost' => 0.1,
+                    'gradingResult' => [
+                        'pass' => true,
+                        'score' => 1.0,
+                        'reason' => '',
+                        'namedScores' => [],
+                        'tokensUsed' => [],
+                        'componentResults' => [
+                            [
+                                'pass' => true,
+                                'score' => 1.0,
+                                'reason' => 'Passed',
+                                'assertion' => [
+                                    'type' => 'is-json',
+                                    // value key is missing (filtered out when null)
+                                ],
+                            ],
+                        ],
+                    ],
+                    'id' => 'test-id',
+                    'latencyMs' => 100,
+                    'prompt' => [
+                        'raw' => 'test',
+                        'label' => 'test',
+                    ],
+                    'promptId' => 'id',
+                    'promptIdx' => 0,
+                    'provider' => [
+                        'id' => 'provider',
+                    ],
+                    'response' => [
+                        'output' => 'output',
+                    ],
+                    'score' => 1.0,
+                    'success' => true,
+                    'testCase' => [
+                        'vars' => [],
+                        'assert' => [],
+                        'options' => [],
+                        'metadata' => [],
+                    ],
+                    'testIdx' => 0,
+                ],
+            ],
+        ],
+    ];
+
+    $builder = new EvaluationResultBuilder($data);
+    $result = $builder->build();
+    $assertion = $result->results[0]->gradingResult->componentResults[0]->assertion;
+
+    expect($assertion->type)->toBe('is-json')
+        ->and($assertion->value)->toBeNull()
+        ->and($assertion->threshold)->toBeNull()
+        ->and($assertion->options)->toBeNull();
+});
+
+test('build handles assertion without threshold and options keys', function () {
+    $data = [
+        'results' => [
+            'results' => [
+                [
+                    'cost' => 0.1,
+                    'gradingResult' => [
+                        'pass' => true,
+                        'score' => 1.0,
+                        'reason' => '',
+                        'namedScores' => [],
+                        'tokensUsed' => [],
+                        'componentResults' => [
+                            [
+                                'pass' => true,
+                                'score' => 1.0,
+                                'reason' => 'Passed',
+                                'assertion' => [
+                                    'type' => 'contains',
+                                    'value' => 'test',
+                                    // threshold and options keys are missing (filtered out when null)
+                                ],
+                            ],
+                        ],
+                    ],
+                    'id' => 'test-id',
+                    'latencyMs' => 100,
+                    'prompt' => [
+                        'raw' => 'test',
+                        'label' => 'test',
+                    ],
+                    'promptId' => 'id',
+                    'promptIdx' => 0,
+                    'provider' => [
+                        'id' => 'provider',
+                    ],
+                    'response' => [
+                        'output' => 'output',
+                    ],
+                    'score' => 1.0,
+                    'success' => true,
+                    'testCase' => [
+                        'vars' => [],
+                        'assert' => [],
+                        'options' => [],
+                        'metadata' => [],
+                    ],
+                    'testIdx' => 0,
+                ],
+            ],
+        ],
+    ];
+
+    $builder = new EvaluationResultBuilder($data);
+    $result = $builder->build();
+    $assertion = $result->results[0]->gradingResult->componentResults[0]->assertion;
+
+    expect($assertion->type)->toBe('contains')
+        ->and($assertion->value)->toBe('test')
+        ->and($assertion->threshold)->toBeNull()
+        ->and($assertion->options)->toBeNull();
+});

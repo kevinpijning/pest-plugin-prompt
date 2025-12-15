@@ -104,7 +104,7 @@ class EvaluationResultBuilder
     {
         return new Assertion(
             type: $data['type'],
-            value: $data['value'],
+            value: $data['value'] ?? null,
             threshold: $data['threshold'] ?? null,
             options: $data['options'] ?? null,
         );
