@@ -53,13 +53,14 @@ class TestCase
         }
 
         $this->shouldNegateNextAssertion = false;
+        $this->assertions[] = $assertion->negate();
 
-        $this->assertions[] = new Assertion(
-            type: $this->negateAssertionType($assertion->type),
-            value: $assertion->value,
-            threshold: $assertion->threshold,
-            options: $assertion->options,
-        );
+        return $this;
+    }
+
+    public function not(): self
+    {
+        $this->shouldNegateNextAssertion = ! $this->shouldNegateNextAssertion;
 
         return $this;
     }
@@ -67,23 +68,10 @@ class TestCase
     public function __get(string $name): mixed
     {
         if ($name === 'not') {
-            $this->shouldNegateNextAssertion = ! $this->shouldNegateNextAssertion;
-
-            return $this;
+            return $this->not();
         }
 
         throw new RuntimeException(sprintf('Undefined property: %s::$%s', static::class, $name));
-    }
-
-    private function negateAssertionType(string $type): string
-    {
-        $prefix = 'not-';
-
-        if (str_starts_with($type, $prefix)) {
-            return substr($type, strlen($prefix));
-        }
-
-        return $prefix.$type;
     }
 
     /**

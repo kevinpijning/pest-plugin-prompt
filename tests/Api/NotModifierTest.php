@@ -241,3 +241,89 @@ test('not modifier with strict toContainAny uses correct type', function () {
     expect($testCase->assertions())->toHaveCount(1)
         ->and($testCase->assertions()[0]->type)->toBe('not-contains-any');
 });
+
+// Tests for not() method call syntax
+
+test('not() method negates the next assertion type', function () {
+    // Arrange
+    $evaluation = new Evaluation(['prompt']);
+    $testCase = $evaluation->expect();
+
+    // Act
+    $testCase
+        ->not()->toContain('forbidden')
+        ->toContain('allowed');
+
+    // Assert
+    expect($testCase->assertions())->toHaveCount(2)
+        ->and($testCase->assertions()[0]->type)->toBe('not-icontains')
+        ->and($testCase->assertions()[1]->type)->toBe('icontains');
+});
+
+test('not() method can be toggled twice to cancel negation', function () {
+    // Arrange
+    $evaluation = new Evaluation(['prompt']);
+    $testCase = $evaluation->expect();
+
+    // Act
+    $testCase->not()->not()->toContain('value');
+
+    // Assert
+    expect($testCase->assertions())->toHaveCount(1)
+        ->and($testCase->assertions()[0]->type)->toBe('icontains');
+});
+
+test('not() method works with all assertion types', function () {
+    // Arrange
+    $evaluation = new Evaluation(['prompt']);
+    $testCase = $evaluation->expect();
+
+    // Act
+    $testCase
+        ->not()->toContain('value1')
+        ->not()->toContainAll(['a', 'b'])
+        ->not()->toContainAny(['c', 'd'])
+        ->not()->toContainJson()
+        ->not()->toBeJudged('rubric');
+
+    // Assert
+    expect($testCase->assertions())->toHaveCount(5)
+        ->and($testCase->assertions()[0]->type)->toBe('not-icontains')
+        ->and($testCase->assertions()[1]->type)->toBe('not-icontains-all')
+        ->and($testCase->assertions()[2]->type)->toBe('not-icontains-any')
+        ->and($testCase->assertions()[3]->type)->toBe('not-contains-json')
+        ->and($testCase->assertions()[4]->type)->toBe('not-llm-rubric');
+});
+
+test('not() method and not property can be mixed', function () {
+    // Arrange
+    $evaluation = new Evaluation(['prompt']);
+    $testCase = $evaluation->expect();
+
+    // Act
+    $testCase
+        ->not->toContain('property-negated')
+        ->not()->toContain('method-negated')
+        ->toContain('regular');
+
+    // Assert
+    expect($testCase->assertions())->toHaveCount(3)
+        ->and($testCase->assertions()[0]->type)->toBe('not-icontains')
+        ->and($testCase->assertions()[1]->type)->toBe('not-icontains')
+        ->and($testCase->assertions()[2]->type)->toBe('icontains');
+});
+
+test('not() method preserves threshold and options', function () {
+    // Arrange
+    $evaluation = new Evaluation(['prompt']);
+    $testCase = $evaluation->expect();
+
+    // Act
+    $testCase->not()->toContain('value', threshold: 0.9, options: ['custom' => 'option']);
+
+    // Assert
+    expect($testCase->assertions())->toHaveCount(1)
+        ->and($testCase->assertions()[0]->type)->toBe('not-icontains')
+        ->and($testCase->assertions()[0]->threshold)->toBe(0.9)
+        ->and($testCase->assertions()[0]->options)->toBe(['custom' => 'option']);
+});
