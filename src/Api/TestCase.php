@@ -6,13 +6,12 @@ namespace KevinPijning\Prompt\Api;
 
 use KevinPijning\Prompt\Api\Concerns\CanBeJudged;
 use KevinPijning\Prompt\Api\Concerns\CanContain;
-use RuntimeException;
 use KevinPijning\Prompt\Api\Concerns\CanEqual;
+use RuntimeException;
 
 /**
  * @property-read TestCase $not
  */
-
 class TestCase
 {
     use CanBeJudged, CanContain, CanEqual;
