@@ -8,11 +8,16 @@ use KevinPijning\Prompt\Api\Assertion;
 
 trait CanEqual
 {
-    public function toEqual(mixed $value): self
+    /**
+     * @param  array<string,mixed>  $options
+     */
+    public function toEqual(mixed $value, ?float $threshold = null, array $options = []): self
     {
         return $this->assert(new Assertion(
             type: 'equals',
             value: $value,
+            threshold: $threshold,
+            options: $options,
         ));
     }
 }

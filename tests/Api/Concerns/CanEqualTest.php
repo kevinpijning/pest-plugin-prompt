@@ -26,7 +26,7 @@ test('toEqual creates an assertion with default parameters', function () {
         ->and($assertion->type)->toBe('equals')
         ->and($assertion->value)->toBe($expectedValue)
         ->and($assertion->threshold)->toBeNull()
-        ->and($assertion->options)->toBeNull();
+        ->and($assertion->options)->toBeArray()->toBeEmpty();
 });
 
 test('toEqual can be chained', function () {
