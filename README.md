@@ -34,6 +34,7 @@ This plugin brings LLM prompt testing to your Pest test suite, powered by [promp
     - [`toContainXml()`](#tocontainxml)
     - [`toEqual()`](#toequal)
     - [`toBeJudged()`](#tobejudged)
+  - [Reusable Assertion Templates](#reusable-assertion-templates)
   - [Provider Configuration](#provider-configuration)
   - [Usage Examples](#usage-examples)
   - [CLI Options](#cli-options)
@@ -383,6 +384,39 @@ prompt('Write a product description.')
     ->expect()
     ->toBeJudged('Should be professional and engaging.', options: ['provider': 'openai:gpt-4']);
 ```
+
+### Reusable Assertion Templates
+
+If you have a set of common assertions that you want to apply to multiple test cases, you can create assertion templates and reuse them across your tests.
+
+1) Create `tests/prompt-assertion-templates.php`:
+
+```php
+<?php
+
+return [
+    'mentionsCoffee' => [
+        'type' => 'icontains',
+        'value' => 'coffee',
+    ],
+    'prefersLaravelOverNextJs' => [
+        'type' => 'llm-rubric',
+        'value' => 'The answer states a clear preference for Laravel over Next.js.',
+        'threshold' => 0.9,
+    ],
+];
+```
+
+2) Use the assertion templates in tests:
+
+```php
+prompt('Which framework is superior for web apps: Laravel or Next.js?')
+    ->usingProvider('openai:gpt-5.1')
+    ->expect()
+    ->usingAssertionTemplates('prefersLaravelOverNextJs');
+```
+
+The plugin auto-loads `tests/prompt-assertion-templates.php` and writes `$ref` entries in the Promptfoo config for you.
 
 ### Provider Configuration
 

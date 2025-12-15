@@ -219,6 +219,32 @@ test('toArray handles assertion with only type and value', function () {
         ->and($result['tests'][0]['assert'][0])->not->toHaveKey('options');
 });
 
+test('toArray maps assertion templates and references cleanly', function () {
+    $evaluation = new Evaluation(['prompt1']);
+    $evaluation->template('mentionsCoffee', 'icontains', 'coffee');
+    $evaluation->defineTemplate('prefersLaravelOverNextJs', new Assertion('llm-rubric', 'The answer states a clear preference for Laravel over Next.js.', 0.9));
+
+    $evaluation->expect(['key' => 'value'])
+        ->usingAssertionTemplates('mentionsCoffee', 'prefersLaravelOverNextJs');
+
+    $result = ConfigBuilder::fromEvaluation($evaluation)->toArray();
+
+    expect($result)->toHaveKey('assertionTemplates')
+        ->and($result['assertionTemplates'])->toHaveKey('mentionsCoffee')
+        ->and($result['assertionTemplates'])->toHaveKey('prefersLaravelOverNextJs')
+        ->and($result['assertionTemplates']['mentionsCoffee'])->toMatchArray([
+            'type' => 'icontains',
+            'value' => 'coffee',
+        ])
+        ->and($result['assertionTemplates']['prefersLaravelOverNextJs'])->toMatchArray([
+            'type' => 'llm-rubric',
+            'value' => 'The answer states a clear preference for Laravel over Next.js.',
+            'threshold' => 0.9,
+        ])
+        ->and($result['tests'][0]['assert'][0])->toBe(['$ref' => '#/assertionTemplates/mentionsCoffee'])
+        ->and($result['tests'][0]['assert'][1])->toBe(['$ref' => '#/assertionTemplates/prefersLaravelOverNextJs']);
+});
+
 test('toArray handles assertion with threshold but no options', function () {
     $evaluation = new Evaluation(['prompt1']);
     $testCase = $evaluation->expect(['key' => 'value']);
