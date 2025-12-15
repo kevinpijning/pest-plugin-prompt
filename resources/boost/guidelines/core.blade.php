@@ -55,17 +55,31 @@ prompt('Greet \{\{name\}\}.')
 
 ### Assertion Methods
 
-**`toContain(string $text, bool $strict = false, ?float $threshold = null)`**: Assert response contains text. Case-insensitive by default.
+**Text matching**: `toContain(string $text, bool $strict = false, ?float $threshold = null)`, `toContainAll(array $texts, bool $strict = false, ?float $threshold = null)`, `toContainAny(array $texts, bool $strict = false, ?float $threshold = null)`, `startsWith(string $prefix, bool $strict = false, ?float $threshold = null)`, `toMatchRegex(string $pattern, ?float $threshold = null)`.
 
-**`toContainAll(array $texts, bool $strict = false, ?float $threshold = null)`**: Assert all texts are present.
+**Format validators (contains)**: `toContainJson()`, `toContainHtml()`, `toContainSql()`, `toContainXml()`.
 
-**`toContainAny(array $texts, bool $strict = false, ?float $threshold = null)`**: Assert any text is present.
+**Format validators (is)**: `toBeJson(?array $schema = null)`, `toBeHtml()`, `toBeSql(?array $authorityList = null)`, `toBeXml()`.
 
-**Format validators**: `toContainJson()`, `toContainHtml()`, `toContainSql()`, `toContainXml()`.
+**Equality**: `toEqual(mixed $value, ?float $threshold = null)`.
 
-**`toEqual(mixed $value)`**: Assert response exactly equals expected value (string, int, float, bool, array, etc.). Useful for deterministic outputs.
+**Similarity metrics**: `toBeSimilar(string|array $expected, ?float $threshold = null, ?string $provider = null)`, `toHaveLevenshtein(string $expected, ?float $threshold = null)`, `toHaveRougeN(int $n, string|array $expected, ?float $threshold = null)`, `toHaveFScore(string|array $expected, ?float $threshold = null)`, `toHavePerplexity(?float $threshold = null)`, `toHavePerplexityScore(?float $threshold = null)`.
 
-**`toBeJudged(string $rubric, ?float $threshold = null, array $options = [])`**: LLM-based evaluation with natural language rubric.
+**Performance**: `toHaveCost(?float $maxCost = null)`, `toHaveLatency(?int $maxMilliseconds = null)`.
+
+**Function/tool calls**: `toHaveValidFunctionCall(?array $schema = null)`, `toHaveValidOpenaiFunctionCall(?array $schema = null)`, `toHaveValidOpenaiToolsCall(?array $schema = null)`, `toHaveToolCallF1(array $expected, ?float $threshold = null)`.
+
+**Finish reason**: `toHaveFinishReason(FinishReason|string $reason)`, `toHaveFinishReasonStop()`, `toHaveFinishReasonLength()`, `toHaveFinishReasonContentFilter()`, `toHaveFinishReasonToolCalls()`. Use `FinishReason` enum for type safety.
+
+**Classification**: `toBeClassified(string $provider, string $expectedClass, ?float $threshold = null)`.
+
+**Scoring**: `toBeJudged(string $rubric, ?float $threshold = null, array $options = [])` (LLM-based), `toBeScoredByPi(string $rubric, ?float $threshold = null)`.
+
+**Refusal detection**: `toBeRefused()`.
+
+**Custom validation**: `toPassJavascript(string $code)`, `toPassPython(string $code)`, `toPassWebhook(string $url)`.
+
+**Tracing**: `toHaveTraceSpanCount(array $patterns, ?int $min = null, ?int $max = null)`, `toHaveTraceSpanDuration(array $patterns, ?float $percentile = null, ?float $maxDuration = null)`, `toHaveTraceErrorSpans()`.
 
 @verbatim
 <code-snippet name="Assertions" lang="php">

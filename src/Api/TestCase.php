@@ -4,9 +4,20 @@ declare(strict_types=1);
 
 namespace KevinPijning\Prompt\Api;
 
+use KevinPijning\Prompt\Api\Concerns\CanBeClassified;
 use KevinPijning\Prompt\Api\Concerns\CanBeJudged;
+use KevinPijning\Prompt\Api\Concerns\CanBeRefused;
+use KevinPijning\Prompt\Api\Concerns\CanBeScored;
+use KevinPijning\Prompt\Api\Concerns\CanBeSimilar;
+use KevinPijning\Prompt\Api\Concerns\CanBeValid;
 use KevinPijning\Prompt\Api\Concerns\CanContain;
 use KevinPijning\Prompt\Api\Concerns\CanEqual;
+use KevinPijning\Prompt\Api\Concerns\CanHaveCustomValidation;
+use KevinPijning\Prompt\Api\Concerns\CanHaveFinishReason;
+use KevinPijning\Prompt\Api\Concerns\CanHaveFunctionCalls;
+use KevinPijning\Prompt\Api\Concerns\CanHavePerformance;
+use KevinPijning\Prompt\Api\Concerns\CanHaveTraces;
+use KevinPijning\Prompt\Api\Concerns\CanMatch;
 use RuntimeException;
 
 /**
@@ -14,7 +25,7 @@ use RuntimeException;
  */
 class TestCase
 {
-    use CanBeJudged, CanContain, CanEqual;
+    use CanBeClassified, CanBeJudged, CanBeRefused, CanBeScored, CanBeSimilar, CanBeValid, CanContain, CanEqual, CanHaveCustomValidation, CanHaveFinishReason, CanHaveFunctionCalls, CanHavePerformance, CanHaveTraces, CanMatch;
 
     /** @var Assertion[] */
     private array $assertions = [];
