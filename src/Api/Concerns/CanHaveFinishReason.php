@@ -10,7 +10,6 @@ use KevinPijning\Prompt\Enums\FinishReason;
 trait CanHaveFinishReason
 {
     /**
-     * @param  FinishReason|string  $reason
      * @param  array<string,mixed>  $options
      */
     public function toHaveFinishReason(FinishReason|string $reason, array $options = []): self
@@ -65,4 +64,3 @@ trait CanHaveFinishReason
         return $this->toHaveFinishReason(FinishReason::ToolCalls, $options);
     }
 }
-

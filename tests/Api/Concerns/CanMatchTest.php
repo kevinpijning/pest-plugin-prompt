@@ -80,4 +80,3 @@ test('can chain match methods', function () {
     expect($result)->toBe($testCase)
         ->and($testCase->assertions())->toHaveCount(2);
 });
-

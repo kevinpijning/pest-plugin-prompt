@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 use KevinPijning\Prompt\Api\Assertion;
 use KevinPijning\Prompt\Api\Evaluation;
-use KevinPijning\Prompt\Enums\FinishReason;
 use KevinPijning\Prompt\Api\TestCase;
+use KevinPijning\Prompt\Enums\FinishReason;
 
 test('toHaveFinishReason creates a finish-reason assertion', function () {
     $evaluation = new Evaluation(['prompt1']);
@@ -119,4 +119,3 @@ test('convenience methods accept options parameter', function () {
     $assertion = $testCase->assertions()[0];
     expect($assertion->options)->toHaveKey('custom');
 });
-

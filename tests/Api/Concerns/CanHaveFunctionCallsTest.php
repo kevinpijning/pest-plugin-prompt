@@ -73,4 +73,3 @@ test('toHaveToolCallF1 creates a tool-call-f1 assertion', function () {
         ->and($assertion->value)->toBe($expected)
         ->and($assertion->threshold)->toBe(0.8);
 });
-

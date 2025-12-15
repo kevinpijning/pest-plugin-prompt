@@ -21,4 +21,3 @@ trait CanBeRefused
         ));
     }
 }
-

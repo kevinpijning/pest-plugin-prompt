@@ -71,4 +71,3 @@ test('custom validation methods accept options parameter', function () {
     expect($assertion->options)->toHaveKey('custom')
         ->and($assertion->options)->toHaveKey('code');
 });
-

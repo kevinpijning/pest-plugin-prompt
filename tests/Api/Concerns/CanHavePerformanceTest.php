@@ -73,4 +73,3 @@ test('can chain performance methods', function () {
     expect($result)->toBe($testCase)
         ->and($testCase->assertions())->toHaveCount(2);
 });
-

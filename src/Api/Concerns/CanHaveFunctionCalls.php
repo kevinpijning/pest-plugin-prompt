@@ -79,4 +79,3 @@ trait CanHaveFunctionCalls
         ));
     }
 }
-

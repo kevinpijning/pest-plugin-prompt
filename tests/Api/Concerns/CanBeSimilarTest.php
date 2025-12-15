@@ -118,4 +118,3 @@ test('toHavePerplexityScore creates a perplexity-score assertion', function () {
     expect($assertion->type)->toBe('perplexity-score')
         ->and($assertion->threshold)->toBe(0.5);
 });
-

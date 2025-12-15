@@ -84,4 +84,3 @@ test('toHaveTraceErrorSpans accepts options parameter', function () {
     $assertion = $testCase->assertions()[0];
     expect($assertion->options)->toHaveKey('custom');
 });
-

@@ -35,4 +35,3 @@ test('toBeClassified accepts options parameter', function () {
     expect($assertion->options)->toHaveKey('custom')
         ->and($assertion->options)->toHaveKey('provider');
 });
-

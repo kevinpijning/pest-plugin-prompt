@@ -11,4 +11,3 @@ enum FinishReason: string
     case ContentFilter = 'content_filter';
     case ToolCalls = 'tool_calls';
 }
-

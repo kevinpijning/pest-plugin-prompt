@@ -65,4 +65,3 @@ trait CanHaveTraces
         ));
     }
 }
-

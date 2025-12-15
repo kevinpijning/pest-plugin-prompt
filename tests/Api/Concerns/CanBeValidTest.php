@@ -97,4 +97,3 @@ test('can chain validation methods', function () {
     expect($result)->toBe($testCase)
         ->and($testCase->assertions())->toHaveCount(4);
 });
-
