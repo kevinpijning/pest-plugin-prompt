@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use KevinPijning\Prompt\Api\Assertion;
 use KevinPijning\Prompt\Api\Evaluation;
+use KevinPijning\Prompt\Enums\FinishReason;
 use KevinPijning\Prompt\Promptfoo\ConfigBuilder;
 
 test('fromEvaluation creates a ConfigBuilder instance', function () {
@@ -243,4 +244,37 @@ test('toArray handles assertion with options but no threshold', function () {
     expect($result['tests'][0]['assert'][0])->not->toHaveKey('threshold')
         ->and($result['tests'][0]['assert'][0])->toHaveKey('options')
         ->and($result['tests'][0]['assert'][0]['options'])->toBe(['key' => 'value']);
+});
+
+test('toArray handles FinishReason enum correctly', function () {
+    $evaluation = new Evaluation(['prompt1']);
+    $testCase = $evaluation->expect(['key' => 'value']);
+    $testCase->toHaveFinishReason(FinishReason::Stop);
+
+    $builder = ConfigBuilder::fromEvaluation($evaluation);
+    $result = $builder->toArray();
+
+    expect($result['tests'][0]['assert'][0])->toHaveKey('type')
+        ->and($result['tests'][0]['assert'][0])->toHaveKey('value')
+        ->and($result['tests'][0]['assert'][0]['type'])->toBe('finish-reason')
+        ->and($result['tests'][0]['assert'][0]['value'])->toBe('stop')
+        ->and($result['tests'][0]['assert'][0]['value'])->toBeString();
+});
+
+test('toArray handles all FinishReason enum values correctly', function () {
+    $evaluation = new Evaluation(['prompt1']);
+    $testCase = $evaluation->expect(['key' => 'value']);
+    $testCase->toHaveFinishReason(FinishReason::Stop);
+    $testCase->toHaveFinishReason(FinishReason::Length);
+    $testCase->toHaveFinishReason(FinishReason::ContentFilter);
+    $testCase->toHaveFinishReason(FinishReason::ToolCalls);
+
+    $builder = ConfigBuilder::fromEvaluation($evaluation);
+    $result = $builder->toArray();
+
+    expect($result['tests'][0]['assert'])->toHaveCount(4)
+        ->and($result['tests'][0]['assert'][0]['value'])->toBe('stop')
+        ->and($result['tests'][0]['assert'][1]['value'])->toBe('length')
+        ->and($result['tests'][0]['assert'][2]['value'])->toBe('content_filter')
+        ->and($result['tests'][0]['assert'][3]['value'])->toBe('tool_calls');
 });

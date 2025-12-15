@@ -385,6 +385,453 @@ prompt('Write a product description.')
     ->toBeJudged('Should be professional and engaging.', options: ['provider': 'openai:gpt-4']);
 ```
 
+#### `startsWith()`
+
+Assert that the response starts with a specific prefix.
+
+```php
+prompt('Generate a greeting.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->startsWith('Hello');
+
+// Case-sensitive
+prompt('Generate a greeting.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->startsWith('Hello', strict: true);
+
+// With threshold
+prompt('Generate a greeting.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->startsWith('Hello', threshold: 0.9);
+```
+
+#### `toMatchRegex()`
+
+Assert that the response matches a regular expression pattern.
+
+```php
+prompt('Generate a phone number.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toMatchRegex('/\d{3}-\d{3}-\d{4}/');
+
+// With threshold
+prompt('Generate a phone number.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toMatchRegex('/\d{3}-\d{3}-\d{4}/', threshold: 0.9);
+```
+
+#### `toBeJson()`
+
+Assert that the response is valid JSON (not just contains JSON).
+
+```php
+prompt('Return user data as JSON: name, age, email')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toBeJson();
+
+// With JSON schema validation
+prompt('Return user data as JSON.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toBeJson([
+        'type' => 'object',
+        'properties' => [
+            'name' => ['type' => 'string'],
+            'age' => ['type' => 'number'],
+        ],
+        'required' => ['name', 'age'],
+    ]);
+```
+
+#### `toBeHtml()`
+
+Assert that the response is valid HTML.
+
+```php
+prompt('Generate an HTML list of fruits')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toBeHtml();
+```
+
+#### `toBeSql()`
+
+Assert that the response is valid SQL (not just contains SQL).
+
+```php
+prompt('Write a SQL query to select all users')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toBeSql();
+
+// With authority list (allowed SQL operations)
+prompt('Write a SQL query.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toBeSql(['SELECT', 'INSERT']);
+```
+
+#### `toBeXml()`
+
+Assert that the response is valid XML.
+
+```php
+prompt('Generate XML for a product catalog')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toBeXml();
+```
+
+#### `toBeSimilar()`
+
+Assert that the response is semantically similar to the expected value using embedding similarity.
+
+```php
+prompt('Explain artificial intelligence.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toBeSimilar('AI is the simulation of human intelligence by machines');
+
+// With threshold (default is 0.75)
+prompt('Explain artificial intelligence.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toBeSimilar('AI explanation', threshold: 0.8);
+
+// With custom embedding provider
+prompt('Explain artificial intelligence.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toBeSimilar('AI explanation', provider: 'huggingface:sentence-similarity:model');
+
+// Multiple expected values
+prompt('Explain artificial intelligence.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toBeSimilar(['AI explanation', 'Machine intelligence', 'Artificial intelligence definition']);
+```
+
+#### `toHaveLevenshtein()`
+
+Assert that the Levenshtein (edit) distance between the response and expected value is below a threshold.
+
+```php
+prompt('Spell the word "hello".')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toHaveLevenshtein('hello', threshold: 2.0);
+```
+
+#### `toHaveRougeN()`
+
+Assert that the ROUGE-N score is above a threshold.
+
+```php
+prompt('Summarize this article.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toHaveRougeN(1, 'Expected summary', threshold: 0.7);
+
+// ROUGE-2
+prompt('Summarize this article.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toHaveRougeN(2, 'Expected summary', threshold: 0.6);
+```
+
+#### `toHaveFScore()`
+
+Assert that the F-score is above a threshold.
+
+```php
+prompt('Extract entities from the text.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toHaveFScore('Expected entities', threshold: 0.8);
+```
+
+#### `toHavePerplexity()`
+
+Assert that the perplexity is below a threshold.
+
+```php
+prompt('Generate coherent text.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toHavePerplexity(threshold: 10.0);
+```
+
+#### `toHavePerplexityScore()`
+
+Assert that the normalized perplexity score is below a threshold.
+
+```php
+prompt('Generate coherent text.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toHavePerplexityScore(threshold: 0.5);
+```
+
+#### `toHaveCost()`
+
+Assert that the inference cost is below a maximum threshold.
+
+```php
+prompt('Generate a short response.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toHaveCost(0.01);
+```
+
+#### `toHaveLatency()`
+
+Assert that the response latency is below a maximum threshold (in milliseconds).
+
+```php
+prompt('Generate a quick response.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toHaveLatency(1000);
+```
+
+#### `toHaveValidFunctionCall()`
+
+Assert that the response contains a valid function call matching the provided schema.
+
+```php
+prompt('Call the weather function.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toHaveValidFunctionCall([
+        'type' => 'object',
+        'properties' => [
+            'name' => ['type' => 'string'],
+            'arguments' => ['type' => 'object'],
+        ],
+    ]);
+```
+
+#### `toHaveValidOpenaiFunctionCall()`
+
+Assert that the response contains a valid OpenAI function call.
+
+```php
+prompt('Call the weather function.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toHaveValidOpenaiFunctionCall();
+```
+
+#### `toHaveValidOpenaiToolsCall()`
+
+Assert that the response contains valid OpenAI tool calls.
+
+```php
+prompt('Use the available tools.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toHaveValidOpenaiToolsCall();
+```
+
+#### `toHaveToolCallF1()`
+
+Assert that the F1 score comparing actual vs expected tool calls is above a threshold.
+
+```php
+prompt('Call the weather and time functions.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toHaveToolCallF1(['weather', 'time'], threshold: 0.8);
+```
+
+#### `toHaveFinishReason()`
+
+Assert that the model stopped for the expected reason. You can use either a string or the `FinishReason` enum.
+
+**Standard Finish Reasons:**
+- `stop`: Natural completion (reached end of response, stop sequence matched)
+- `length`: Token limit reached (max_tokens exceeded, context length reached)
+- `content_filter`: Content filtering triggered due to safety policies
+- `tool_calls`: Model made function/tool calls
+
+```php
+use KevinPijning\Prompt\Enums\FinishReason;
+
+// Using string
+prompt('Generate a response.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toHaveFinishReason('stop');
+
+// Using enum
+prompt('Generate a response.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toHaveFinishReason(FinishReason::Stop);
+
+// Check for tool calls
+prompt('Use available tools.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toHaveFinishReason(FinishReason::ToolCalls);
+```
+
+**Convenience Methods:**
+
+For each finish reason, there's a dedicated convenience method:
+
+```php
+// Natural completion
+prompt('Generate a response.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toHaveFinishReasonStop();
+
+// Token limit reached
+prompt('Generate a very long response.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toHaveFinishReasonLength();
+
+// Content filter triggered
+prompt('Generate harmful content.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toHaveFinishReasonContentFilter();
+
+// Tool calls made
+prompt('Use available tools.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toHaveFinishReasonToolCalls();
+```
+
+#### `toBeClassified()`
+
+Assert that a HuggingFace classifier returns the expected class above a threshold.
+
+```php
+// Sentiment analysis
+prompt('Write a positive review.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toBeClassified(
+        'huggingface:text-classification:distilbert-base-uncased-finetuned-sst-2-english',
+        'POSITIVE',
+        threshold: 0.8
+    );
+
+// Hate speech detection
+prompt('Write a friendly message.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toBeClassified(
+        'huggingface:text-classification:facebook/roberta-hate-speech-dynabench-r4-target',
+        'nothate',
+        threshold: 0.9
+    );
+```
+
+#### `toBeScoredByPi()`
+
+Use Pi Labs' preference scoring model as an alternative to LLM-as-a-judge.
+
+```php
+prompt('Write a helpful response.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toBeScoredByPi('Is the response not apologetic and provides a clear, concise answer?', threshold: 0.8);
+```
+
+#### `toBeRefused()`
+
+Assert that the LLM output indicates the model refused to perform the requested task.
+
+```php
+prompt('Write harmful content.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toBeRefused();
+
+// Ensure model does NOT refuse safe requests
+prompt('What is 2+2?')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->not->toBeRefused();
+```
+
+#### `toPassJavascript()`
+
+Assert that a custom JavaScript function validates the output.
+
+```php
+prompt('Generate a response longer than 10 characters.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toPassJavascript('return output.length > 10;');
+```
+
+#### `toPassPython()`
+
+Assert that a custom Python function validates the output.
+
+```php
+prompt('Generate a response longer than 10 characters.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toPassPython('return len(output) > 10');
+```
+
+#### `toPassWebhook()`
+
+Assert that a webhook returns `{pass: true}`.
+
+```php
+prompt('Generate a response.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toPassWebhook('https://example.com/validate');
+```
+
+#### `toHaveTraceSpanCount()`
+
+Assert that trace spans matching patterns meet min/max thresholds.
+
+```php
+prompt('Process the request.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toHaveTraceSpanCount(['pattern1', 'pattern2'], min: 1, max: 5);
+```
+
+#### `toHaveTraceSpanDuration()`
+
+Assert that trace span durations meet percentile and max duration thresholds.
+
+```php
+prompt('Process the request.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toHaveTraceSpanDuration(['pattern1'], percentile: 0.95, maxDuration: 1000.0);
+```
+
+#### `toHaveTraceErrorSpans()`
+
+Detect errors in traces by status codes, attributes, and messages.
+
+```php
+prompt('Process the request.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->not->toHaveTraceErrorSpans();
+```
+
 #### `not` Modifier
 
 Negate any assertion by using the `not` modifier.
