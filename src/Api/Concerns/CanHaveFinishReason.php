@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace KevinPijning\Prompt\Api\Concerns;
 
 use KevinPijning\Prompt\Api\Assertion;
-use KevinPijning\Prompt\Api\FinishReason;
+use KevinPijning\Prompt\Enums\FinishReason;
 
 trait CanHaveFinishReason
 {

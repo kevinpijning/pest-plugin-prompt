@@ -661,7 +661,7 @@ Assert that the model stopped for the expected reason. You can use either a stri
 - `tool_calls`: Model made function/tool calls
 
 ```php
-use KevinPijning\Prompt\Api\FinishReason;
+use KevinPijning\Prompt\Enums\FinishReason;
 
 // Using string
 prompt('Generate a response.')

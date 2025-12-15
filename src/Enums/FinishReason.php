@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace KevinPijning\Prompt\Api;
+namespace KevinPijning\Prompt\Enums;
 
 enum FinishReason: string
 {
