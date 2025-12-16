@@ -43,3 +43,33 @@ test('Response can be instantiated with empty arrays', function () {
         ->and($response->guardrails)->toBeArray()
         ->and($response->guardrails)->toBeEmpty();
 });
+
+test('Response transforms array output to JSON string', function () {
+    $response = new Response(
+        output: ['message' => 'Hello', 'code' => 200],
+        tokenUsage: [],
+        cached: false,
+        latencyMs: 100,
+        finishReason: 'stop',
+        cost: 0.0,
+        guardrails: [],
+    );
+
+    expect($response->output)->toBeString()
+        ->and($response->output)->toBe('{"message":"Hello","code":200}');
+});
+
+test('Response keeps string output as string', function () {
+    $response = new Response(
+        output: 'Simple text output',
+        tokenUsage: [],
+        cached: false,
+        latencyMs: 100,
+        finishReason: 'stop',
+        cost: 0.0,
+        guardrails: [],
+    );
+
+    expect($response->output)->toBeString()
+        ->and($response->output)->toBe('Simple text output');
+});
