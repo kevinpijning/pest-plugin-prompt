@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace KevinPijning\Prompt\Promptfoo;
 
 use KevinPijning\Prompt\Evaluation;
+use KevinPijning\Prompt\Internal\EvaluationResult;
 
 class Promptfoo
 {

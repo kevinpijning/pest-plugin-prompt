@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use KevinPijning\Prompt\Evaluation;
-use KevinPijning\Prompt\Promptfoo\PendingEvaluation;
+use KevinPijning\Prompt\Promptfoo\EvaluationCommandBuilder;
 use KevinPijning\Prompt\Promptfoo\PromptfooClient;
 
 beforeEach(function () {
@@ -40,7 +40,7 @@ test('evaluate generates config file', function () {
     $reflection = new ReflectionClass(PromptfooClient::class);
 
     // Actually, let's test the generateCommand and generateConfig methods via reflection
-    $pending = PendingEvaluation::create($evaluation);
+    $pending = EvaluationCommandBuilder::create($evaluation);
 
     // Test generateCommand
     $generateCommandMethod = $reflection->getMethod('generateCommand');
@@ -54,13 +54,13 @@ test('evaluate generates config file', function () {
 
 test('generateCommand includes user output path when provided', function () {
     $evaluation = new Evaluation(['test prompt']);
-    $pending = PendingEvaluation::create($evaluation);
+    $pending = EvaluationCommandBuilder::create($evaluation);
 
     // Manually set userOutputPath via reflection
-    $reflection = new ReflectionClass(PendingEvaluation::class);
+    $reflection = new ReflectionClass(EvaluationCommandBuilder::class);
     $property = $reflection->getProperty('userOutputPath');
 
-    $newPending = new PendingEvaluation(
+    $newPending = new EvaluationCommandBuilder(
         $pending->evaluation,
         $pending->configPath,
         $pending->outputPath,
@@ -79,7 +79,7 @@ test('generateCommand includes user output path when provided', function () {
 
 test('cleanup removes config and output files', function () {
     $evaluation = new Evaluation(['test prompt']);
-    $pending = PendingEvaluation::create($evaluation);
+    $pending = EvaluationCommandBuilder::create($evaluation);
 
     // Create test files
     file_put_contents($pending->configPath, 'test config');
@@ -100,7 +100,7 @@ test('cleanup removes config and output files', function () {
 
 test('cleanup handles non-existent files gracefully', function () {
     $evaluation = new Evaluation(['test prompt']);
-    $pending = PendingEvaluation::create($evaluation);
+    $pending = EvaluationCommandBuilder::create($evaluation);
 
     // Ensure files don't exist
     if (file_exists($pending->configPath)) {

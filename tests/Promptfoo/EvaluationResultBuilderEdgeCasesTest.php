@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use KevinPijning\Prompt\Promptfoo\EvaluationResult;
+use KevinPijning\Prompt\Internal\EvaluationResult;
 use KevinPijning\Prompt\Promptfoo\EvaluationResultBuilder;
 
 test('build handles empty results array', function () {

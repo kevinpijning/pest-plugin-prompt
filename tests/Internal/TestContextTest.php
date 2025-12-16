@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use KevinPijning\Prompt\Evaluation;
+use KevinPijning\Prompt\Internal\TestContext;
 use KevinPijning\Prompt\Provider;
-use KevinPijning\Prompt\TestContext;
 
 beforeEach(function () {
     TestContext::clear();

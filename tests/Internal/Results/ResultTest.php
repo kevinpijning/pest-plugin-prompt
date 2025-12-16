@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-use KevinPijning\Prompt\Promptfoo\Results\GradingResult;
-use KevinPijning\Prompt\Promptfoo\Results\Prompt;
-use KevinPijning\Prompt\Promptfoo\Results\Provider;
-use KevinPijning\Prompt\Promptfoo\Results\Response;
-use KevinPijning\Prompt\Promptfoo\Results\Result;
-use KevinPijning\Prompt\Promptfoo\Results\TestCase;
+use KevinPijning\Prompt\Internal\Results\GradingResult;
+use KevinPijning\Prompt\Internal\Results\Prompt;
+use KevinPijning\Prompt\Internal\Results\Provider;
+use KevinPijning\Prompt\Internal\Results\Response;
+use KevinPijning\Prompt\Internal\Results\Result;
+use KevinPijning\Prompt\Internal\Results\TestCase;
 
 test('Result can be instantiated with all properties', function () {
     $gradingResult = new GradingResult(

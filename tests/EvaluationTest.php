@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 use KevinPijning\Prompt\Evaluation;
+use KevinPijning\Prompt\Internal\TestContext;
 use KevinPijning\Prompt\Provider;
 use KevinPijning\Prompt\TestCase;
-use KevinPijning\Prompt\TestContext;
 
 test('it can be instantiated with prompts', function () {
     $prompts = ['prompt1', 'prompt2', 'prompt3'];

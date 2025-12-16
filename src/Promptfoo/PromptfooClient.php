@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace KevinPijning\Prompt\Promptfoo;
 
-use KevinPijning\Prompt\Evaluation;
 use KevinPijning\Prompt\Contracts\EvaluatorClient;
+use KevinPijning\Prompt\Evaluation;
 use KevinPijning\Prompt\Exceptions\ExecutionException;
+use KevinPijning\Prompt\Internal\EvaluationResult;
 use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\Process;
 
@@ -19,7 +20,7 @@ class PromptfooClient implements EvaluatorClient
 
     public function evaluate(Evaluation $evaluation): EvaluationResult
     {
-        $pendingEvaluation = PendingEvaluation::create($evaluation);
+        $pendingEvaluation = EvaluationCommandBuilder::create($evaluation);
 
         try {
             $this->generateConfig($pendingEvaluation);
@@ -78,7 +79,7 @@ class PromptfooClient implements EvaluatorClient
     /**
      * @return string[]
      */
-    private function generateCommand(PendingEvaluation $pendingEvaluation): array
+    private function generateCommand(EvaluationCommandBuilder $pendingEvaluation): array
     {
         $command = [
             ...explode(' ', $this->promptfooCommand), 'eval',
@@ -95,7 +96,7 @@ class PromptfooClient implements EvaluatorClient
         return $command;
     }
 
-    private function generateConfig(PendingEvaluation $pendingEvaluation): void
+    private function generateConfig(EvaluationCommandBuilder $pendingEvaluation): void
     {
         $configYaml = ConfigBuilder::fromEvaluation($pendingEvaluation->evaluation)->toYaml();
 
@@ -107,7 +108,7 @@ class PromptfooClient implements EvaluatorClient
         return EvaluationResultBuilder::fromJson($outputPath);
     }
 
-    private function cleanup(PendingEvaluation $pendingEvaluation): void
+    private function cleanup(EvaluationCommandBuilder $pendingEvaluation): void
     {
         if (file_exists($pendingEvaluation->outputPath)) {
             unlink($pendingEvaluation->outputPath);

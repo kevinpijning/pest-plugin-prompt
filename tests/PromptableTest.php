@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 use KevinPijning\Prompt\Evaluation;
-use KevinPijning\Prompt\Provider;
+use KevinPijning\Prompt\Internal\TestContext;
 use KevinPijning\Prompt\Promptable;
-use KevinPijning\Prompt\TestContext;
+use KevinPijning\Prompt\Provider;
 
 beforeEach(function () {
     TestContext::clear();

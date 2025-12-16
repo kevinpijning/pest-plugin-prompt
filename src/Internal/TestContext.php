@@ -2,11 +2,14 @@
 
 declare(strict_types=1);
 
-namespace KevinPijning\Prompt;
+namespace KevinPijning\Prompt\Internal;
 
 use KevinPijning\Prompt\Evaluation;
 use KevinPijning\Prompt\Provider;
 
+/**
+ * @internal
+ */
 class TestContext
 {
     /** @var Evaluation[] */

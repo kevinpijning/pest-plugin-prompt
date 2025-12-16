@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 use KevinPijning\Prompt\Assertion;
+use KevinPijning\Prompt\Enums\FinishReason;
 use KevinPijning\Prompt\Evaluation;
 use KevinPijning\Prompt\TestCase;
-use KevinPijning\Prompt\Enums\FinishReason;
 
 test('toHaveFinishReason creates a finish-reason assertion', function () {
     $evaluation = new Evaluation(['prompt1']);

@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use KevinPijning\Prompt\Assertion;
-use KevinPijning\Prompt\Evaluation;
 use KevinPijning\Prompt\Enums\FinishReason;
+use KevinPijning\Prompt\Evaluation;
 use KevinPijning\Prompt\Promptfoo\ConfigBuilder;
 
 test('fromEvaluation creates a ConfigBuilder instance', function () {

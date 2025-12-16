@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use KevinPijning\Prompt\Assertion;
-use KevinPijning\Prompt\Promptfoo\Results\ComponentResult;
-use KevinPijning\Prompt\Promptfoo\Results\GradingResult;
+use KevinPijning\Prompt\Internal\Results\ComponentResult;
+use KevinPijning\Prompt\Internal\Results\GradingResult;
 
 test('GradingResult can be instantiated with all properties', function () {
     $componentResult = new ComponentResult(

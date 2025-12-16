@@ -2,15 +2,17 @@
 
 declare(strict_types=1);
 
-namespace KevinPijning\Prompt;
+namespace KevinPijning\Prompt\Internal;
 
 use InvalidArgumentException;
-use KevinPijning\Prompt\Promptfoo\EvaluationResult;
+use KevinPijning\Prompt\Internal\Results\ComponentResult;
+use KevinPijning\Prompt\Internal\Results\GradingResult;
+use KevinPijning\Prompt\Internal\Results\Result;
 use KevinPijning\Prompt\Promptfoo\Promptfoo;
-use KevinPijning\Prompt\Promptfoo\Results\ComponentResult;
-use KevinPijning\Prompt\Promptfoo\Results\GradingResult;
-use KevinPijning\Prompt\Promptfoo\Results\Result;
 
+/**
+ * @internal
+ */
 class TestLifecycle
 {
     public static function evaluate(): void

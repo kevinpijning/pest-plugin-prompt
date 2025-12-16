@@ -10,7 +10,7 @@ use KevinPijning\Prompt\Helpers\Path;
 /**
  * @internal
  */
-final readonly class PendingEvaluation
+final readonly class EvaluationCommandBuilder
 {
     public function __construct(
         public Evaluation $evaluation,

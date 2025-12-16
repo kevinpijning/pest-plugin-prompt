@@ -1,8 +1,8 @@
 <?php
 
 use KevinPijning\Prompt\Evaluation;
+use KevinPijning\Prompt\Internal\TestContext;
 use KevinPijning\Prompt\Provider;
-use KevinPijning\Prompt\TestContext;
 
 if (! function_exists('provider')) {
     function provider(string $name, ?callable $config = null): Provider

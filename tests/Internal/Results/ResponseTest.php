@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use KevinPijning\Prompt\Promptfoo\Results\Response;
+use KevinPijning\Prompt\Internal\Results\Response;
 
 test('Response can be instantiated with all properties', function () {
     $response = new Response(

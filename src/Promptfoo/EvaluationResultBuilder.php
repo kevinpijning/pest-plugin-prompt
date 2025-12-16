@@ -6,13 +6,14 @@ namespace KevinPijning\Prompt\Promptfoo;
 
 use InvalidArgumentException;
 use KevinPijning\Prompt\Assertion;
-use KevinPijning\Prompt\Promptfoo\Results\ComponentResult;
-use KevinPijning\Prompt\Promptfoo\Results\GradingResult;
-use KevinPijning\Prompt\Promptfoo\Results\Prompt;
-use KevinPijning\Prompt\Promptfoo\Results\Provider;
-use KevinPijning\Prompt\Promptfoo\Results\Response;
-use KevinPijning\Prompt\Promptfoo\Results\Result;
-use KevinPijning\Prompt\Promptfoo\Results\TestCase;
+use KevinPijning\Prompt\Internal\EvaluationResult;
+use KevinPijning\Prompt\Internal\Results\ComponentResult;
+use KevinPijning\Prompt\Internal\Results\GradingResult;
+use KevinPijning\Prompt\Internal\Results\Prompt;
+use KevinPijning\Prompt\Internal\Results\Provider;
+use KevinPijning\Prompt\Internal\Results\Response;
+use KevinPijning\Prompt\Internal\Results\Result;
+use KevinPijning\Prompt\Internal\Results\TestCase;
 
 class EvaluationResultBuilder
 {

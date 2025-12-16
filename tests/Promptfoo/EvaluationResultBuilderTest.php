@@ -3,15 +3,15 @@
 declare(strict_types=1);
 
 use KevinPijning\Prompt\Assertion;
-use KevinPijning\Prompt\Promptfoo\EvaluationResult;
+use KevinPijning\Prompt\Internal\EvaluationResult;
+use KevinPijning\Prompt\Internal\Results\ComponentResult;
+use KevinPijning\Prompt\Internal\Results\GradingResult;
+use KevinPijning\Prompt\Internal\Results\Prompt;
+use KevinPijning\Prompt\Internal\Results\Provider;
+use KevinPijning\Prompt\Internal\Results\Response;
+use KevinPijning\Prompt\Internal\Results\Result;
+use KevinPijning\Prompt\Internal\Results\TestCase;
 use KevinPijning\Prompt\Promptfoo\EvaluationResultBuilder;
-use KevinPijning\Prompt\Promptfoo\Results\ComponentResult;
-use KevinPijning\Prompt\Promptfoo\Results\GradingResult;
-use KevinPijning\Prompt\Promptfoo\Results\Prompt;
-use KevinPijning\Prompt\Promptfoo\Results\Provider;
-use KevinPijning\Prompt\Promptfoo\Results\Response;
-use KevinPijning\Prompt\Promptfoo\Results\Result;
-use KevinPijning\Prompt\Promptfoo\Results\TestCase;
 
 test('fromJson creates EvaluationResult from JSON file', function () {
     $result = EvaluationResultBuilder::fromJson(__DIR__.'/../fixtures/promptfoo_output.json');

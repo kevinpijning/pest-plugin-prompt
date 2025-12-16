@@ -7,8 +7,8 @@ namespace KevinPijning\Prompt;
 use KevinPijning\Prompt\Internal\BuiltEvaluation;
 use KevinPijning\Prompt\Internal\BuiltProvider;
 use KevinPijning\Prompt\Internal\BuiltTestCase;
+use KevinPijning\Prompt\Internal\TestContext;
 use KevinPijning\Prompt\Promptfoo\Promptfoo;
-use KevinPijning\Prompt\TestContext;
 
 class Evaluation
 {

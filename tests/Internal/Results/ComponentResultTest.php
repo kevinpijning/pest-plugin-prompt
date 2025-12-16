@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use KevinPijning\Prompt\Assertion;
-use KevinPijning\Prompt\Promptfoo\Results\ComponentResult;
+use KevinPijning\Prompt\Internal\Results\ComponentResult;
 
 test('ComponentResult can be instantiated with all properties', function () {
     $assertion = new Assertion('contains', 'test');
