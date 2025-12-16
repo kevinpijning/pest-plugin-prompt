@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use KevinPijning\Prompt\Path;
+use KevinPijning\Prompt\Helpers\Path;
 
 test('withFileName creates a new Path instance', function () {
     $path = Path::withFileName('test-name');

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace KevinPijning\Prompt;
+namespace KevinPijning\Prompt\Helpers;
 
 use Stringable;
 

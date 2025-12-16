@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace KevinPijning\Prompt\Promptfoo;
 
 use KevinPijning\Prompt\Evaluation;
-use KevinPijning\Prompt\Path;
+use KevinPijning\Prompt\Helpers\Path;
 
 /**
  * @internal
