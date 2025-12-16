@@ -43,3 +43,22 @@ test('Response can be instantiated with empty arrays', function () {
         ->and($response->guardrails)->toBeArray()
         ->and($response->guardrails)->toBeEmpty();
 });
+
+test('Response can be instantiated with array output', function () {
+    $arrayOutput = ['name' => 'John', 'age' => 30, 'email' => 'john@example.com'];
+
+    $response = new Response(
+        output: $arrayOutput,
+        tokenUsage: ['total' => 100],
+        cached: false,
+        latencyMs: 200,
+        finishReason: 'stop',
+        cost: 0.02,
+        guardrails: [],
+    );
+
+    expect($response->output)->toBeArray()
+        ->and($response->output)->toBe($arrayOutput)
+        ->and($response->output['name'])->toBe('John')
+        ->and($response->output['age'])->toBe(30);
+});

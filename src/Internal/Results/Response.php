@@ -10,11 +10,12 @@ namespace KevinPijning\Prompt\Internal\Results;
 final readonly class Response
 {
     /**
+     * @param  string|array<string, mixed>  $output
      * @param  array<string, mixed>  $tokenUsage
      * @param  array<string, mixed>  $guardrails
      */
     public function __construct(
-        public string $output,
+        public string|array $output,
         public array $tokenUsage,
         public bool $cached,
         public int $latencyMs,

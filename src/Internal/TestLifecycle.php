@@ -66,7 +66,7 @@ class TestLifecycle
 
     private static function buildFailureMessage(ComponentResult $componentResult, Result $result): string
     {
-        $output = $result->response->output ?? '(no response available)';
+        $output = self::encodeOutput($result->response->output ?? '(no response available)');
 
         // ANSI color codes
         $reset = "\033[0m";
@@ -87,5 +87,17 @@ class TestLifecycle
         $message .= "{$bold}{$cyan}Prompt:{$reset} {$blue}{$result->prompt->raw}{$reset}\n";
 
         return $message."{$bold}{$cyan}Actual output:{$reset} {$red}{$output}{$reset}\n";
+    }
+
+    /**
+     * @param  array<string,mixed>|string  $output
+     */
+    private static function encodeOutput(array|string $output): string
+    {
+        if (is_array($output)) {
+            return json_encode($output, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR);
+        }
+
+        return $output;
     }
 }

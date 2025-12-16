@@ -315,3 +315,84 @@ test('buildFailureMessage handles missing response output', function () {
 
     expect($message)->toContain('(no response available)');
 });
+
+test('buildFailureMessage handles array output', function () {
+    $componentResult = new ComponentResult(
+        pass: false,
+        score: 0.0,
+        reason: 'Assertion failed',
+        assertion: new Assertion('contains', 'test')
+    );
+
+    $arrayOutput = ['name' => 'John', 'age' => 30, 'data' => ['nested' => 'value']];
+
+    $result = new Result(
+        cost: 0.1,
+        error: null,
+        gradingResult: new GradingResult(
+            pass: false,
+            score: 0.0,
+            reason: '',
+            namedScores: [],
+            tokensUsed: [],
+            componentResults: [$componentResult]
+        ),
+        id: 'id1',
+        latencyMs: 100,
+        namedScores: [],
+        prompt: new Prompt('test', 'test'),
+        promptId: 'pid1',
+        promptIdx: 0,
+        provider: new Provider('provider1', ''),
+        response: new Response($arrayOutput, [], false, 50, 'stop', 0.05, []),
+        score: 0.0,
+        success: false,
+        testCase: new TestCase([], [], [], []),
+        testIdx: 0,
+        vars: [],
+        metadata: [],
+        failureReason: null
+    );
+
+    $reflection = new ReflectionClass(TestLifecycle::class);
+    $method = $reflection->getMethod('buildFailureMessage');
+
+    $message = $method->invoke(null, $componentResult, $result);
+
+    // Array output should be JSON encoded
+    expect($message)->toContain('John')
+        ->and($message)->toContain('30')
+        ->and($message)->toContain('nested')
+        ->and($message)->toContain('value');
+});
+
+test('encodeOutput converts array to JSON string', function () {
+    $reflection = new ReflectionClass(TestLifecycle::class);
+    $method = $reflection->getMethod('encodeOutput');
+    $method->setAccessible(true);
+
+    $array = ['name' => 'John', 'age' => 30, 'nested' => ['key' => 'value']];
+    $result = $method->invoke(null, $array);
+
+    expect($result)->toBeString()
+        ->and($result)->toContain('John')
+        ->and($result)->toContain('30')
+        ->and($result)->toContain('nested')
+        ->and($result)->toContain('value');
+
+    // Verify it's valid JSON
+    $decoded = json_decode($result, true);
+    expect($decoded)->toBe($array);
+});
+
+test('encodeOutput returns string as-is', function () {
+    $reflection = new ReflectionClass(TestLifecycle::class);
+    $method = $reflection->getMethod('encodeOutput');
+    $method->setAccessible(true);
+
+    $string = 'This is a test output string';
+    $result = $method->invoke(null, $string);
+
+    expect($result)->toBeString()
+        ->and($result)->toBe($string);
+});
