@@ -24,7 +24,7 @@
         },
         "files": [
             "src/Autoload.php",
-            "src/Functions.php"
+            "src/Helpers/Functions.php"
         ]
     },
     "require-dev": {

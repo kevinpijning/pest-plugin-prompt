@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace KevinPijning\Prompt;
 
+use KevinPijning\Prompt\Internal\TestLifecycle;
 use KevinPijning\Prompt\Promptfoo\Promptfoo;
 use Pest\Contracts\Plugins\Bootable;
 use Pest\Contracts\Plugins\HandlesArguments;

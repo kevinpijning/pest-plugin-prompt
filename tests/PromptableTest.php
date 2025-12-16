@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use KevinPijning\Prompt\Api\Evaluation;
-use KevinPijning\Prompt\Api\Provider;
+use KevinPijning\Prompt\Evaluation;
+use KevinPijning\Prompt\Internal\TestContext;
 use KevinPijning\Prompt\Promptable;
-use KevinPijning\Prompt\TestContext;
+use KevinPijning\Prompt\Provider;
 
 beforeEach(function () {
     TestContext::clear();
@@ -39,9 +39,9 @@ test('Promptable trait provides provider method that delegates to global provide
     expect($provider)->toBeInstanceOf(Provider::class)
         ->and(TestContext::hasProvider('my-provider'))->toBeTrue()
         ->and(TestContext::getProvider('my-provider'))->toBe($provider)
-        ->and($provider->getId())->toBe('openai:gpt-4')
-        ->and($provider->getLabel())->toBe('Test Provider')
-        ->and($provider->getTemperature())->toBe(0.7);
+        ->and($provider->build()->id)->toBe('openai:gpt-4')
+        ->and($provider->build()->label)->toBe('Test Provider')
+        ->and($provider->build()->temperature)->toBe(0.7);
 });
 
 test('Promptable trait provider method works without config', function () {
@@ -67,7 +67,8 @@ test('Promptable trait methods can be chained in test context', function () {
     $evaluation = $testObject->prompt('test')
         ->usingProvider('chained-provider');
 
+    $built = $evaluation->build();
     expect($evaluation)->toBeInstanceOf(Evaluation::class)
-        ->and($evaluation->providers())->toHaveCount(1)
-        ->and($evaluation->providers()[0])->toBe($provider);
+        ->and($built->providers)->toHaveCount(1)
+        ->and($built->providers[0]->id)->toBe('openai:gpt-4');
 });

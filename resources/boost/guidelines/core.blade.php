@@ -23,7 +23,7 @@ test('greeting works', function () {
 
 @verbatim
 <code-snippet name="Provider registration" lang="php">
-use \KevinPijning\Prompt\Api\Provider;
+use \KevinPijning\Prompt\Provider;
 
 provider('openai-gpt4')
     ->id('openai:gpt-4')
@@ -101,7 +101,7 @@ Chain methods: `id()`, `label()`, `temperature()`, `maxTokens()`, `topP()`, `fre
 
 @verbatim
 <code-snippet name="Provider config" lang="php">
-use \KevinPijning\Prompt\Api\Provider;
+use \KevinPijning\Prompt\Provider;
 
 $provider = Provider::create('openai:gpt-4')
     ->temperature(0.7)

@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace KevinPijning\Prompt;
 
-use KevinPijning\Prompt\Api\Evaluation;
-use KevinPijning\Prompt\Api\Provider;
-
 /**
  * @internal
  */
