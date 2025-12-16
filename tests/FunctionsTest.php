@@ -28,10 +28,10 @@ test('provider function creates and registers a provider with config callable', 
     expect($provider)->toBeInstanceOf(Provider::class)
         ->and(TestContext::hasProvider('my-provider'))->toBeTrue()
         ->and(TestContext::getProvider('my-provider'))->toBe($provider)
-        ->and($provider->getId())->toBe('openai:gpt-4')
-        ->and($provider->getLabel())->toBe('Custom Provider')
-        ->and($provider->getTemperature())->toBe(0.7)
-        ->and($provider->getMaxTokens())->toBe(2000);
+        ->and($provider->build()->id)->toBe('openai:gpt-4')
+        ->and($provider->build()->label)->toBe('Custom Provider')
+        ->and($provider->build()->temperature)->toBe(0.7)
+        ->and($provider->build()->maxTokens)->toBe(2000);
 });
 
 test('provider function can register multiple providers with different names', function () {
@@ -53,7 +53,7 @@ test('provider function overwrites existing provider with same name', function (
 
     expect(TestContext::getProvider('my-provider'))->toBe($provider2)
         ->and(TestContext::getProvider('my-provider'))->not->toBe($provider1)
-        ->and($provider2->getId())->toBe('anthropic:claude-3');
+        ->and($provider2->build()->id)->toBe('anthropic:claude-3');
 });
 
 test('provider function returns the same instance that is stored in TestContext', function () {

@@ -19,7 +19,9 @@ class TestLifecycle
             $evaluations = TestContext::getCurrentEvaluations();
 
             foreach ($evaluations as $evaluation) {
-                if ($evaluation->testCases() === []) {
+                $built = $evaluation->build();
+
+                if ($built->testCases === []) {
                     continue;
                 }
 

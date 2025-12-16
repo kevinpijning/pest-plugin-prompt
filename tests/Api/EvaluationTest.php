@@ -46,9 +46,8 @@ test('usingProvider method adds a single provider and returns self', function ()
     $result = $evaluation->usingProvider($provider);
 
     expect($result)->toBe($evaluation)
-        ->and($result->providers())->toHaveCount(1)
-        ->and($result->providers()[0])->toBeInstanceOf(Provider::class)
-        ->getId()->toBe('openai:gpt-4');
+        ->and($result->build()->providers)->toHaveCount(1)
+        ->and($result->build()->providers[0]->id)->toBe('openai:gpt-4');
 });
 
 test('usingProvider method can add multiple providers', function () {
@@ -60,9 +59,8 @@ test('usingProvider method can add multiple providers', function () {
     $result = $evaluation->usingProvider($provider1, $provider2, $provider3);
 
     expect($result)->toBe($evaluation)
-        ->and($result->providers())->toHaveCount(3)
-        ->and($result->providers()[0])->toBeInstanceOf(Provider::class)
-        ->getId()->toBe('openai:gpt-4');
+        ->and($result->build()->providers)->toHaveCount(3)
+        ->and($result->build()->providers[0]->id)->toBe('openai:gpt-4');
 });
 
 test('usingProvider method can be called multiple times', function () {
@@ -72,9 +70,8 @@ test('usingProvider method can be called multiple times', function () {
     $result = $evaluation->usingProvider('anthropic:claude-3');
 
     expect($result)->toBe($evaluation)
-        ->and($result->providers())->toHaveCount(2)
-        ->and($result->providers()[0])->toBeInstanceOf(Provider::class)
-        ->getId()->toBe('openai:gpt-4');
+        ->and($result->build()->providers)->toHaveCount(2)
+        ->and($result->build()->providers[0]->id)->toBe('openai:gpt-4');
 });
 
 test('usingProvider method can be chained', function () {
@@ -86,7 +83,7 @@ test('usingProvider method can be chained', function () {
         ->usingProvider('google:gemini');
 
     expect($result)->toBe($evaluation)
-        ->and($result->providers())->toHaveCount(3);
+        ->and($result->build()->providers)->toHaveCount(3);
 });
 
 test('usingProvider method can accept a Provider class', function () {
@@ -94,9 +91,8 @@ test('usingProvider method can accept a Provider class', function () {
 
     $result = $evaluation->usingProvider(Provider::create('openai:gpt-4o-mini'));
 
-    expect($result->providers())->toHaveCount(1)
-        ->and($result->providers()[0])->toBeInstanceOf(Provider::class)
-        ->getId()->toBe('openai:gpt-4o-mini');
+    expect($result->build()->providers)->toHaveCount(1)
+        ->and($result->build()->providers[0]->id)->toBe('openai:gpt-4o-mini');
 });
 
 test('usingProvider method with empty array uses default providers', function () {
@@ -105,7 +101,7 @@ test('usingProvider method with empty array uses default providers', function ()
     $result = $evaluation->usingProvider();
 
     // Should use default providers from Promptfoo
-    expect($result->providers())->not->toBeEmpty();
+    expect($result->build()->providers)->not->toBeEmpty();
 });
 
 test('expect method creates and returns a TestCase', function () {
@@ -115,7 +111,7 @@ test('expect method creates and returns a TestCase', function () {
     $testCase = $evaluation->expect($variables);
 
     expect($testCase)->toBeInstanceOf(TestCase::class)
-        ->and($testCase->variables())->toBe($variables);
+        ->and($testCase->build()->variables)->toBe($variables);
 });
 
 test('expect method can be called with no parameters', function () {
@@ -124,7 +120,7 @@ test('expect method can be called with no parameters', function () {
     $testCase = $evaluation->expect();
 
     expect($testCase)->toBeInstanceOf(TestCase::class)
-        ->and($testCase->variables())->toBe([]);
+        ->and($testCase->build()->variables)->toBe([]);
 });
 
 test('expect method can be called with empty variables array', function () {
@@ -133,7 +129,7 @@ test('expect method can be called with empty variables array', function () {
     $testCase = $evaluation->expect([]);
 
     expect($testCase)->toBeInstanceOf(TestCase::class)
-        ->and($testCase->variables())->toBe([]);
+        ->and($testCase->build()->variables)->toBe([]);
 });
 
 test('expect method can create multiple test cases', function () {
@@ -151,9 +147,9 @@ test('expect method can create multiple test cases', function () {
         ->and($testCase3)->toBeInstanceOf(TestCase::class)
         ->and($testCase1)->not->toBe($testCase2)
         ->and($testCase2)->not->toBe($testCase3)
-        ->and($testCase1->variables())->toBe($variables1)
-        ->and($testCase2->variables())->toBe($variables2)
-        ->and($testCase3->variables())->toBe($variables3);
+        ->and($testCase1->build()->variables)->toBe($variables1)
+        ->and($testCase2->build()->variables)->toBe($variables2)
+        ->and($testCase3->build()->variables)->toBe($variables3);
 });
 
 test('methods can be chained together', function () {
@@ -178,11 +174,10 @@ test('usingProvider method can accept a callable that configures a provider', fu
     });
 
     expect($result)->toBe($evaluation)
-        ->and($result->providers())->toHaveCount(1)
-        ->and($result->providers()[0])->toBeInstanceOf(Provider::class)
-        ->and($result->providers()[0]->getId())->toBe('openai:gpt-4')
-        ->and($result->providers()[0]->getLabel())->toBe('Custom Label')
-        ->and($result->providers()[0]->getTemperature())->toBe(0.7);
+        ->and($result->build()->providers)->toHaveCount(1)
+        ->and($result->build()->providers[0]->id)->toBe('openai:gpt-4')
+        ->and($result->build()->providers[0]->label)->toBe('Custom Label')
+        ->and($result->build()->providers[0]->temperature)->toBe(0.7);
 });
 
 test('usingProvider method can accept multiple callables', function () {
@@ -194,9 +189,9 @@ test('usingProvider method can accept multiple callables', function () {
     );
 
     expect($result)->toBe($evaluation)
-        ->and($result->providers())->toHaveCount(2)
-        ->and($result->providers()[0]->getId())->toBe('openai:gpt-4')
-        ->and($result->providers()[1]->getId())->toBe('anthropic:claude-3');
+        ->and($result->build()->providers)->toHaveCount(2)
+        ->and($result->build()->providers[0]->id)->toBe('openai:gpt-4')
+        ->and($result->build()->providers[1]->id)->toBe('anthropic:claude-3');
 });
 
 test('usingProvider method can use global provider from TestContext', function () {
@@ -211,11 +206,10 @@ test('usingProvider method can use global provider from TestContext', function (
     $result = $evaluation->usingProvider('my-global-provider');
 
     expect($result)->toBe($evaluation)
-        ->and($result->providers())->toHaveCount(1)
-        ->and($result->providers()[0])->toBe($globalProvider)
-        ->and($result->providers()[0]->getId())->toBe('openai:gpt-4')
-        ->and($result->providers()[0]->getLabel())->toBe('Global Provider')
-        ->and($result->providers()[0]->getTemperature())->toBe(0.8);
+        ->and($result->build()->providers)->toHaveCount(1)
+        ->and($result->build()->providers[0]->id)->toBe('openai:gpt-4')
+        ->and($result->build()->providers[0]->label)->toBe('Global Provider')
+        ->and($result->build()->providers[0]->temperature)->toBe(0.8);
 });
 
 test('usingProvider method can mix global providers, callables, and direct providers', function () {
@@ -234,10 +228,10 @@ test('usingProvider method can mix global providers, callables, and direct provi
     );
 
     expect($result)->toBe($evaluation)
-        ->and($result->providers())->toHaveCount(3)
-        ->and($result->providers()[0])->toBe($globalProvider)
-        ->and($result->providers()[1]->getId())->toBe('google:gemini')
-        ->and($result->providers()[2])->toBe($directProvider);
+        ->and($result->build()->providers)->toHaveCount(3)
+        ->and($result->build()->providers[0]->id)->toBe('openai:gpt-4')
+        ->and($result->build()->providers[1]->id)->toBe('google:gemini')
+        ->and($result->build()->providers[2]->id)->toBe('anthropic:claude-3');
 });
 
 test('usingProvider method treats string as provider ID when not found in TestContext', function () {
@@ -247,9 +241,8 @@ test('usingProvider method treats string as provider ID when not found in TestCo
     $result = $evaluation->usingProvider('openai:gpt-4o-mini');
 
     expect($result)->toBe($evaluation)
-        ->and($result->providers())->toHaveCount(1)
-        ->and($result->providers()[0])->toBeInstanceOf(Provider::class)
-        ->and($result->providers()[0]->getId())->toBe('openai:gpt-4o-mini');
+        ->and($result->build()->providers)->toHaveCount(1)
+        ->and($result->build()->providers[0]->id)->toBe('openai:gpt-4o-mini');
 });
 
 test('alwaysExpect method creates and returns a TestCase', function () {
@@ -259,7 +252,7 @@ test('alwaysExpect method creates and returns a TestCase', function () {
     $testCase = $evaluation->alwaysExpect($variables);
 
     expect($testCase)->toBeInstanceOf(TestCase::class)
-        ->and($testCase->variables())->toBe($variables);
+        ->and($testCase->build()->variables)->toBe($variables);
 });
 
 test('alwaysExpect method can be called with no parameters', function () {
@@ -268,7 +261,7 @@ test('alwaysExpect method can be called with no parameters', function () {
     $testCase = $evaluation->alwaysExpect();
 
     expect($testCase)->toBeInstanceOf(TestCase::class)
-        ->and($testCase->variables())->toBe([]);
+        ->and($testCase->build()->variables)->toBe([]);
 });
 
 test('alwaysExpect method can be called with empty variables array', function () {
@@ -277,7 +270,7 @@ test('alwaysExpect method can be called with empty variables array', function ()
     $testCase = $evaluation->alwaysExpect([]);
 
     expect($testCase)->toBeInstanceOf(TestCase::class)
-        ->and($testCase->variables())->toBe([]);
+        ->and($testCase->build()->variables)->toBe([]);
 });
 
 test('alwaysExpect method returns the same TestCase instance on subsequent calls', function () {
@@ -288,7 +281,7 @@ test('alwaysExpect method returns the same TestCase instance on subsequent calls
     $testCase2 = $evaluation->alwaysExpect(['key2' => 'value2']);
 
     expect($testCase1)->toBe($testCase2)
-        ->and($testCase1->variables())->toBe($variables);
+        ->and($testCase1->build()->variables)->toBe($variables);
 });
 
 test('alwaysExpect method can be chained with assertion methods', function () {
@@ -299,7 +292,7 @@ test('alwaysExpect method can be chained with assertion methods', function () {
         ->toBeJudged('the source and output language are always mentioned');
 
     expect($result)->toBeInstanceOf(TestCase::class)
-        ->and($result->assertions())->toHaveCount(2);
+        ->and($result->build()->assertions)->toHaveCount(2);
 });
 
 test('default test case is NOT added to testCases array', function () {
@@ -308,20 +301,22 @@ test('default test case is NOT added to testCases array', function () {
     $defaultTestCase = $evaluation->alwaysExpect(['default' => 'value']);
     $regularTestCase = $evaluation->expect(['key' => 'value']);
 
-    expect($evaluation->testCases())->toHaveCount(1)
-        ->and($evaluation->testCases()[0])->toBe($regularTestCase)
-        ->and($evaluation->testCases()[0])->not->toBe($defaultTestCase)
-        ->and($evaluation->defaultTestCase())->toBe($defaultTestCase);
+    $built = $evaluation->build();
+    expect($built->testCases)->toHaveCount(1)
+        ->and($built->testCases[0]->variables)->toBe(['key' => 'value'])
+        ->and($built->defaultTestCase)->not->toBeNull()
+        ->and($built->defaultTestCase->variables)->toBe(['default' => 'value']);
 });
 
 test('defaultTestCase getter returns the stored test case', function () {
     $evaluation = new Evaluation(['prompt1']);
 
-    expect($evaluation->defaultTestCase())->toBeNull();
+    expect($evaluation->build()->defaultTestCase)->toBeNull();
 
     $defaultTestCase = $evaluation->alwaysExpect(['key' => 'value']);
 
-    expect($evaluation->defaultTestCase())->toBe($defaultTestCase);
+    expect($evaluation->build()->defaultTestCase)->not->toBeNull()
+        ->and($evaluation->build()->defaultTestCase->variables)->toBe(['key' => 'value']);
 });
 
 test('expect method can accept a callback that receives the test case', function () {
@@ -337,7 +332,7 @@ test('expect method can accept a callback that receives the test case', function
 
     expect($callbackExecuted)->toBeTrue()
         ->and($receivedTestCase)->toBe($testCase)
-        ->and($testCase->variables())->toBe($variables);
+        ->and($testCase->build()->variables)->toBe($variables);
 });
 
 test('expect method callback can be used to add assertions', function () {
@@ -349,7 +344,7 @@ test('expect method callback can be used to add assertions', function () {
             ->toContain('value');
     });
 
-    expect($testCase->assertions())->toHaveCount(2);
+    expect($testCase->build()->assertions)->toHaveCount(2);
 });
 
 test('expect method works without callback', function () {
@@ -359,7 +354,7 @@ test('expect method works without callback', function () {
     $testCase = $evaluation->expect($variables);
 
     expect($testCase)->toBeInstanceOf(TestCase::class)
-        ->and($testCase->variables())->toBe($variables);
+        ->and($testCase->build()->variables)->toBe($variables);
 });
 
 test('expect method callback can be null', function () {
@@ -369,7 +364,7 @@ test('expect method callback can be null', function () {
     $testCase = $evaluation->expect($variables, null);
 
     expect($testCase)->toBeInstanceOf(TestCase::class)
-        ->and($testCase->variables())->toBe($variables);
+        ->and($testCase->build()->variables)->toBe($variables);
 });
 
 test('alwaysExpect method can accept a callback that receives the test case', function () {
@@ -385,7 +380,7 @@ test('alwaysExpect method can accept a callback that receives the test case', fu
 
     expect($callbackExecuted)->toBeTrue()
         ->and($receivedTestCase)->toBe($testCase)
-        ->and($testCase->variables())->toBe($variables);
+        ->and($testCase->build()->variables)->toBe($variables);
 });
 
 test('alwaysExpect method callback can be used to add assertions', function () {
@@ -397,7 +392,7 @@ test('alwaysExpect method callback can be used to add assertions', function () {
             ->toBeJudged('should be professional');
     });
 
-    expect($testCase->assertions())->toHaveCount(2);
+    expect($testCase->build()->assertions)->toHaveCount(2);
 });
 
 test('alwaysExpect method callback is called on subsequent calls with existing test case', function () {
@@ -417,7 +412,7 @@ test('alwaysExpect method callback is called on subsequent calls with existing t
 
     expect($testCase1)->toBe($testCase2)
         ->and($callbackCount)->toBe(2)
-        ->and($testCase1->assertions())->toHaveCount(2);
+        ->and($testCase1->build()->assertions)->toHaveCount(2);
 });
 
 test('alwaysExpect method works without callback', function () {
@@ -427,7 +422,7 @@ test('alwaysExpect method works without callback', function () {
     $testCase = $evaluation->alwaysExpect($variables);
 
     expect($testCase)->toBeInstanceOf(TestCase::class)
-        ->and($testCase->variables())->toBe($variables);
+        ->and($testCase->build()->variables)->toBe($variables);
 });
 
 test('alwaysExpect method callback can be null', function () {
@@ -437,5 +432,5 @@ test('alwaysExpect method callback can be null', function () {
     $testCase = $evaluation->alwaysExpect($variables, null);
 
     expect($testCase)->toBeInstanceOf(TestCase::class)
-        ->and($testCase->variables())->toBe($variables);
+        ->and($testCase->build()->variables)->toBe($variables);
 });

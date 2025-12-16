@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace KevinPijning\Prompt\Api;
 
 use KevinPijning\Prompt\Api\Concerns\CanBeClassified;
+use KevinPijning\Prompt\Internal\BuiltTestCase;
 use KevinPijning\Prompt\Api\Concerns\CanBeJudged;
 use KevinPijning\Prompt\Api\Concerns\CanBeRefused;
 use KevinPijning\Prompt\Api\Concerns\CanBeScored;
@@ -40,22 +41,6 @@ class TestCase
         private readonly array $variables,
         private readonly Evaluation $evaluation,
     ) {}
-
-    /**
-     * @return Assertion[]
-     */
-    public function assertions(): array
-    {
-        return $this->assertions;
-    }
-
-    /**
-     * @return array<string,mixed>
-     */
-    public function variables(): array
-    {
-        return $this->variables;
-    }
 
     public function assert(Assertion $assertion): self
     {
@@ -107,5 +92,13 @@ class TestCase
     public function and(array $variables, ?callable $callback = null): self
     {
         return $this->expect($variables, $callback);
+    }
+
+    public function build(): BuiltTestCase
+    {
+        return new BuiltTestCase(
+            variables: $this->variables,
+            assertions: $this->assertions,
+        );
     }
 }

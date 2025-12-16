@@ -13,9 +13,9 @@ test('toHaveValidFunctionCall creates an is-valid-function-call assertion', func
     $result = $testCase->toHaveValidFunctionCall();
 
     expect($result)->toBe($testCase)
-        ->and($testCase->assertions())->toHaveCount(1);
+        ->and($testCase->build()->assertions)->toHaveCount(1);
 
-    $assertion = $testCase->assertions()[0];
+    $assertion = $testCase->build()->assertions[0];
     expect($assertion)->toBeInstanceOf(Assertion::class)
         ->and($assertion->type)->toBe('is-valid-function-call');
 });
@@ -27,7 +27,7 @@ test('toHaveValidFunctionCall accepts schema parameter', function () {
 
     $testCase->toHaveValidFunctionCall($schema);
 
-    $assertion = $testCase->assertions()[0];
+    $assertion = $testCase->build()->assertions[0];
     expect($assertion->options)->toHaveKey('schema')
         ->and($assertion->options['schema'])->toBe($schema);
 });
@@ -39,9 +39,9 @@ test('toHaveValidOpenaiFunctionCall creates an is-valid-openai-function-call ass
     $result = $testCase->toHaveValidOpenaiFunctionCall();
 
     expect($result)->toBe($testCase)
-        ->and($testCase->assertions())->toHaveCount(1);
+        ->and($testCase->build()->assertions)->toHaveCount(1);
 
-    $assertion = $testCase->assertions()[0];
+    $assertion = $testCase->build()->assertions[0];
     expect($assertion->type)->toBe('is-valid-openai-function-call');
 });
 
@@ -52,9 +52,9 @@ test('toHaveValidOpenaiToolsCall creates an is-valid-openai-tools-call assertion
     $result = $testCase->toHaveValidOpenaiToolsCall();
 
     expect($result)->toBe($testCase)
-        ->and($testCase->assertions())->toHaveCount(1);
+        ->and($testCase->build()->assertions)->toHaveCount(1);
 
-    $assertion = $testCase->assertions()[0];
+    $assertion = $testCase->build()->assertions[0];
     expect($assertion->type)->toBe('is-valid-openai-tools-call');
 });
 
@@ -66,9 +66,9 @@ test('toHaveToolCallF1 creates a tool-call-f1 assertion', function () {
     $result = $testCase->toHaveToolCallF1($expected, threshold: 0.8);
 
     expect($result)->toBe($testCase)
-        ->and($testCase->assertions())->toHaveCount(1);
+        ->and($testCase->build()->assertions)->toHaveCount(1);
 
-    $assertion = $testCase->assertions()[0];
+    $assertion = $testCase->build()->assertions[0];
     expect($assertion->type)->toBe('tool-call-f1')
         ->and($assertion->value)->toBe($expected)
         ->and($assertion->threshold)->toBe(0.8);

@@ -155,9 +155,9 @@ test('getProvider returns the correct provider', function () {
     $retrieved = TestContext::getProvider('custom');
 
     expect($retrieved)->toBe($provider)
-        ->and($retrieved->getId())->toBe('openai:gpt-4')
-        ->and($retrieved->getLabel())->toBe('My Custom Provider')
-        ->and($retrieved->getTemperature())->toBe(0.7);
+        ->and($retrieved->build()->id)->toBe('openai:gpt-4')
+        ->and($retrieved->build()->label)->toBe('My Custom Provider')
+        ->and($retrieved->build()->temperature)->toBe(0.7);
 });
 
 test('addProvider overwrites existing provider with same name', function () {

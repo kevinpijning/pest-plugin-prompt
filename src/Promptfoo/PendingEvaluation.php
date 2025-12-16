@@ -22,10 +22,11 @@ final readonly class PendingEvaluation
     public static function create(Evaluation $evaluation): self
     {
         $userOutputPath = null;
+        $built = $evaluation->build();
 
         if (Promptfoo::shouldOutput()) {
             /** @phpstan-ignore-next-line */
-            $testName = $evaluation->description() ?: test()->name();
+            $testName = $built->description ?: test()->name();
 
             $userOutputPath = Path::withFileName($testName)
                 ->inFolder(Promptfoo::outputFolder())

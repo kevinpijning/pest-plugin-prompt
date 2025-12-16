@@ -19,7 +19,7 @@ test('it returns the variables', function () {
     $variables = ['key1' => 'value1', 'key2' => 'value2'];
     $testCase = new TestCase($variables, $evaluation);
 
-    expect($testCase->variables())->toBe($variables);
+    expect($testCase->build()->variables)->toBe($variables);
 });
 
 test('it returns an empty array of assertions initially', function () {
@@ -27,7 +27,7 @@ test('it returns an empty array of assertions initially', function () {
     $variables = ['key1' => 'value1', 'key2' => 'value2'];
     $testCase = new TestCase($variables, $evaluation);
 
-    expect($testCase->assertions())->toBe([]);
+    expect($testCase->build()->assertions)->toBe([]);
 });
 
 test('it can add an assertion', function () {
@@ -39,8 +39,8 @@ test('it can add an assertion', function () {
     $result = $testCase->assert($assertion);
 
     expect($result)->toBe($testCase)
-        ->and($testCase->assertions())->toHaveCount(1)
-        ->and($testCase->assertions()[0])->toBe($assertion);
+        ->and($testCase->build()->assertions)->toHaveCount(1)
+        ->and($testCase->build()->assertions[0])->toBe($assertion);
 });
 
 test('it can add multiple assertions', function () {
@@ -53,9 +53,9 @@ test('it can add multiple assertions', function () {
     $testCase->assert($assertion1);
     $testCase->assert($assertion2);
 
-    expect($testCase->assertions())->toHaveCount(2)
-        ->and($testCase->assertions()[0])->toBe($assertion1)
-        ->and($testCase->assertions()[1])->toBe($assertion2);
+    expect($testCase->build()->assertions)->toHaveCount(2)
+        ->and($testCase->build()->assertions[0])->toBe($assertion1)
+        ->and($testCase->build()->assertions[1])->toBe($assertion2);
 });
 
 test('and method returns a new TestCase from evaluation', function () {
@@ -68,7 +68,7 @@ test('and method returns a new TestCase from evaluation', function () {
 
     expect($result)->toBeInstanceOf(TestCase::class)
         ->and($result)->not->toBe($testCase)
-        ->and($result->variables())->toBe($newVariables);
+        ->and($result->build()->variables)->toBe($newVariables);
 });
 
 test('and method can be chained with assertions', function () {
@@ -84,8 +84,8 @@ test('and method can be chained with assertions', function () {
 
     expect($result)->toBeInstanceOf(TestCase::class)
         ->and($result)->not->toBe($testCase)
-        ->and($testCase->assertions())->toHaveCount(1)
-        ->and($result->assertions())->toHaveCount(1);
+        ->and($testCase->build()->assertions)->toHaveCount(1)
+        ->and($result->build()->assertions)->toHaveCount(1);
 });
 
 test('expect method returns a new TestCase from evaluation', function () {
@@ -98,7 +98,7 @@ test('expect method returns a new TestCase from evaluation', function () {
 
     expect($result)->toBeInstanceOf(TestCase::class)
         ->and($result)->not->toBe($testCase)
-        ->and($result->variables())->toBe($newVariables);
+        ->and($result->build()->variables)->toBe($newVariables);
 });
 
 test('expect method can be chained with assertions', function () {
@@ -114,8 +114,8 @@ test('expect method can be chained with assertions', function () {
 
     expect($result)->toBeInstanceOf(TestCase::class)
         ->and($result)->not->toBe($testCase)
-        ->and($testCase->assertions())->toHaveCount(1)
-        ->and($result->assertions())->toHaveCount(1);
+        ->and($testCase->build()->assertions)->toHaveCount(1)
+        ->and($result->build()->assertions)->toHaveCount(1);
 });
 
 test('expect method can be called with empty variables array', function () {
@@ -127,7 +127,7 @@ test('expect method can be called with empty variables array', function () {
 
     expect($result)->toBeInstanceOf(TestCase::class)
         ->and($result)->not->toBe($testCase)
-        ->and($result->variables())->toBe([]);
+        ->and($result->build()->variables)->toBe([]);
 });
 
 test('expect and and methods are functionally equivalent', function () {
@@ -141,10 +141,10 @@ test('expect and and methods are functionally equivalent', function () {
 
     expect($result1)->toBeInstanceOf(TestCase::class)
         ->and($result2)->toBeInstanceOf(TestCase::class)
-        ->and($result1->variables())->toBe($newVariables)
-        ->and($result2->variables())->toBe($newVariables)
+        ->and($result1->build()->variables)->toBe($newVariables)
+        ->and($result2->build()->variables)->toBe($newVariables)
         ->and($result1)->not->toBe($result2) // They create different instances
-        ->and($evaluation->testCases())->toHaveCount(2); // Both are added to evaluation
+        ->and($evaluation->build()->testCases)->toHaveCount(2); // Both are added to evaluation
 });
 
 test('expect method can accept a callback that receives the new test case', function () {
@@ -162,7 +162,7 @@ test('expect method can accept a callback that receives the new test case', func
 
     expect($callbackExecuted)->toBeTrue()
         ->and($receivedTestCase)->toBe($result)
-        ->and($result->variables())->toBe($newVariables)
+        ->and($result->build()->variables)->toBe($newVariables)
         ->and($result)->not->toBe($testCase);
 });
 
@@ -177,8 +177,8 @@ test('expect method callback can be used to add assertions', function () {
             ->toContain('value');
     });
 
-    expect($result->assertions())->toHaveCount(2)
-        ->and($testCase->assertions())->toHaveCount(2);
+    expect($result->build()->assertions)->toHaveCount(2)
+        ->and($testCase->build()->assertions)->toHaveCount(2);
 });
 
 test('expect method works without callback', function () {
@@ -190,7 +190,7 @@ test('expect method works without callback', function () {
     $result = $testCase->expect($newVariables);
 
     expect($result)->toBeInstanceOf(TestCase::class)
-        ->and($result->variables())->toBe($newVariables);
+        ->and($result->build()->variables)->toBe($newVariables);
 });
 
 test('expect method callback can be null', function () {
@@ -202,7 +202,7 @@ test('expect method callback can be null', function () {
     $result = $testCase->expect($newVariables, null);
 
     expect($result)->toBeInstanceOf(TestCase::class)
-        ->and($result->variables())->toBe($newVariables);
+        ->and($result->build()->variables)->toBe($newVariables);
 });
 
 test('and method can accept a callback that receives the new test case', function () {
@@ -220,7 +220,7 @@ test('and method can accept a callback that receives the new test case', functio
 
     expect($callbackExecuted)->toBeTrue()
         ->and($receivedTestCase)->toBe($result)
-        ->and($result->variables())->toBe($newVariables)
+        ->and($result->build()->variables)->toBe($newVariables)
         ->and($result)->not->toBe($testCase);
 });
 
@@ -235,8 +235,8 @@ test('and method callback can be used to add assertions', function () {
             ->toContain('value');
     });
 
-    expect($result->assertions())->toHaveCount(2)
-        ->and($testCase->assertions())->toHaveCount(2);
+    expect($result->build()->assertions)->toHaveCount(2)
+        ->and($testCase->build()->assertions)->toHaveCount(2);
 });
 
 test('and method works without callback', function () {
@@ -248,7 +248,7 @@ test('and method works without callback', function () {
     $result = $testCase->and($newVariables);
 
     expect($result)->toBeInstanceOf(TestCase::class)
-        ->and($result->variables())->toBe($newVariables);
+        ->and($result->build()->variables)->toBe($newVariables);
 });
 
 test('and method callback can be null', function () {
@@ -260,5 +260,5 @@ test('and method callback can be null', function () {
     $result = $testCase->and($newVariables, null);
 
     expect($result)->toBeInstanceOf(TestCase::class)
-        ->and($result->variables())->toBe($newVariables);
+        ->and($result->build()->variables)->toBe($newVariables);
 });

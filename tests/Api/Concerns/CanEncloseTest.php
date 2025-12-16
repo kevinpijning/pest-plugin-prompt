@@ -34,9 +34,9 @@ test('to method can be used to add assertions', function () {
     });
 
     expect($result)->toBe($testCase)
-        ->and($testCase->assertions())->toHaveCount(2)
-        ->and($testCase->assertions()[0])->toBeInstanceOf(Assertion::class)
-        ->and($testCase->assertions()[1])->toBeInstanceOf(Assertion::class);
+        ->and($testCase->build()->assertions)->toHaveCount(2)
+        ->and($testCase->build()->assertions[0])->toBeInstanceOf(Assertion::class)
+        ->and($testCase->build()->assertions[1])->toBeInstanceOf(Assertion::class);
 });
 
 test('to method can be chained', function () {
@@ -49,7 +49,7 @@ test('to method can be chained', function () {
         ->to(fn (TestCase $tc) => $tc->toContain('second'));
 
     expect($result)->toBe($testCase)
-        ->and($testCase->assertions())->toHaveCount(2);
+        ->and($testCase->build()->assertions)->toHaveCount(2);
 });
 
 test('group method is an alias for to method', function () {
@@ -65,7 +65,7 @@ test('group method is an alias for to method', function () {
 
     expect($callbackExecuted)->toBeTrue()
         ->and($result)->toBe($testCase)
-        ->and($testCase->assertions())->toHaveCount(1);
+        ->and($testCase->build()->assertions)->toHaveCount(1);
 });
 
 test('group method can be chained', function () {
@@ -78,7 +78,7 @@ test('group method can be chained', function () {
         ->group(fn (TestCase $tc) => $tc->toContain('second'));
 
     expect($result)->toBe($testCase)
-        ->and($testCase->assertions())->toHaveCount(2);
+        ->and($testCase->build()->assertions)->toHaveCount(2);
 });
 
 test('to and group methods can be mixed', function () {
@@ -92,5 +92,5 @@ test('to and group methods can be mixed', function () {
         ->to(fn (TestCase $tc) => $tc->toContain('third'));
 
     expect($result)->toBe($testCase)
-        ->and($testCase->assertions())->toHaveCount(3);
+        ->and($testCase->build()->assertions)->toHaveCount(3);
 });

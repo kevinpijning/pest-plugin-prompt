@@ -13,9 +13,9 @@ test('toHaveCost creates a cost assertion', function () {
     $result = $testCase->toHaveCost(0.01);
 
     expect($result)->toBe($testCase)
-        ->and($testCase->assertions())->toHaveCount(1);
+        ->and($testCase->build()->assertions)->toHaveCount(1);
 
-    $assertion = $testCase->assertions()[0];
+    $assertion = $testCase->build()->assertions[0];
     expect($assertion)->toBeInstanceOf(Assertion::class)
         ->and($assertion->type)->toBe('cost')
         ->and($assertion->value)->toBe(0.01)
@@ -28,7 +28,7 @@ test('toHaveCost can be called without maxCost', function () {
 
     $testCase->toHaveCost();
 
-    $assertion = $testCase->assertions()[0];
+    $assertion = $testCase->build()->assertions[0];
     expect($assertion->type)->toBe('cost')
         ->and($assertion->value)->toBeNull()
         ->and($assertion->threshold)->toBeNull();
@@ -41,9 +41,9 @@ test('toHaveLatency creates a latency assertion', function () {
     $result = $testCase->toHaveLatency(1000);
 
     expect($result)->toBe($testCase)
-        ->and($testCase->assertions())->toHaveCount(1);
+        ->and($testCase->build()->assertions)->toHaveCount(1);
 
-    $assertion = $testCase->assertions()[0];
+    $assertion = $testCase->build()->assertions[0];
     expect($assertion)->toBeInstanceOf(Assertion::class)
         ->and($assertion->type)->toBe('latency')
         ->and($assertion->value)->toBe(1000)
@@ -56,7 +56,7 @@ test('toHaveLatency can be called without maxMilliseconds', function () {
 
     $testCase->toHaveLatency();
 
-    $assertion = $testCase->assertions()[0];
+    $assertion = $testCase->build()->assertions[0];
     expect($assertion->type)->toBe('latency')
         ->and($assertion->value)->toBeNull()
         ->and($assertion->threshold)->toBeNull();
@@ -71,5 +71,5 @@ test('can chain performance methods', function () {
         ->toHaveLatency(1000);
 
     expect($result)->toBe($testCase)
-        ->and($testCase->assertions())->toHaveCount(2);
+        ->and($testCase->build()->assertions)->toHaveCount(2);
 });

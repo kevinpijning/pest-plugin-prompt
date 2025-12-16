@@ -14,9 +14,9 @@ test('toPassJavascript creates a javascript assertion', function () {
     $result = $testCase->toPassJavascript($code);
 
     expect($result)->toBe($testCase)
-        ->and($testCase->assertions())->toHaveCount(1);
+        ->and($testCase->build()->assertions)->toHaveCount(1);
 
-    $assertion = $testCase->assertions()[0];
+    $assertion = $testCase->build()->assertions[0];
     expect($assertion)->toBeInstanceOf(Assertion::class)
         ->and($assertion->type)->toBe('javascript')
         ->and($assertion->value)->toBe($code)
@@ -32,9 +32,9 @@ test('toPassPython creates a python assertion', function () {
     $result = $testCase->toPassPython($code);
 
     expect($result)->toBe($testCase)
-        ->and($testCase->assertions())->toHaveCount(1);
+        ->and($testCase->build()->assertions)->toHaveCount(1);
 
-    $assertion = $testCase->assertions()[0];
+    $assertion = $testCase->build()->assertions[0];
     expect($assertion)->toBeInstanceOf(Assertion::class)
         ->and($assertion->type)->toBe('python')
         ->and($assertion->value)->toBe($code)
@@ -50,9 +50,9 @@ test('toPassWebhook creates a webhook assertion', function () {
     $result = $testCase->toPassWebhook($url);
 
     expect($result)->toBe($testCase)
-        ->and($testCase->assertions())->toHaveCount(1);
+        ->and($testCase->build()->assertions)->toHaveCount(1);
 
-    $assertion = $testCase->assertions()[0];
+    $assertion = $testCase->build()->assertions[0];
     expect($assertion)->toBeInstanceOf(Assertion::class)
         ->and($assertion->type)->toBe('webhook')
         ->and($assertion->value)->toBe($url)
@@ -67,7 +67,7 @@ test('custom validation methods accept options parameter', function () {
 
     $testCase->toPassJavascript('code', $options);
 
-    $assertion = $testCase->assertions()[0];
+    $assertion = $testCase->build()->assertions[0];
     expect($assertion->options)->toHaveKey('custom')
         ->and($assertion->options)->toHaveKey('code');
 });

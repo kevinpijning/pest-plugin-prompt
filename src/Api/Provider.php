@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace KevinPijning\Prompt\Api;
 
+use KevinPijning\Prompt\Internal\BuiltProvider;
+
 class Provider
 {
     private ?string $id = null;
@@ -120,54 +122,18 @@ class Provider
         return $this;
     }
 
-    public function getId(): ?string
+    public function build(): BuiltProvider
     {
-        return $this->id;
-    }
-
-    public function getLabel(): ?string
-    {
-        return $this->label;
-    }
-
-    public function getTemperature(): ?float
-    {
-        return $this->temperature;
-    }
-
-    public function getMaxTokens(): ?int
-    {
-        return $this->maxTokens;
-    }
-
-    public function getTopP(): ?float
-    {
-        return $this->topP;
-    }
-
-    public function getFrequencyPenalty(): ?float
-    {
-        return $this->frequencyPenalty;
-    }
-
-    public function getPresencePenalty(): ?float
-    {
-        return $this->presencePenalty;
-    }
-
-    /**
-     * @return string[]|null
-     */
-    public function getStop(): ?array
-    {
-        return $this->stop;
-    }
-
-    /**
-     * @return array<string,mixed>
-     */
-    public function getConfig(): array
-    {
-        return $this->config;
+        return new BuiltProvider(
+            id: $this->id,
+            label: $this->label,
+            temperature: $this->temperature,
+            maxTokens: $this->maxTokens,
+            topP: $this->topP,
+            frequencyPenalty: $this->frequencyPenalty,
+            presencePenalty: $this->presencePenalty,
+            stop: $this->stop,
+            config: $this->config,
+        );
     }
 }

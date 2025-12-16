@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace KevinPijning\Prompt\Api;
 
+use KevinPijning\Prompt\Internal\BuiltEvaluation;
+use KevinPijning\Prompt\Internal\BuiltProvider;
+use KevinPijning\Prompt\Internal\BuiltTestCase;
 use KevinPijning\Prompt\Promptfoo\Promptfoo;
 use KevinPijning\Prompt\TestContext;
 
@@ -106,37 +109,26 @@ class Evaluation
         return $this->defaultTestCase;
     }
 
-    public function defaultTestCase(): ?TestCase
+    public function build(): BuiltEvaluation
     {
-        return $this->defaultTestCase;
-    }
+        $builtProviders = array_map(
+            fn (Provider $provider): BuiltProvider => $provider->build(),
+            $this->providers
+        );
 
-    public function description(): ?string
-    {
-        return $this->description;
-    }
+        $builtTestCases = array_map(
+            fn (TestCase $testCase): BuiltTestCase => $testCase->build(),
+            $this->testCases
+        );
 
-    /**
-     * @return string[]
-     */
-    public function prompts(): array
-    {
-        return $this->prompts;
-    }
+        $builtDefaultTestCase = $this->defaultTestCase?->build();
 
-    /**
-     * @return Provider[]
-     */
-    public function providers(): array
-    {
-        return $this->providers;
-    }
-
-    /**
-     * @return TestCase[]
-     */
-    public function testCases(): array
-    {
-        return $this->testCases;
+        return new BuiltEvaluation(
+            description: $this->description,
+            prompts: $this->prompts,
+            providers: $builtProviders,
+            testCases: $builtTestCases,
+            defaultTestCase: $builtDefaultTestCase,
+        );
     }
 }

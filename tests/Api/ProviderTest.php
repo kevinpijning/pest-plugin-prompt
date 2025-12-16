@@ -12,8 +12,8 @@ test('a complete provider object', function () {
         ->stop(['\n', 'Human:', 'AI:']);
 
     expect($provider)->toBeInstanceOf(Provider::class)
-        ->getLabel()->toBe('Custom label')
-        ->getMaxTokens()->toBe(1234)
+        ->build()->label->toBe('Custom label')
+        ->build()->maxTokens->toBe(1234)
         ->getTopP()->toBe(.1)
         ->getFrequencyPenalty()->toBe(.2)
         ->getPresencePenalty()->toBe(.3)
@@ -24,14 +24,14 @@ test('the provider accepts a provider id', function () {
     $provider = Provider::create('openai:gpt-4o-mini');
 
     expect($provider)->toBeInstanceOf(Provider::class)
-        ->and($provider->getId())->toBe('openai:gpt-4o-mini');
+        ->and($provider->build()->id)->toBe('openai:gpt-4o-mini');
 });
 
 test('a label can be set', function () {
     $provider = Provider::create('openai:gpt-4o-mini')
         ->label('custom label');
 
-    expect($provider->getLabel()
+    expect($provider->build()->label
     )->toBe('custom label');
 });
 
@@ -39,13 +39,13 @@ test('the temperature can be ser', function () {
     $provider = Provider::create('openai:gpt-4o-mini')
         ->temperature(.3);
 
-    expect($provider->getTemperature())->toBe(.3);
+    expect($provider->build()->temperature)->toBe(.3);
 });
 
 test('the max token can be set', function () {
     $provider = Provider::create('openai:gpt-4o-mini')
         ->maxTokens(3);
-    expect($provider->getMaxTokens())->toBe(3);
+    expect($provider->build()->maxTokens)->toBe(3);
 });
 
 test('the top p can be set', function () {
@@ -83,7 +83,7 @@ test('id method sets the provider id and returns self', function () {
     $result = $provider->id('openai:gpt-4');
 
     expect($result)->toBe($provider)
-        ->and($provider->getId())->toBe('openai:gpt-4');
+        ->and($provider->build()->id)->toBe('openai:gpt-4');
 });
 
 test('id method can be chained with other methods', function () {
@@ -92,17 +92,17 @@ test('id method can be chained with other methods', function () {
         ->label('Custom Label')
         ->temperature(0.7);
 
-    expect($provider->getId())->toBe('openai:gpt-4')
-        ->and($provider->getLabel())->toBe('Custom Label')
-        ->and($provider->getTemperature())->toBe(0.7);
+    expect($provider->build()->id)->toBe('openai:gpt-4')
+        ->and($provider->build()->label)->toBe('Custom Label')
+        ->and($provider->build()->temperature)->toBe(0.7);
 });
 
 test('id method can be called multiple times to update the id', function () {
     $provider = new Provider;
 
     $provider->id('openai:gpt-4');
-    expect($provider->getId())->toBe('openai:gpt-4');
+    expect($provider->build()->id)->toBe('openai:gpt-4');
 
     $provider->id('anthropic:claude-3');
-    expect($provider->getId())->toBe('anthropic:claude-3');
+    expect($provider->build()->id)->toBe('anthropic:claude-3');
 });

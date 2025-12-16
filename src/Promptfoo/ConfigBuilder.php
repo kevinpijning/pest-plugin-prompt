@@ -6,17 +6,18 @@ namespace KevinPijning\Prompt\Promptfoo;
 
 use KevinPijning\Prompt\Api\Assertion;
 use KevinPijning\Prompt\Api\Evaluation;
-use KevinPijning\Prompt\Api\Provider;
-use KevinPijning\Prompt\Api\TestCase;
+use KevinPijning\Prompt\Internal\BuiltEvaluation;
+use KevinPijning\Prompt\Internal\BuiltProvider;
+use KevinPijning\Prompt\Internal\BuiltTestCase;
 use Symfony\Component\Yaml\Yaml;
 
 final readonly class ConfigBuilder
 {
-    private function __construct(private Evaluation $evaluation) {}
+    private function __construct(private BuiltEvaluation $evaluation) {}
 
     public static function fromEvaluation(Evaluation $evaluation): self
     {
-        return new self($evaluation);
+        return new self($evaluation->build());
     }
 
     /**
@@ -25,8 +26,8 @@ final readonly class ConfigBuilder
     public function toArray(): array
     {
         return array_filter([
-            'description' => $this->evaluation->description(),
-            'prompts' => $this->evaluation->prompts(),
+            'description' => $this->evaluation->description,
+            'prompts' => $this->evaluation->prompts,
             'providers' => $this->mapProviders(),
             'defaultTest' => $this->mapDefaultTest(),
             'tests' => $this->mapTests(),
@@ -43,19 +44,19 @@ final readonly class ConfigBuilder
      */
     private function mapProviders(): array
     {
-        return array_map(fn (Provider $provider): array => array_filter([
-            'id' => $provider->getId(),
-            'label' => $provider->getLabel(),
+        return array_map(fn (BuiltProvider $provider): array => array_filter([
+            'id' => $provider->id,
+            'label' => $provider->label,
             'config' => array_filter([
-                ...array_filter($provider->getConfig()),
-                'temperature' => $provider->getTemperature(),
-                'max_tokens' => $provider->getMaxTokens(),
-                'top_p' => $provider->getTopP(),
-                'frequency_penalty' => $provider->getFrequencyPenalty(),
-                'presence_penalty' => $provider->getPresencePenalty(),
-                'stop' => $provider->getStop(),
+                ...array_filter($provider->config),
+                'temperature' => $provider->temperature,
+                'max_tokens' => $provider->maxTokens,
+                'top_p' => $provider->topP,
+                'frequency_penalty' => $provider->frequencyPenalty,
+                'presence_penalty' => $provider->presencePenalty,
+                'stop' => $provider->stop,
             ]),
-        ]), $this->evaluation->providers());
+        ]), $this->evaluation->providers);
     }
 
     /**
@@ -65,10 +66,10 @@ final readonly class ConfigBuilder
     {
         $self = $this;
 
-        return array_map(static fn (TestCase $testCase): array => array_filter([
-            'vars' => $testCase->variables(),
-            'assert' => $self->mapAssertions($testCase->assertions()),
-        ]), $this->evaluation->testCases());
+        return array_map(static fn (BuiltTestCase $testCase): array => array_filter([
+            'vars' => $testCase->variables,
+            'assert' => $self->mapAssertions($testCase->assertions),
+        ]), $this->evaluation->testCases);
     }
 
     /**
@@ -76,15 +77,15 @@ final readonly class ConfigBuilder
      */
     private function mapDefaultTest(): ?array
     {
-        $defaultTestCase = $this->evaluation->defaultTestCase();
+        $defaultTestCase = $this->evaluation->defaultTestCase;
 
-        if (! $defaultTestCase instanceof TestCase) {
+        if ($defaultTestCase === null) {
             return null;
         }
 
         return array_filter([
-            'vars' => $defaultTestCase->variables(),
-            'assert' => $this->mapAssertions($defaultTestCase->assertions()),
+            'vars' => $defaultTestCase->variables,
+            'assert' => $this->mapAssertions($defaultTestCase->assertions),
         ]);
     }
 

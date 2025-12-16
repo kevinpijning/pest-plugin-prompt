@@ -13,9 +13,9 @@ test('startsWith creates a starts-with assertion', function () {
     $result = $testCase->startsWith('Hello');
 
     expect($result)->toBe($testCase)
-        ->and($testCase->assertions())->toHaveCount(1);
+        ->and($testCase->build()->assertions)->toHaveCount(1);
 
-    $assertion = $testCase->assertions()[0];
+    $assertion = $testCase->build()->assertions[0];
     expect($assertion)->toBeInstanceOf(Assertion::class)
         ->and($assertion->type)->toBe('starts-with')
         ->and($assertion->value)->toBe('Hello')
@@ -28,7 +28,7 @@ test('startsWith accepts threshold parameter', function () {
 
     $testCase->startsWith('Hello', threshold: 0.8);
 
-    $assertion = $testCase->assertions()[0];
+    $assertion = $testCase->build()->assertions[0];
     expect($assertion->threshold)->toBe(0.8);
 });
 
@@ -39,7 +39,7 @@ test('startsWith accepts options parameter', function () {
 
     $testCase->startsWith('Hello', options: $options);
 
-    $assertion = $testCase->assertions()[0];
+    $assertion = $testCase->build()->assertions[0];
     expect($assertion->options)->toBeArray()->toHaveKey('custom');
 });
 
@@ -50,9 +50,9 @@ test('toMatchRegex creates a regex assertion', function () {
     $result = $testCase->toMatchRegex('/\d+/');
 
     expect($result)->toBe($testCase)
-        ->and($testCase->assertions())->toHaveCount(1);
+        ->and($testCase->build()->assertions)->toHaveCount(1);
 
-    $assertion = $testCase->assertions()[0];
+    $assertion = $testCase->build()->assertions[0];
     expect($assertion)->toBeInstanceOf(Assertion::class)
         ->and($assertion->type)->toBe('regex')
         ->and($assertion->value)->toBe('/\d+/')
@@ -65,7 +65,7 @@ test('toMatchRegex accepts threshold parameter', function () {
 
     $testCase->toMatchRegex('/\d+/', threshold: 0.9);
 
-    $assertion = $testCase->assertions()[0];
+    $assertion = $testCase->build()->assertions[0];
     expect($assertion->threshold)->toBe(0.9);
 });
 
@@ -78,5 +78,5 @@ test('can chain match methods', function () {
         ->toMatchRegex('/\d+/');
 
     expect($result)->toBe($testCase)
-        ->and($testCase->assertions())->toHaveCount(2);
+        ->and($testCase->build()->assertions)->toHaveCount(2);
 });

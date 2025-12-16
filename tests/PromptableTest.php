@@ -39,9 +39,9 @@ test('Promptable trait provides provider method that delegates to global provide
     expect($provider)->toBeInstanceOf(Provider::class)
         ->and(TestContext::hasProvider('my-provider'))->toBeTrue()
         ->and(TestContext::getProvider('my-provider'))->toBe($provider)
-        ->and($provider->getId())->toBe('openai:gpt-4')
-        ->and($provider->getLabel())->toBe('Test Provider')
-        ->and($provider->getTemperature())->toBe(0.7);
+        ->and($provider->build()->id)->toBe('openai:gpt-4')
+        ->and($provider->build()->label)->toBe('Test Provider')
+        ->and($provider->build()->temperature)->toBe(0.7);
 });
 
 test('Promptable trait provider method works without config', function () {
@@ -68,6 +68,6 @@ test('Promptable trait methods can be chained in test context', function () {
         ->usingProvider('chained-provider');
 
     expect($evaluation)->toBeInstanceOf(Evaluation::class)
-        ->and($evaluation->providers())->toHaveCount(1)
-        ->and($evaluation->providers()[0])->toBe($provider);
+        ->and($evaluation->build()->providers)->toHaveCount(1)
+        ->and($evaluation->build()->providers[0])->toBe($provider);
 });

@@ -13,9 +13,9 @@ test('toBeClassified creates a classifier assertion', function () {
     $result = $testCase->toBeClassified('huggingface:model', 'positive', threshold: 0.8);
 
     expect($result)->toBe($testCase)
-        ->and($testCase->assertions())->toHaveCount(1);
+        ->and($testCase->build()->assertions)->toHaveCount(1);
 
-    $assertion = $testCase->assertions()[0];
+    $assertion = $testCase->build()->assertions[0];
     expect($assertion)->toBeInstanceOf(Assertion::class)
         ->and($assertion->type)->toBe('classifier')
         ->and($assertion->value)->toBe('positive')
@@ -31,7 +31,7 @@ test('toBeClassified accepts options parameter', function () {
 
     $testCase->toBeClassified('provider', 'class', options: $options);
 
-    $assertion = $testCase->assertions()[0];
+    $assertion = $testCase->build()->assertions[0];
     expect($assertion->options)->toHaveKey('custom')
         ->and($assertion->options)->toHaveKey('provider');
 });

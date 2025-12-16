@@ -14,9 +14,9 @@ test('toHaveTraceSpanCount creates a trace-span-count assertion', function () {
     $result = $testCase->toHaveTraceSpanCount($patterns, min: 1, max: 5);
 
     expect($result)->toBe($testCase)
-        ->and($testCase->assertions())->toHaveCount(1);
+        ->and($testCase->build()->assertions)->toHaveCount(1);
 
-    $assertion = $testCase->assertions()[0];
+    $assertion = $testCase->build()->assertions[0];
     expect($assertion)->toBeInstanceOf(Assertion::class)
         ->and($assertion->type)->toBe('trace-span-count')
         ->and($assertion->value)->toBe($patterns)
@@ -35,7 +35,7 @@ test('toHaveTraceSpanCount can be called without min/max', function () {
 
     $testCase->toHaveTraceSpanCount($patterns);
 
-    $assertion = $testCase->assertions()[0];
+    $assertion = $testCase->build()->assertions[0];
     expect($assertion->options)->toHaveKey('patterns')
         ->and($assertion->options)->not->toHaveKey('min')
         ->and($assertion->options)->not->toHaveKey('max');
@@ -49,9 +49,9 @@ test('toHaveTraceSpanDuration creates a trace-span-duration assertion', function
     $result = $testCase->toHaveTraceSpanDuration($patterns, percentile: 0.95, maxDuration: 1000.0);
 
     expect($result)->toBe($testCase)
-        ->and($testCase->assertions())->toHaveCount(1);
+        ->and($testCase->build()->assertions)->toHaveCount(1);
 
-    $assertion = $testCase->assertions()[0];
+    $assertion = $testCase->build()->assertions[0];
     expect($assertion->type)->toBe('trace-span-duration')
         ->and($assertion->options)->toHaveKey('patterns')
         ->and($assertion->options)->toHaveKey('percentile')
@@ -67,9 +67,9 @@ test('toHaveTraceErrorSpans creates a trace-error-spans assertion', function () 
     $result = $testCase->toHaveTraceErrorSpans();
 
     expect($result)->toBe($testCase)
-        ->and($testCase->assertions())->toHaveCount(1);
+        ->and($testCase->build()->assertions)->toHaveCount(1);
 
-    $assertion = $testCase->assertions()[0];
+    $assertion = $testCase->build()->assertions[0];
     expect($assertion)->toBeInstanceOf(Assertion::class)
         ->and($assertion->type)->toBe('trace-error-spans');
 });
@@ -81,6 +81,6 @@ test('toHaveTraceErrorSpans accepts options parameter', function () {
 
     $testCase->toHaveTraceErrorSpans($options);
 
-    $assertion = $testCase->assertions()[0];
+    $assertion = $testCase->build()->assertions[0];
     expect($assertion->options)->toHaveKey('custom');
 });

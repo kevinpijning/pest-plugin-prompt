@@ -15,9 +15,9 @@ test('toContainAll creates an assertion with default parameters', function () {
     $result = $testCase->toContainAll($contains);
 
     expect($result)->toBe($testCase)
-        ->and($testCase->assertions())->toHaveCount(1);
+        ->and($testCase->build()->assertions)->toHaveCount(1);
 
-    $assertion = $testCase->assertions()[0];
+    $assertion = $testCase->build()->assertions[0];
     expect($assertion)->toBeInstanceOf(Assertion::class)
         ->and($assertion->type)->toBe('icontains-all')
         ->and($assertion->value)->toBe($contains)
@@ -33,7 +33,7 @@ test('toContainAll creates an icontains-all assertion when strict is false', fun
 
     $testCase->toContainAll($contains, strict: false);
 
-    $assertion = $testCase->assertions()[0];
+    $assertion = $testCase->build()->assertions[0];
     expect($assertion)->toBeInstanceOf(Assertion::class)
         ->and($assertion->type)->toBe('icontains-all')
         ->and($assertion->value)->toBe($contains)
@@ -49,7 +49,7 @@ test('toContainAll creates a contains-all assertion when strict is true', functi
 
     $testCase->toContainAll($contains, strict: true);
 
-    $assertion = $testCase->assertions()[0];
+    $assertion = $testCase->build()->assertions[0];
     expect($assertion)->toBeInstanceOf(Assertion::class)
         ->and($assertion->type)->toBe('contains-all')
         ->and($assertion->value)->toBe($contains)
@@ -66,8 +66,8 @@ test('toContainAll accepts a threshold parameter', function () {
 
     $testCase->toContainAll($contains, threshold: $threshold);
 
-    expect($testCase->assertions())->toHaveCount(1);
-    $assertion = $testCase->assertions()[0];
+    expect($testCase->build()->assertions)->toHaveCount(1);
+    $assertion = $testCase->build()->assertions[0];
     expect($assertion)->toBeInstanceOf(Assertion::class)
         ->and($assertion->type)->toBe('icontains-all')
         ->and($assertion->value)->toBe($contains)
@@ -84,8 +84,8 @@ test('toContainAll accepts options parameter', function () {
 
     $testCase->toContainAll($contains, options: $options);
 
-    expect($testCase->assertions())->toHaveCount(1);
-    $assertion = $testCase->assertions()[0];
+    expect($testCase->build()->assertions)->toHaveCount(1);
+    $assertion = $testCase->build()->assertions[0];
     expect($assertion)->toBeInstanceOf(Assertion::class)
         ->and($assertion->type)->toBe('icontains-all')
         ->and($assertion->value)->toBe($contains)
@@ -103,9 +103,9 @@ test('toContainAll can be chained', function () {
         ->toContainAll(['third', 'fourth']);
 
     expect($result)->toBe($testCase)
-        ->and($testCase->assertions())->toHaveCount(2);
+        ->and($testCase->build()->assertions)->toHaveCount(2);
 
-    $assertions = $testCase->assertions();
+    $assertions = $testCase->build()->assertions;
     expect($assertions[0]->value)->toBe(['first', 'second'])
         ->and($assertions[1]->value)->toBe(['third', 'fourth'])
         ->and($assertions[0]->type)->toBe('icontains-all')
@@ -121,9 +121,9 @@ test('toContainAny creates an assertion with default parameters', function () {
     $result = $testCase->toContainAny($contains);
 
     expect($result)->toBe($testCase)
-        ->and($testCase->assertions())->toHaveCount(1);
+        ->and($testCase->build()->assertions)->toHaveCount(1);
 
-    $assertion = $testCase->assertions()[0];
+    $assertion = $testCase->build()->assertions[0];
     expect($assertion)->toBeInstanceOf(Assertion::class)
         ->and($assertion->type)->toBe('icontains-any')
         ->and($assertion->value)->toBe($contains)
@@ -139,7 +139,7 @@ test('toContainAny creates an icontains-any assertion when strict is false', fun
 
     $testCase->toContainAny($contains, strict: false);
 
-    $assertion = $testCase->assertions()[0];
+    $assertion = $testCase->build()->assertions[0];
     expect($assertion)->toBeInstanceOf(Assertion::class)
         ->and($assertion->type)->toBe('icontains-any')
         ->and($assertion->value)->toBe($contains)
@@ -155,7 +155,7 @@ test('toContainAny creates a contains-any assertion when strict is true', functi
 
     $testCase->toContainAny($contains, strict: true);
 
-    $assertion = $testCase->assertions()[0];
+    $assertion = $testCase->build()->assertions[0];
     expect($assertion)->toBeInstanceOf(Assertion::class)
         ->and($assertion->type)->toBe('contains-any')
         ->and($assertion->value)->toBe($contains)
@@ -172,8 +172,8 @@ test('toContainAny accepts a threshold parameter', function () {
 
     $testCase->toContainAny($contains, threshold: $threshold);
 
-    expect($testCase->assertions())->toHaveCount(1);
-    $assertion = $testCase->assertions()[0];
+    expect($testCase->build()->assertions)->toHaveCount(1);
+    $assertion = $testCase->build()->assertions[0];
     expect($assertion)->toBeInstanceOf(Assertion::class)
         ->and($assertion->type)->toBe('icontains-any')
         ->and($assertion->value)->toBe($contains)
@@ -190,8 +190,8 @@ test('toContainAny accepts options parameter', function () {
 
     $testCase->toContainAny($contains, options: $options);
 
-    expect($testCase->assertions())->toHaveCount(1);
-    $assertion = $testCase->assertions()[0];
+    expect($testCase->build()->assertions)->toHaveCount(1);
+    $assertion = $testCase->build()->assertions[0];
     expect($assertion)->toBeInstanceOf(Assertion::class)
         ->and($assertion->type)->toBe('icontains-any')
         ->and($assertion->value)->toBe($contains)
@@ -209,9 +209,9 @@ test('toContainAny can be chained', function () {
         ->toContainAny(['third', 'fourth']);
 
     expect($result)->toBe($testCase)
-        ->and($testCase->assertions())->toHaveCount(2);
+        ->and($testCase->build()->assertions)->toHaveCount(2);
 
-    $assertions = $testCase->assertions();
+    $assertions = $testCase->build()->assertions;
     expect($assertions[0]->value)->toBe(['first', 'second'])
         ->and($assertions[1]->value)->toBe(['third', 'fourth'])
         ->and($assertions[0]->type)->toBe('icontains-any')
@@ -226,9 +226,9 @@ test('toContainJson creates a contains-json assertion', function () {
     $result = $testCase->toContainJson();
 
     expect($result)->toBe($testCase)
-        ->and($testCase->assertions())->toHaveCount(1);
+        ->and($testCase->build()->assertions)->toHaveCount(1);
 
-    $assertion = $testCase->assertions()[0];
+    $assertion = $testCase->build()->assertions[0];
     expect($assertion)->toBeInstanceOf(Assertion::class)
         ->and($assertion->type)->toBe('contains-json')
         ->and($assertion->value)->toBeNull()
@@ -244,9 +244,9 @@ test('toContainHtml creates a contains-html assertion', function () {
     $result = $testCase->toContainHtml();
 
     expect($result)->toBe($testCase)
-        ->and($testCase->assertions())->toHaveCount(1);
+        ->and($testCase->build()->assertions)->toHaveCount(1);
 
-    $assertion = $testCase->assertions()[0];
+    $assertion = $testCase->build()->assertions[0];
     expect($assertion)->toBeInstanceOf(Assertion::class)
         ->and($assertion->type)->toBe('contains-html')
         ->and($assertion->value)->toBeNull()
@@ -262,9 +262,9 @@ test('toContainSql creates a contains-sql assertion', function () {
     $result = $testCase->toContainSql();
 
     expect($result)->toBe($testCase)
-        ->and($testCase->assertions())->toHaveCount(1);
+        ->and($testCase->build()->assertions)->toHaveCount(1);
 
-    $assertion = $testCase->assertions()[0];
+    $assertion = $testCase->build()->assertions[0];
     expect($assertion)->toBeInstanceOf(Assertion::class)
         ->and($assertion->type)->toBe('contains-sql')
         ->and($assertion->value)->toBeNull()
@@ -280,9 +280,9 @@ test('toContainXml creates a contains-xml assertion', function () {
     $result = $testCase->toContainXml();
 
     expect($result)->toBe($testCase)
-        ->and($testCase->assertions())->toHaveCount(1);
+        ->and($testCase->build()->assertions)->toHaveCount(1);
 
-    $assertion = $testCase->assertions()[0];
+    $assertion = $testCase->build()->assertions[0];
     expect($assertion)->toBeInstanceOf(Assertion::class)
         ->and($assertion->type)->toBe('contains-xml')
         ->and($assertion->value)->toBeNull()
@@ -302,9 +302,9 @@ test('format-specific assertions can be chained', function () {
         ->toContainXml();
 
     expect($result)->toBe($testCase)
-        ->and($testCase->assertions())->toHaveCount(4);
+        ->and($testCase->build()->assertions)->toHaveCount(4);
 
-    $assertions = $testCase->assertions();
+    $assertions = $testCase->build()->assertions;
     expect($assertions[0]->type)->toBe('contains-json')
         ->and($assertions[1]->type)->toBe('contains-html')
         ->and($assertions[2]->type)->toBe('contains-sql')
@@ -326,9 +326,9 @@ test('all CanContain methods can be mixed and chained', function () {
         ->toContainXml();
 
     expect($result)->toBe($testCase)
-        ->and($testCase->assertions())->toHaveCount(7);
+        ->and($testCase->build()->assertions)->toHaveCount(7);
 
-    $assertions = $testCase->assertions();
+    $assertions = $testCase->build()->assertions;
     expect($assertions[0]->type)->toBe('icontains')
         ->and($assertions[1]->type)->toBe('icontains-all')
         ->and($assertions[2]->type)->toBe('icontains-any')
