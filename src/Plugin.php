@@ -6,6 +6,7 @@ namespace KevinPijning\Prompt;
 
 use KevinPijning\Prompt\Internal\TestLifecycle;
 use KevinPijning\Prompt\Promptfoo\Promptfoo;
+use KevinPijning\Prompt\Promptfoo\PromptfooExecutor;
 use Pest\Contracts\Plugins\Bootable;
 use Pest\Contracts\Plugins\HandlesArguments;
 use Pest\Plugins\Concerns\HandleArguments;
@@ -28,6 +29,27 @@ final class Plugin implements Bootable, HandlesArguments
         pest()->afterEach(function (): void {
             TestLifecycle::evaluate();
         })->in($this->in());
+
+        // Merge parallel caches after all tests complete
+        pest()->afterAll(function (): void {
+            // #region agent log
+            $logData = [
+                'sessionId' => 'debug-session',
+                'runId' => 'post-fix-v3',
+                'location' => __FILE__.':'.__LINE__,
+                'message' => 'afterAll hook CALLED',
+                'data' => [
+                    'pid' => getmypid(),
+                    'timestamp' => microtime(true),
+                ],
+                'timestamp' => (int) (microtime(true) * 1000),
+                'hypothesisId' => 'AFTERALL',
+            ];
+            file_put_contents('/Users/kevinpijning/workspace/pest-plugin-prompts/.cursor/debug.log', json_encode($logData)."\n", FILE_APPEND);
+            // #endregion
+            
+            PromptfooExecutor::mergeParallelCaches();
+        });
     }
 
     /**
