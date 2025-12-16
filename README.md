@@ -22,6 +22,7 @@ This plugin brings LLM prompt testing to your Pest test suite, powered by [promp
   - [Evaluation Methods](#evaluation-methods)
     - [`describe()`](#describe)
     - [`usingProvider()`](#usingprovider)
+    - [`alwaysExpect()`](#alwaysexpect)
     - [`expect()`](#expect)
     - [`and()`](#and)
   - [Assertion Methods](#assertion-methods)
@@ -244,6 +245,34 @@ prompt('Hello')
     ->expect()
     ->toContain('Hi');
 ```
+
+#### `alwaysExpect()`
+
+Set default assertions and variables that apply to **all** test cases in the evaluation. This is useful when you want to ensure certain conditions are met for every test case without repeating the assertions.
+
+```php
+prompt('Translate {{message}} to {{language}}.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->alwaysExpect(['message' => 'Hello World!'])
+    ->toBeJudged('the language is always a friendly variant')
+    ->toBeJudged('the source and output language are always mentioned in the response')
+    ->expect(['language' => 'es'])
+    ->toContain('hola')
+    ->toBeJudged('Contains the translation of Hello world! in spanish');
+```
+
+**Key points:**
+- `alwaysExpect()` returns a `TestCase` instance that supports all assertion methods
+- Assertions added via `alwaysExpect()` apply to every test case in the evaluation
+- Default variables can be set and will be merged with test case variables
+- You can chain multiple assertions after `alwaysExpect()`
+- The default test case is separate from regular test cases and won't appear in the `testCases()` array
+
+**Use cases:**
+- Ensure all responses meet quality standards (e.g., "always be professional")
+- Set common variables that apply to all tests
+- Enforce safety checks across all test cases
+- Apply format requirements universally (e.g., "always contain JSON")
 
 #### `expect()`
 
@@ -1048,6 +1077,24 @@ test('greeting works for different names', function () {
         ->toContain('Bob')
         ->and(['name' => 'Charlie'])
         ->toContain('Charlie');
+});
+```
+
+#### Default Test Cases
+
+Use `alwaysExpect()` to set assertions that apply to all test cases.
+
+```php
+test('all translations meet quality standards', function () {
+    prompt('Translate {{message}} to {{language}} in the style {{style}}.')
+        ->usingProvider('openai:gpt-4o-mini')
+        ->alwaysExpect(['style' => 'friendly'])
+        ->toBeJudged('the translation is always accurate and natural')
+        ->toBeJudged('the response is always in a friendly tone')
+        ->expect(['message' => 'Hello', 'language' => 'es'])
+        ->toContain('hola')
+        ->expect(['message' => 'Goodbye', 'language' => 'fr'])
+        ->toContain('au revoir');
 });
 ```
 

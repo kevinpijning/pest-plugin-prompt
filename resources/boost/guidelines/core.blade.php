@@ -38,6 +38,8 @@ provider('openai-gpt4')
 
 **`usingProvider(string|Provider ...$providers)`**: Set provider(s). Accepts IDs, `Provider` instances, or registered names.
 
+**`alwaysExpect(array $defaultVariables = [])`**: Set default assertions and variables that apply to all test cases. Returns a `TestCase` for chaining assertions.
+
 **`expect(array $variables = [])`**: Create test case with variables for `\{\{variable\}\}` substitution.
 
 **`and(array $variables)`**: Chain additional test cases.
