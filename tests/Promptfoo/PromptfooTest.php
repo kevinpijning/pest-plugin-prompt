@@ -3,11 +3,10 @@
 declare(strict_types=1);
 
 use KevinPijning\Prompt\Promptfoo\Promptfoo;
+use KevinPijning\Prompt\Promptfoo\PromptfooConfiguration;
 
 beforeEach(function () {
-    // Reset to defaults before each test
-    Promptfoo::setDefaultProviders(['openai:gpt-4o-mini']);
-    Promptfoo::setOutputFolder(null);
+    Promptfoo::reset();
 });
 
 test('defaultProviders returns the default providers', function () {
@@ -53,8 +52,25 @@ test('shouldOutput returns false when output folder is null', function () {
     expect(Promptfoo::shouldOutput())->toBeFalse();
 });
 
-test('initialize returns a PromptfooClient instance', function () {
-    $client = Promptfoo::initialize();
+test('configuration returns a PromptfooConfiguration instance', function () {
+    $config = Promptfoo::configuration();
 
-    expect($client)->toBeInstanceOf(\KevinPijning\Prompt\Promptfoo\PromptfooClient::class);
+    expect($config)->toBeInstanceOf(PromptfooConfiguration::class);
+});
+
+test('configuration returns the same instance on multiple calls', function () {
+    $config1 = Promptfoo::configuration();
+    $config2 = Promptfoo::configuration();
+
+    expect($config1)->toBe($config2);
+});
+
+test('reset clears the configuration', function () {
+    Promptfoo::setDefaultProviders(['custom-provider']);
+    Promptfoo::setOutputFolder('/custom/path');
+
+    Promptfoo::reset();
+
+    expect(Promptfoo::defaultProviders())->toBe(['openai:gpt-4o-mini'])
+        ->and(Promptfoo::outputFolder())->toBeNull();
 });

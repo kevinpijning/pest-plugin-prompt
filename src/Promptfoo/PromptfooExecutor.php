@@ -11,26 +11,25 @@ use KevinPijning\Prompt\Internal\EvaluationResult;
 use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\Process;
 
-class PromptfooClient implements EvaluatorClient
+final class PromptfooExecutor implements EvaluatorClient
 {
     public function __construct(
-        private readonly string $promptfooCommand,
-        private readonly int $promptfooTimeout = 300,
+        private readonly PromptfooConfiguration $config,
     ) {}
 
     public function evaluate(Evaluation $evaluation): EvaluationResult
     {
-        $pendingEvaluation = EvaluationCommandBuilder::create($evaluation);
+        $context = EvaluationContext::create($evaluation, $this->config);
 
         try {
-            $this->generateConfig($pendingEvaluation);
+            $this->writeConfig($context);
 
-            $command = $this->generateCommand($pendingEvaluation);
+            $command = $this->buildCommand($context);
             $this->execute($command);
 
-            $result = $this->parseOutput($pendingEvaluation->outputPath);
+            $result = $this->parseOutput($context->outputPath);
         } finally {
-            $this->cleanup($pendingEvaluation);
+            $this->cleanup($context);
         }
 
         return $result;
@@ -45,13 +44,13 @@ class PromptfooClient implements EvaluatorClient
     {
         $process = new Process($command, env: $_ENV);
 
-        $process->setTimeout($this->promptfooTimeout);
+        $process->setTimeout($this->config->timeout());
 
         try {
             $process->run();
         } catch (ProcessTimedOutException) {
             throw new ExecutionException(
-                'Promptfoo command timed out after 300 seconds. The process may be hanging or waiting for a response.',
+                sprintf('Promptfoo command timed out after %d seconds. The process may be hanging or waiting for a response.', $this->config->timeout()),
                 implode(' ', $command),
                 $process->getOutput().$process->getErrorOutput(),
                 $process->getExitCode() ?? 1
@@ -79,28 +78,27 @@ class PromptfooClient implements EvaluatorClient
     /**
      * @return string[]
      */
-    private function generateCommand(EvaluationCommandBuilder $pendingEvaluation): array
+    private function buildCommand(EvaluationContext $context): array
     {
         $command = [
-            ...explode(' ', $this->promptfooCommand), 'eval',
-            '--config', $pendingEvaluation->configPath,
-            '--output', $pendingEvaluation->outputPath,
+            ...explode(' ', $this->config->command()), 'eval',
+            '--config', $context->configPath,
+            '--output', $context->outputPath,
         ];
 
-        // Add user-specified output path if provided
-        if ($pendingEvaluation->userOutputPath !== null) {
+        if ($context->userOutputPath !== null) {
             $command[] = '--output';
-            $command[] = $pendingEvaluation->userOutputPath;
+            $command[] = $context->userOutputPath;
         }
 
         return $command;
     }
 
-    private function generateConfig(EvaluationCommandBuilder $pendingEvaluation): void
+    private function writeConfig(EvaluationContext $context): void
     {
-        $configYaml = ConfigBuilder::fromEvaluation($pendingEvaluation->evaluation)->toYaml();
+        $configYaml = ConfigBuilder::fromEvaluation($context->evaluation)->toYaml();
 
-        file_put_contents($pendingEvaluation->configPath, $configYaml);
+        file_put_contents($context->configPath, $configYaml);
     }
 
     private function parseOutput(string $outputPath): EvaluationResult
@@ -108,14 +106,14 @@ class PromptfooClient implements EvaluatorClient
         return EvaluationResultBuilder::fromJson($outputPath);
     }
 
-    private function cleanup(EvaluationCommandBuilder $pendingEvaluation): void
+    private function cleanup(EvaluationContext $context): void
     {
-        if (file_exists($pendingEvaluation->outputPath)) {
-            unlink($pendingEvaluation->outputPath);
+        if (file_exists($context->outputPath)) {
+            unlink($context->outputPath);
         }
 
-        if (file_exists($pendingEvaluation->configPath)) {
-            unlink($pendingEvaluation->configPath);
+        if (file_exists($context->configPath)) {
+            unlink($context->configPath);
         }
     }
 }

@@ -7,27 +7,18 @@ namespace KevinPijning\Prompt\Promptfoo;
 use KevinPijning\Prompt\Evaluation;
 use KevinPijning\Prompt\Internal\EvaluationResult;
 
-class Promptfoo
+final class Promptfoo
 {
-    private static string $promptfooCommand = 'npx promptfoo@latest';
+    private static ?PromptfooConfiguration $config = null;
 
-    private static int $promptfooTimeout = 300;
-
-    /**
-     * @var string[]
-     */
-    private static array $defaultProviders = ['openai:gpt-4o-mini'];
-
-    private static ?string $outputFolder = null;
-
-    public static function initialize(): PromptfooClient
+    public static function configuration(): PromptfooConfiguration
     {
-        return new PromptfooClient(self::$promptfooCommand, self::$promptfooTimeout);
+        return self::$config ??= new PromptfooConfiguration;
     }
 
-    public static function evaluate(Evaluation $valuation): EvaluationResult
+    public static function evaluate(Evaluation $evaluation): EvaluationResult
     {
-        return self::initialize()->evaluate($valuation);
+        return (new PromptfooExecutor(self::configuration()))->evaluate($evaluation);
     }
 
     /**
@@ -35,7 +26,7 @@ class Promptfoo
      */
     public static function defaultProviders(): array
     {
-        return self::$defaultProviders;
+        return self::configuration()->defaultProviders();
     }
 
     /**
@@ -43,21 +34,29 @@ class Promptfoo
      */
     public static function setDefaultProviders(array $defaultProviders): void
     {
-        self::$defaultProviders = $defaultProviders;
+        self::$config = self::configuration()->withDefaultProviders($defaultProviders);
     }
 
     public static function setOutputFolder(?string $path): void
     {
-        self::$outputFolder = $path;
+        self::$config = self::configuration()->withOutputFolder($path);
     }
 
     public static function outputFolder(): ?string
     {
-        return self::$outputFolder;
+        return self::configuration()->outputFolder();
     }
 
     public static function shouldOutput(): bool
     {
-        return self::outputFolder() !== null;
+        return self::configuration()->shouldOutput();
+    }
+
+    /**
+     * Reset configuration to defaults. Useful for test isolation.
+     */
+    public static function reset(): void
+    {
+        self::$config = null;
     }
 }

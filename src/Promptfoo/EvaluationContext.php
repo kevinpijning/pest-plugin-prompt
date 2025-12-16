@@ -10,7 +10,7 @@ use KevinPijning\Prompt\Helpers\Path;
 /**
  * @internal
  */
-final readonly class EvaluationCommandBuilder
+final readonly class EvaluationContext
 {
     public function __construct(
         public Evaluation $evaluation,
@@ -19,17 +19,17 @@ final readonly class EvaluationCommandBuilder
         public ?string $userOutputPath = null,
     ) {}
 
-    public static function create(Evaluation $evaluation): self
+    public static function create(Evaluation $evaluation, PromptfooConfiguration $config): self
     {
         $userOutputPath = null;
         $built = $evaluation->build();
 
-        if (Promptfoo::shouldOutput()) {
+        if ($config->shouldOutput()) {
             /** @phpstan-ignore-next-line */
             $testName = $built->description ?: test()->name();
 
             $userOutputPath = Path::withFileName($testName)
-                ->inFolder(Promptfoo::outputFolder())
+                ->inFolder($config->outputFolder())
                 ->withExtension('html')
                 ->includeDatetime()
                 ->includeUniqueId()
@@ -38,17 +38,18 @@ final readonly class EvaluationCommandBuilder
 
         return new self(
             evaluation: $evaluation,
-            configPath: Path::withFileName('promptfoo_config')
-                ->inFolder(sys_get_temp_dir())
-                ->withExtension('yaml')
-                ->includeUniqueId()
-                ->toString(),
-            outputPath: Path::withFileName('promptfoo_output')
-                ->inFolder(sys_get_temp_dir())
-                ->withExtension('json')
-                ->includeUniqueId()
-                ->toString(),
+            configPath: self::generateTempPath('promptfoo_config', 'yaml'),
+            outputPath: self::generateTempPath('promptfoo_output', 'json'),
             userOutputPath: $userOutputPath,
         );
+    }
+
+    private static function generateTempPath(string $prefix, string $extension): string
+    {
+        return Path::withFileName($prefix)
+            ->inFolder(sys_get_temp_dir())
+            ->withExtension($extension)
+            ->includeUniqueId()
+            ->toString();
     }
 }
