@@ -79,7 +79,7 @@ final readonly class ConfigBuilder
     {
         $defaultTestCase = $this->evaluation->defaultTestCase;
 
-        if ($defaultTestCase === null) {
+        if (! $defaultTestCase instanceof BuiltTestCase) {
             return null;
         }
 

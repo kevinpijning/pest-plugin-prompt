@@ -14,15 +14,14 @@ final readonly class BuiltProvider
      * @param  array<string,mixed>  $config
      */
     public function __construct(
-        public readonly ?string $id,
-        public readonly ?string $label,
-        public readonly ?float $temperature,
-        public readonly ?int $maxTokens,
-        public readonly ?float $topP,
-        public readonly ?float $frequencyPenalty,
-        public readonly ?float $presencePenalty,
-        public readonly ?array $stop,
-        public readonly array $config,
+        public ?string $id,
+        public ?string $label,
+        public ?float $temperature,
+        public ?int $maxTokens,
+        public ?float $topP,
+        public ?float $frequencyPenalty,
+        public ?float $presencePenalty,
+        public ?array $stop,
+        public array $config,
     ) {}
 }
-

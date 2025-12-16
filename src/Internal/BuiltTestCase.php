@@ -16,8 +16,7 @@ final readonly class BuiltTestCase
      * @param  Assertion[]  $assertions
      */
     public function __construct(
-        public readonly array $variables,
-        public readonly array $assertions,
+        public array $variables,
+        public array $assertions,
     ) {}
 }
-

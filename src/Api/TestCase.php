@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace KevinPijning\Prompt\Api;
 
 use KevinPijning\Prompt\Api\Concerns\CanBeClassified;
-use KevinPijning\Prompt\Internal\BuiltTestCase;
 use KevinPijning\Prompt\Api\Concerns\CanBeJudged;
 use KevinPijning\Prompt\Api\Concerns\CanBeRefused;
 use KevinPijning\Prompt\Api\Concerns\CanBeScored;
@@ -20,6 +19,7 @@ use KevinPijning\Prompt\Api\Concerns\CanHaveFunctionCalls;
 use KevinPijning\Prompt\Api\Concerns\CanHavePerformance;
 use KevinPijning\Prompt\Api\Concerns\CanHaveTraces;
 use KevinPijning\Prompt\Api\Concerns\CanMatch;
+use KevinPijning\Prompt\Internal\BuiltTestCase;
 use RuntimeException;
 
 /**

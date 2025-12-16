@@ -15,11 +15,10 @@ final readonly class BuiltEvaluation
      * @param  BuiltTestCase[]  $testCases
      */
     public function __construct(
-        public readonly ?string $description,
-        public readonly array $prompts,
-        public readonly array $providers,
-        public readonly array $testCases,
-        public readonly ?BuiltTestCase $defaultTestCase,
+        public ?string $description,
+        public array $prompts,
+        public array $providers,
+        public array $testCases,
+        public ?BuiltTestCase $defaultTestCase,
     ) {}
 }
-
