@@ -49,9 +49,18 @@ trait CanContain
         ));
     }
 
-    public function toContainJson(): self
+    /**
+     * @param  array<string,mixed>|null  $schema
+     * @param  array<string,mixed>  $options
+     */
+    public function toContainJson(?array $schema = null, array $options = []): self
     {
-        return $this->assert(new Assertion('contains-json'));
+        return $this->assert(new Assertion(
+            type: 'contains-json',
+            value: $schema,
+            threshold: null,
+            options: $options,
+        ));
     }
 
     public function toContainHtml(): self

@@ -233,7 +233,45 @@ test('toContainJson creates a contains-json assertion', function () {
         ->and($assertion->type)->toBe('contains-json')
         ->and($assertion->value)->toBeNull()
         ->and($assertion->threshold)->toBeNull()
-        ->and($assertion->options)->toBeNull();
+        ->and($assertion->options)->toBe([]);
+});
+
+test('toContainJson accepts schema parameter', function () {
+    $evaluation = new Evaluation(['prompt1', 'prompt2']);
+    $variables = ['key1' => 'value1', 'key2' => 'value2'];
+    $testCase = new TestCase($variables, $evaluation);
+    $schema = ['type' => 'object', 'properties' => ['name' => ['type' => 'string']]];
+
+    $testCase->toContainJson($schema);
+
+    $assertion = $testCase->build()->assertions[0];
+    expect($assertion->value)->toBe($schema);
+});
+
+test('toContainJson accepts options parameter', function () {
+    $evaluation = new Evaluation(['prompt1', 'prompt2']);
+    $variables = ['key1' => 'value1', 'key2' => 'value2'];
+    $testCase = new TestCase($variables, $evaluation);
+    $options = ['strict' => true];
+
+    $testCase->toContainJson(null, $options);
+
+    $assertion = $testCase->build()->assertions[0];
+    expect($assertion->options)->toBe($options);
+});
+
+test('toContainJson accepts both schema and options parameters', function () {
+    $evaluation = new Evaluation(['prompt1', 'prompt2']);
+    $variables = ['key1' => 'value1', 'key2' => 'value2'];
+    $testCase = new TestCase($variables, $evaluation);
+    $schema = ['type' => 'object'];
+    $options = ['strict' => true];
+
+    $testCase->toContainJson($schema, $options);
+
+    $assertion = $testCase->build()->assertions[0];
+    expect($assertion->value)->toBe($schema)
+        ->and($assertion->options)->toBe($options);
 });
 
 test('toContainHtml creates a contains-html assertion', function () {

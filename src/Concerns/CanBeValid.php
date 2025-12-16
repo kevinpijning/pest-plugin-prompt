@@ -14,16 +14,11 @@ trait CanBeValid
      */
     public function toBeJson(?array $schema = null, array $options = []): self
     {
-        $assertionOptions = $options;
-        if ($schema !== null) {
-            $assertionOptions['schema'] = $schema;
-        }
-
         return $this->assert(new Assertion(
             type: 'is-json',
-            value: null,
+            value: $schema,
             threshold: null,
-            options: $assertionOptions,
+            options: $options,
         ));
     }
 
@@ -41,21 +36,15 @@ trait CanBeValid
     }
 
     /**
-     * @param  array<string,mixed>|null  $authorityList
      * @param  array<string,mixed>  $options
      */
-    public function toBeSql(?array $authorityList = null, array $options = []): self
+    public function toBeSql(array $options = []): self
     {
-        $assertionOptions = $options;
-        if ($authorityList !== null) {
-            $assertionOptions['authorityList'] = $authorityList;
-        }
-
         return $this->assert(new Assertion(
             type: 'is-sql',
             value: null,
             threshold: null,
-            options: $assertionOptions,
+            options: $options,
         ));
     }
 

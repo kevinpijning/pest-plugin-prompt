@@ -29,8 +29,31 @@ test('toBeJson accepts schema parameter', function () {
     $testCase->toBeJson($schema);
 
     $assertion = $testCase->build()->assertions[0];
-    expect($assertion->options)->toHaveKey('schema')
-        ->and($assertion->options['schema'])->toBe($schema);
+    expect($assertion->value)->toBe($schema);
+});
+
+test('toBeJson accepts options parameter', function () {
+    $evaluation = new Evaluation(['prompt1']);
+    $testCase = new TestCase([], $evaluation);
+    $options = ['strict' => true];
+
+    $testCase->toBeJson(null, $options);
+
+    $assertion = $testCase->build()->assertions[0];
+    expect($assertion->options)->toBe($options);
+});
+
+test('toBeJson accepts both schema and options parameters', function () {
+    $evaluation = new Evaluation(['prompt1']);
+    $testCase = new TestCase([], $evaluation);
+    $schema = ['type' => 'object'];
+    $options = ['strict' => true];
+
+    $testCase->toBeJson($schema, $options);
+
+    $assertion = $testCase->build()->assertions[0];
+    expect($assertion->value)->toBe($schema)
+        ->and($assertion->options)->toBe($options);
 });
 
 test('toBeHtml creates an is-html assertion', function () {
@@ -59,16 +82,15 @@ test('toBeSql creates an is-sql assertion', function () {
     expect($assertion->type)->toBe('is-sql');
 });
 
-test('toBeSql accepts authorityList parameter', function () {
+test('toBeSql accepts options parameter', function () {
     $evaluation = new Evaluation(['prompt1']);
     $testCase = new TestCase([], $evaluation);
-    $authorityList = ['SELECT', 'INSERT'];
+    $options = ['authorityList' => ['SELECT', 'INSERT']];
 
-    $testCase->toBeSql($authorityList);
+    $testCase->toBeSql($options);
 
     $assertion = $testCase->build()->assertions[0];
-    expect($assertion->options)->toHaveKey('authorityList')
-        ->and($assertion->options['authorityList'])->toBe($authorityList);
+    expect($assertion->options)->toBe($options);
 });
 
 test('toBeXml creates an is-xml assertion', function () {
