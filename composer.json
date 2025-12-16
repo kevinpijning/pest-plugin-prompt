@@ -51,6 +51,10 @@
             "@test:lint",
             "@test:types",
             "@test:unit"
+        ],
+        "codestyle": [
+            "@refacto",
+            "@lint"
         ]
     },
     "extra": {
