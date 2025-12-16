@@ -278,3 +278,94 @@ test('toArray handles all FinishReason enum values correctly', function () {
         ->and($result['tests'][0]['assert'][2]['value'])->toBe('content_filter')
         ->and($result['tests'][0]['assert'][3]['value'])->toBe('tool_calls');
 });
+
+test('toArray includes defaultTest when alwaysExpect is used', function () {
+    $evaluation = new Evaluation(['prompt1']);
+    $evaluation->alwaysExpect(['default' => 'value'])
+        ->toBeJudged('test assertion');
+
+    $builder = ConfigBuilder::fromEvaluation($evaluation);
+    $result = $builder->toArray();
+
+    expect($result)->toHaveKey('defaultTest')
+        ->and($result['defaultTest'])->toBeArray()
+        ->and($result['defaultTest'])->toHaveKey('vars')
+        ->and($result['defaultTest'])->toHaveKey('assert')
+        ->and($result['defaultTest']['vars'])->toBe(['default' => 'value'])
+        ->and($result['defaultTest']['assert'])->toBeArray()
+        ->and($result['defaultTest']['assert'])->toHaveCount(1);
+});
+
+test('toArray filters out defaultTest when not set', function () {
+    $evaluation = new Evaluation(['prompt1']);
+
+    $builder = ConfigBuilder::fromEvaluation($evaluation);
+    $result = $builder->toArray();
+
+    expect($result)->not->toHaveKey('defaultTest');
+});
+
+test('toArray includes defaultTest vars correctly', function () {
+    $evaluation = new Evaluation(['prompt1']);
+    $evaluation->alwaysExpect(['key1' => 'value1', 'key2' => 'value2']);
+
+    $builder = ConfigBuilder::fromEvaluation($evaluation);
+    $result = $builder->toArray();
+
+    expect($result['defaultTest']['vars'])->toBe(['key1' => 'value1', 'key2' => 'value2']);
+});
+
+test('toArray includes defaultTest assertions correctly', function () {
+    $evaluation = new Evaluation(['prompt1']);
+    $defaultTestCase = $evaluation->alwaysExpect(['default' => 'value']);
+    $defaultTestCase->toBeJudged('first assertion');
+    $defaultTestCase->toContain('second assertion');
+    $defaultTestCase->toBeJudged('third assertion', 0.8);
+
+    $builder = ConfigBuilder::fromEvaluation($evaluation);
+    $result = $builder->toArray();
+
+    expect($result['defaultTest']['assert'])->toHaveCount(3)
+        ->and($result['defaultTest']['assert'][0]['type'])->toBe('llm-rubric')
+        ->and($result['defaultTest']['assert'][0]['value'])->toBe('first assertion')
+        ->and($result['defaultTest']['assert'][1]['type'])->toBe('icontains')
+        ->and($result['defaultTest']['assert'][1]['value'])->toBe('second assertion')
+        ->and($result['defaultTest']['assert'][2]['type'])->toBe('llm-rubric')
+        ->and($result['defaultTest']['assert'][2]['value'])->toBe('third assertion')
+        ->and($result['defaultTest']['assert'][2]['threshold'])->toBe(0.8);
+});
+
+test('toArray filters out empty vars in defaultTest', function () {
+    $evaluation = new Evaluation(['prompt1']);
+    $evaluation->alwaysExpect([])->toBeJudged('test');
+
+    $builder = ConfigBuilder::fromEvaluation($evaluation);
+    $result = $builder->toArray();
+
+    expect($result['defaultTest'])->not->toHaveKey('vars');
+});
+
+test('toArray filters out empty assert in defaultTest', function () {
+    $evaluation = new Evaluation(['prompt1']);
+    $evaluation->alwaysExpect(['key' => 'value']);
+
+    $builder = ConfigBuilder::fromEvaluation($evaluation);
+    $result = $builder->toArray();
+
+    expect($result['defaultTest'])->not->toHaveKey('assert');
+});
+
+test('toArray handles defaultTest with both vars and assert', function () {
+    $evaluation = new Evaluation(['prompt1']);
+    $evaluation->alwaysExpect(['default' => 'value', 'another' => 'test'])
+        ->toBeJudged('assertion 1')
+        ->toContain('assertion 2');
+
+    $builder = ConfigBuilder::fromEvaluation($evaluation);
+    $result = $builder->toArray();
+
+    expect($result['defaultTest'])->toHaveKey('vars')
+        ->and($result['defaultTest'])->toHaveKey('assert')
+        ->and($result['defaultTest']['vars'])->toBe(['default' => 'value', 'another' => 'test'])
+        ->and($result['defaultTest']['assert'])->toHaveCount(2);
+});

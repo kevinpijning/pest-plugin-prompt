@@ -89,8 +89,16 @@ class TestCase
     /**
      * @param  array<string,mixed>  $variables
      */
-    public function and(array $variables): self
+    public function expect(array $variables): self
     {
         return $this->evaluation->expect($variables);
+    }
+
+    /**
+     * @param  array<string,mixed>  $variables
+     */
+    public function and(array $variables): self
+    {
+        return $this->expect($variables);
     }
 }

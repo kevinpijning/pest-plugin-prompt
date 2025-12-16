@@ -284,3 +284,75 @@ test('usingProvider method treats string as provider ID when not found in TestCo
         ->and($result->providers()[0])->toBeInstanceOf(Provider::class)
         ->and($result->providers()[0]->getId())->toBe('openai:gpt-4o-mini');
 });
+
+test('alwaysExpect method creates and returns a TestCase', function () {
+    $evaluation = new Evaluation(['prompt1']);
+    $variables = ['key1' => 'value1', 'key2' => 'value2'];
+
+    $testCase = $evaluation->alwaysExpect($variables);
+
+    expect($testCase)->toBeInstanceOf(TestCase::class)
+        ->and($testCase->variables())->toBe($variables);
+});
+
+test('alwaysExpect method can be called with no parameters', function () {
+    $evaluation = new Evaluation(['prompt1']);
+
+    $testCase = $evaluation->alwaysExpect();
+
+    expect($testCase)->toBeInstanceOf(TestCase::class)
+        ->and($testCase->variables())->toBe([]);
+});
+
+test('alwaysExpect method can be called with empty variables array', function () {
+    $evaluation = new Evaluation(['prompt1']);
+
+    $testCase = $evaluation->alwaysExpect([]);
+
+    expect($testCase)->toBeInstanceOf(TestCase::class)
+        ->and($testCase->variables())->toBe([]);
+});
+
+test('alwaysExpect method returns the same TestCase instance on subsequent calls', function () {
+    $evaluation = new Evaluation(['prompt1']);
+    $variables = ['key1' => 'value1'];
+
+    $testCase1 = $evaluation->alwaysExpect($variables);
+    $testCase2 = $evaluation->alwaysExpect(['key2' => 'value2']);
+
+    expect($testCase1)->toBe($testCase2)
+        ->and($testCase1->variables())->toBe($variables);
+});
+
+test('alwaysExpect method can be chained with assertion methods', function () {
+    $evaluation = new Evaluation(['prompt1']);
+
+    $result = $evaluation->alwaysExpect(['default' => 'value'])
+        ->toBeJudged('the language is always a friendly variant')
+        ->toBeJudged('the source and output language are always mentioned');
+
+    expect($result)->toBeInstanceOf(TestCase::class)
+        ->and($result->assertions())->toHaveCount(2);
+});
+
+test('default test case is NOT added to testCases array', function () {
+    $evaluation = new Evaluation(['prompt1']);
+
+    $defaultTestCase = $evaluation->alwaysExpect(['default' => 'value']);
+    $regularTestCase = $evaluation->expect(['key' => 'value']);
+
+    expect($evaluation->testCases())->toHaveCount(1)
+        ->and($evaluation->testCases()[0])->toBe($regularTestCase)
+        ->and($evaluation->testCases()[0])->not->toBe($defaultTestCase)
+        ->and($evaluation->defaultTestCase())->toBe($defaultTestCase);
+});
+
+test('defaultTestCase getter returns the stored test case', function () {
+    $evaluation = new Evaluation(['prompt1']);
+
+    expect($evaluation->defaultTestCase())->toBeNull();
+
+    $defaultTestCase = $evaluation->alwaysExpect(['key' => 'value']);
+
+    expect($evaluation->defaultTestCase())->toBe($defaultTestCase);
+});

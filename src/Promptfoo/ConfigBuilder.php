@@ -28,6 +28,7 @@ final readonly class ConfigBuilder
             'description' => $this->evaluation->description(),
             'prompts' => $this->evaluation->prompts(),
             'providers' => $this->mapProviders(),
+            'defaultTest' => $this->mapDefaultTest(),
             'tests' => $this->mapTests(),
         ]);
     }
@@ -67,6 +68,23 @@ final readonly class ConfigBuilder
             'vars' => $testCase->variables(),
             'assert' => $self->mapAssertions($testCase->assertions()),
         ]), $this->evaluation->testCases());
+    }
+
+    /**
+     * @return array<string,mixed>|null
+     */
+    private function mapDefaultTest(): ?array
+    {
+        $defaultTestCase = $this->evaluation->defaultTestCase();
+
+        if (! $defaultTestCase instanceof TestCase) {
+            return null;
+        }
+
+        return array_filter([
+            'vars' => $defaultTestCase->variables(),
+            'assert' => $this->mapAssertions($defaultTestCase->assertions()),
+        ]);
     }
 
     /**

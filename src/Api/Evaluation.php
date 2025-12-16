@@ -17,6 +17,8 @@ class Evaluation
     /** @var TestCase[] */
     private array $testCases = [];
 
+    private ?TestCase $defaultTestCase = null;
+
     public function __construct(
         /** @var string[] */
         private readonly array $prompts
@@ -80,6 +82,23 @@ class Evaluation
         $this->testCases[] = $testCase;
 
         return $testCase;
+    }
+
+    /**
+     * @param  array<string,mixed>  $defaultVariables
+     */
+    public function alwaysExpect(array $defaultVariables = []): TestCase
+    {
+        if (! $this->defaultTestCase instanceof TestCase) {
+            $this->defaultTestCase = new TestCase($defaultVariables, $this);
+        }
+
+        return $this->defaultTestCase;
+    }
+
+    public function defaultTestCase(): ?TestCase
+    {
+        return $this->defaultTestCase;
     }
 
     public function clearTests(): self
