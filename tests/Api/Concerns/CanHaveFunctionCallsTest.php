@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use KevinPijning\Prompt\Api\Assertion;
-use KevinPijning\Prompt\Api\Evaluation;
-use KevinPijning\Prompt\Api\TestCase;
+use KevinPijning\Prompt\Assertion;
+use KevinPijning\Prompt\Evaluation;
+use KevinPijning\Prompt\TestCase;
 
 test('toHaveValidFunctionCall creates an is-valid-function-call assertion', function () {
     $evaluation = new Evaluation(['prompt1']);

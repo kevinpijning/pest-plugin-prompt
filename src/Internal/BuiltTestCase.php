@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace KevinPijning\Prompt\Internal;
 
-use KevinPijning\Prompt\Api\Assertion;
+use KevinPijning\Prompt\Assertion;
 
 /**
  * @internal

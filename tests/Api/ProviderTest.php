@@ -1,6 +1,6 @@
 <?php
 
-use KevinPijning\Prompt\Api\Provider;
+use KevinPijning\Prompt\Provider;
 
 test('a complete provider object', function () {
     $provider = Provider::create('openai:gpt-4o-mini')

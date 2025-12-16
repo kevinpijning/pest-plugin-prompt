@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use KevinPijning\Prompt\Api\Evaluation;
+use KevinPijning\Prompt\Evaluation;
 use KevinPijning\Prompt\Promptfoo\PendingEvaluation;
 use KevinPijning\Prompt\Promptfoo\PromptfooClient;
 

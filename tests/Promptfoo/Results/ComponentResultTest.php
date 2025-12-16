@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use KevinPijning\Prompt\Api\Assertion;
+use KevinPijning\Prompt\Assertion;
 use KevinPijning\Prompt\Promptfoo\Results\ComponentResult;
 
 test('ComponentResult can be instantiated with all properties', function () {

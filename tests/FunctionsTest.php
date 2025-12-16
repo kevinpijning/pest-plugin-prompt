@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use KevinPijning\Prompt\Api\Provider;
+use KevinPijning\Prompt\Provider;
 use KevinPijning\Prompt\TestContext;
 
 beforeEach(function () {

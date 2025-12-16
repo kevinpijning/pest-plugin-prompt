@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use KevinPijning\Prompt\Api\Evaluation;
+use KevinPijning\Prompt\Evaluation;
 use KevinPijning\Prompt\Promptfoo\ConfigBuilder;
 
 test('not modifier negates the next assertion type and then resets', function () {

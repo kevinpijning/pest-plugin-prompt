@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use KevinPijning\Prompt\Api\Evaluation;
-use KevinPijning\Prompt\Api\Provider;
+use KevinPijning\Prompt\Evaluation;
+use KevinPijning\Prompt\Provider;
 use KevinPijning\Prompt\Promptable;
 use KevinPijning\Prompt\TestContext;
 

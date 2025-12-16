@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace KevinPijning\Prompt\Api\Concerns;
+namespace KevinPijning\Prompt\Concerns;
 
 trait CanEnclose
 {

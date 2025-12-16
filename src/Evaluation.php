@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace KevinPijning\Prompt\Api;
+namespace KevinPijning\Prompt;
 
 use KevinPijning\Prompt\Internal\BuiltEvaluation;
 use KevinPijning\Prompt\Internal\BuiltProvider;

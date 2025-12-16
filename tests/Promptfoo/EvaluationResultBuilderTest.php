@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use KevinPijning\Prompt\Api\Assertion;
+use KevinPijning\Prompt\Assertion;
 use KevinPijning\Prompt\Promptfoo\EvaluationResult;
 use KevinPijning\Prompt\Promptfoo\EvaluationResultBuilder;
 use KevinPijning\Prompt\Promptfoo\Results\ComponentResult;

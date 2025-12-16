@@ -2,23 +2,23 @@
 
 declare(strict_types=1);
 
-namespace KevinPijning\Prompt\Api;
+namespace KevinPijning\Prompt;
 
-use KevinPijning\Prompt\Api\Concerns\CanBeClassified;
-use KevinPijning\Prompt\Api\Concerns\CanBeJudged;
-use KevinPijning\Prompt\Api\Concerns\CanBeRefused;
-use KevinPijning\Prompt\Api\Concerns\CanBeScored;
-use KevinPijning\Prompt\Api\Concerns\CanBeSimilar;
-use KevinPijning\Prompt\Api\Concerns\CanBeValid;
-use KevinPijning\Prompt\Api\Concerns\CanContain;
-use KevinPijning\Prompt\Api\Concerns\CanEnclose;
-use KevinPijning\Prompt\Api\Concerns\CanEqual;
-use KevinPijning\Prompt\Api\Concerns\CanHaveCustomValidation;
-use KevinPijning\Prompt\Api\Concerns\CanHaveFinishReason;
-use KevinPijning\Prompt\Api\Concerns\CanHaveFunctionCalls;
-use KevinPijning\Prompt\Api\Concerns\CanHavePerformance;
-use KevinPijning\Prompt\Api\Concerns\CanHaveTraces;
-use KevinPijning\Prompt\Api\Concerns\CanMatch;
+use KevinPijning\Prompt\Concerns\CanBeClassified;
+use KevinPijning\Prompt\Concerns\CanBeJudged;
+use KevinPijning\Prompt\Concerns\CanBeRefused;
+use KevinPijning\Prompt\Concerns\CanBeScored;
+use KevinPijning\Prompt\Concerns\CanBeSimilar;
+use KevinPijning\Prompt\Concerns\CanBeValid;
+use KevinPijning\Prompt\Concerns\CanContain;
+use KevinPijning\Prompt\Concerns\CanEnclose;
+use KevinPijning\Prompt\Concerns\CanEqual;
+use KevinPijning\Prompt\Concerns\CanHaveCustomValidation;
+use KevinPijning\Prompt\Concerns\CanHaveFinishReason;
+use KevinPijning\Prompt\Concerns\CanHaveFunctionCalls;
+use KevinPijning\Prompt\Concerns\CanHavePerformance;
+use KevinPijning\Prompt\Concerns\CanHaveTraces;
+use KevinPijning\Prompt\Concerns\CanMatch;
 use KevinPijning\Prompt\Internal\BuiltTestCase;
 use RuntimeException;
 

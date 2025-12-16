@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace KevinPijning\Prompt\Promptfoo\Results;
 
-use KevinPijning\Prompt\Api\Assertion;
+use KevinPijning\Prompt\Assertion;
 
 class ComponentResult
 {

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace KevinPijning\Prompt\Promptfoo;
 
 use InvalidArgumentException;
-use KevinPijning\Prompt\Api\Assertion;
+use KevinPijning\Prompt\Assertion;
 use KevinPijning\Prompt\Promptfoo\Results\ComponentResult;
 use KevinPijning\Prompt\Promptfoo\Results\GradingResult;
 use KevinPijning\Prompt\Promptfoo\Results\Prompt;

@@ -1,7 +1,7 @@
 <?php
 
-use KevinPijning\Prompt\Api\Evaluation;
-use KevinPijning\Prompt\Api\Provider;
+use KevinPijning\Prompt\Evaluation;
+use KevinPijning\Prompt\Provider;
 use KevinPijning\Prompt\TestContext;
 
 if (! function_exists('provider')) {

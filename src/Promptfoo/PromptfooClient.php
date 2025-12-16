@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace KevinPijning\Prompt\Promptfoo;
 
-use KevinPijning\Prompt\Api\Evaluation;
+use KevinPijning\Prompt\Evaluation;
 use KevinPijning\Prompt\Contracts\EvaluatorClient;
 use KevinPijning\Prompt\Exceptions\ExecutionException;
 use Symfony\Component\Process\Exception\ProcessTimedOutException;

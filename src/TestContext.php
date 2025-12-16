@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace KevinPijning\Prompt;
 
-use KevinPijning\Prompt\Api\Evaluation;
-use KevinPijning\Prompt\Api\Provider;
+use KevinPijning\Prompt\Evaluation;
+use KevinPijning\Prompt\Provider;
 
 class TestContext
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace KevinPijning\Prompt\Api\Concerns;
+namespace KevinPijning\Prompt\Concerns;
 
-use KevinPijning\Prompt\Api\Assertion;
+use KevinPijning\Prompt\Assertion;
 
 trait CanBeJudged
 {

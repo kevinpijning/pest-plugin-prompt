@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use KevinPijning\Prompt\Api\Assertion;
-use KevinPijning\Prompt\Api\Evaluation;
-use KevinPijning\Prompt\Api\TestCase;
+use KevinPijning\Prompt\Assertion;
+use KevinPijning\Prompt\Evaluation;
+use KevinPijning\Prompt\TestCase;
 use KevinPijning\Prompt\Enums\FinishReason;
 
 test('toHaveFinishReason creates a finish-reason assertion', function () {
