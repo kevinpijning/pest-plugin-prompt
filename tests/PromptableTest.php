@@ -67,7 +67,8 @@ test('Promptable trait methods can be chained in test context', function () {
     $evaluation = $testObject->prompt('test')
         ->usingProvider('chained-provider');
 
+    $built = $evaluation->build();
     expect($evaluation)->toBeInstanceOf(Evaluation::class)
-        ->and($evaluation->build()->providers)->toHaveCount(1)
-        ->and($evaluation->build()->providers[0])->toBe($provider);
+        ->and($built->providers)->toHaveCount(1)
+        ->and($built->providers[0]->id)->toBe('openai:gpt-4');
 });

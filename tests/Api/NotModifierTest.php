@@ -16,9 +16,9 @@ test('not modifier negates the next assertion type and then resets', function ()
         ->toContain('allowed');
 
     // Assert
-    expect($testCase->assertions())->toHaveCount(2)
-        ->and($testCase->assertions()[0]->type)->toBe('not-icontains')
-        ->and($testCase->assertions()[1]->type)->toBe('icontains');
+    expect($testCase->build()->assertions)->toHaveCount(2)
+        ->and($testCase->build()->assertions[0]->type)->toBe('not-icontains')
+        ->and($testCase->build()->assertions[1]->type)->toBe('icontains');
 });
 
 test('not modifier can be toggled twice to cancel negation', function () {
@@ -30,8 +30,8 @@ test('not modifier can be toggled twice to cancel negation', function () {
     $testCase->not->not->toContain('value');
 
     // Assert
-    expect($testCase->assertions())->toHaveCount(1)
-        ->and($testCase->assertions()[0]->type)->toBe('icontains');
+    expect($testCase->build()->assertions)->toHaveCount(1)
+        ->and($testCase->build()->assertions[0]->type)->toBe('icontains');
 });
 
 test('not modifier works with strict mode toContain', function () {
@@ -43,8 +43,8 @@ test('not modifier works with strict mode toContain', function () {
     $testCase->not->toContain('value', strict: true);
 
     // Assert
-    expect($testCase->assertions())->toHaveCount(1)
-        ->and($testCase->assertions()[0]->type)->toBe('not-contains');
+    expect($testCase->build()->assertions)->toHaveCount(1)
+        ->and($testCase->build()->assertions[0]->type)->toBe('not-contains');
 });
 
 test('not modifier works with toContainAll', function () {
@@ -56,8 +56,8 @@ test('not modifier works with toContainAll', function () {
     $testCase->not->toContainAll(['value1', 'value2']);
 
     // Assert
-    expect($testCase->assertions())->toHaveCount(1)
-        ->and($testCase->assertions()[0]->type)->toBe('not-icontains-all');
+    expect($testCase->build()->assertions)->toHaveCount(1)
+        ->and($testCase->build()->assertions[0]->type)->toBe('not-icontains-all');
 });
 
 test('not modifier works with toContainAny', function () {
@@ -69,8 +69,8 @@ test('not modifier works with toContainAny', function () {
     $testCase->not->toContainAny(['value1', 'value2']);
 
     // Assert
-    expect($testCase->assertions())->toHaveCount(1)
-        ->and($testCase->assertions()[0]->type)->toBe('not-icontains-any');
+    expect($testCase->build()->assertions)->toHaveCount(1)
+        ->and($testCase->build()->assertions[0]->type)->toBe('not-icontains-any');
 });
 
 test('not modifier works with toContainJson', function () {
@@ -82,8 +82,8 @@ test('not modifier works with toContainJson', function () {
     $testCase->not->toContainJson();
 
     // Assert
-    expect($testCase->assertions())->toHaveCount(1)
-        ->and($testCase->assertions()[0]->type)->toBe('not-contains-json');
+    expect($testCase->build()->assertions)->toHaveCount(1)
+        ->and($testCase->build()->assertions[0]->type)->toBe('not-contains-json');
 });
 
 test('not modifier works with toContainHtml', function () {
@@ -95,8 +95,8 @@ test('not modifier works with toContainHtml', function () {
     $testCase->not->toContainHtml();
 
     // Assert
-    expect($testCase->assertions())->toHaveCount(1)
-        ->and($testCase->assertions()[0]->type)->toBe('not-contains-html');
+    expect($testCase->build()->assertions)->toHaveCount(1)
+        ->and($testCase->build()->assertions[0]->type)->toBe('not-contains-html');
 });
 
 test('not modifier works with toContainSql', function () {
@@ -108,8 +108,8 @@ test('not modifier works with toContainSql', function () {
     $testCase->not->toContainSql();
 
     // Assert
-    expect($testCase->assertions())->toHaveCount(1)
-        ->and($testCase->assertions()[0]->type)->toBe('not-contains-sql');
+    expect($testCase->build()->assertions)->toHaveCount(1)
+        ->and($testCase->build()->assertions[0]->type)->toBe('not-contains-sql');
 });
 
 test('not modifier works with toContainXml', function () {
@@ -121,8 +121,8 @@ test('not modifier works with toContainXml', function () {
     $testCase->not->toContainXml();
 
     // Assert
-    expect($testCase->assertions())->toHaveCount(1)
-        ->and($testCase->assertions()[0]->type)->toBe('not-contains-xml');
+    expect($testCase->build()->assertions)->toHaveCount(1)
+        ->and($testCase->build()->assertions[0]->type)->toBe('not-contains-xml');
 });
 
 test('not modifier works with toBeJudged', function () {
@@ -134,8 +134,8 @@ test('not modifier works with toBeJudged', function () {
     $testCase->not->toBeJudged('rubric text');
 
     // Assert
-    expect($testCase->assertions())->toHaveCount(1)
-        ->and($testCase->assertions()[0]->type)->toBe('not-llm-rubric');
+    expect($testCase->build()->assertions)->toHaveCount(1)
+        ->and($testCase->build()->assertions[0]->type)->toBe('not-llm-rubric');
 });
 
 test('not modifier preserves threshold and options', function () {
@@ -147,10 +147,10 @@ test('not modifier preserves threshold and options', function () {
     $testCase->not->toContain('value', threshold: 0.8, options: ['key' => 'value']);
 
     // Assert
-    expect($testCase->assertions())->toHaveCount(1)
-        ->and($testCase->assertions()[0]->type)->toBe('not-icontains')
-        ->and($testCase->assertions()[0]->threshold)->toBe(0.8)
-        ->and($testCase->assertions()[0]->options)->toBe(['key' => 'value']);
+    expect($testCase->build()->assertions)->toHaveCount(1)
+        ->and($testCase->build()->assertions[0]->type)->toBe('not-icontains')
+        ->and($testCase->build()->assertions[0]->threshold)->toBe(0.8)
+        ->and($testCase->build()->assertions[0]->options)->toBe(['key' => 'value']);
 });
 
 test('not modifier can be used multiple times independently', function () {
@@ -166,11 +166,11 @@ test('not modifier can be used multiple times independently', function () {
         ->toContain('allowed2');
 
     // Assert
-    expect($testCase->assertions())->toHaveCount(4)
-        ->and($testCase->assertions()[0]->type)->toBe('not-icontains')
-        ->and($testCase->assertions()[1]->type)->toBe('icontains')
-        ->and($testCase->assertions()[2]->type)->toBe('not-icontains')
-        ->and($testCase->assertions()[3]->type)->toBe('icontains');
+    expect($testCase->build()->assertions)->toHaveCount(4)
+        ->and($testCase->build()->assertions[0]->type)->toBe('not-icontains')
+        ->and($testCase->build()->assertions[1]->type)->toBe('icontains')
+        ->and($testCase->build()->assertions[2]->type)->toBe('not-icontains')
+        ->and($testCase->build()->assertions[3]->type)->toBe('icontains');
 });
 
 test('not modifier works with three consecutive not calls', function () {
@@ -182,8 +182,8 @@ test('not modifier works with three consecutive not calls', function () {
     $testCase->not->not->not->toContain('value');
 
     // Assert
-    expect($testCase->assertions())->toHaveCount(1)
-        ->and($testCase->assertions()[0]->type)->toBe('not-icontains');
+    expect($testCase->build()->assertions)->toHaveCount(1)
+        ->and($testCase->build()->assertions[0]->type)->toBe('not-icontains');
 });
 
 test('not modifier works correctly in ConfigBuilder output', function () {
@@ -211,9 +211,9 @@ test('not modifier with toContainAll preserves array value', function () {
     $testCase->not->toContainAll($values);
 
     // Assert
-    expect($testCase->assertions())->toHaveCount(1)
-        ->and($testCase->assertions()[0]->type)->toBe('not-icontains-all')
-        ->and($testCase->assertions()[0]->value)->toBe($values);
+    expect($testCase->build()->assertions)->toHaveCount(1)
+        ->and($testCase->build()->assertions[0]->type)->toBe('not-icontains-all')
+        ->and($testCase->build()->assertions[0]->value)->toBe($values);
 });
 
 test('not modifier with strict toContainAll uses correct type', function () {
@@ -225,8 +225,8 @@ test('not modifier with strict toContainAll uses correct type', function () {
     $testCase->not->toContainAll(['value1', 'value2'], strict: true);
 
     // Assert
-    expect($testCase->assertions())->toHaveCount(1)
-        ->and($testCase->assertions()[0]->type)->toBe('not-contains-all');
+    expect($testCase->build()->assertions)->toHaveCount(1)
+        ->and($testCase->build()->assertions[0]->type)->toBe('not-contains-all');
 });
 
 test('not modifier with strict toContainAny uses correct type', function () {
@@ -238,8 +238,8 @@ test('not modifier with strict toContainAny uses correct type', function () {
     $testCase->not->toContainAny(['value1', 'value2'], strict: true);
 
     // Assert
-    expect($testCase->assertions())->toHaveCount(1)
-        ->and($testCase->assertions()[0]->type)->toBe('not-contains-any');
+    expect($testCase->build()->assertions)->toHaveCount(1)
+        ->and($testCase->build()->assertions[0]->type)->toBe('not-contains-any');
 });
 
 // Tests for not() method call syntax
@@ -255,9 +255,9 @@ test('not() method negates the next assertion type', function () {
         ->toContain('allowed');
 
     // Assert
-    expect($testCase->assertions())->toHaveCount(2)
-        ->and($testCase->assertions()[0]->type)->toBe('not-icontains')
-        ->and($testCase->assertions()[1]->type)->toBe('icontains');
+    expect($testCase->build()->assertions)->toHaveCount(2)
+        ->and($testCase->build()->assertions[0]->type)->toBe('not-icontains')
+        ->and($testCase->build()->assertions[1]->type)->toBe('icontains');
 });
 
 test('not() method can be toggled twice to cancel negation', function () {
@@ -269,8 +269,8 @@ test('not() method can be toggled twice to cancel negation', function () {
     $testCase->not()->not()->toContain('value');
 
     // Assert
-    expect($testCase->assertions())->toHaveCount(1)
-        ->and($testCase->assertions()[0]->type)->toBe('icontains');
+    expect($testCase->build()->assertions)->toHaveCount(1)
+        ->and($testCase->build()->assertions[0]->type)->toBe('icontains');
 });
 
 test('not() method works with all assertion types', function () {
@@ -287,12 +287,12 @@ test('not() method works with all assertion types', function () {
         ->not()->toBeJudged('rubric');
 
     // Assert
-    expect($testCase->assertions())->toHaveCount(5)
-        ->and($testCase->assertions()[0]->type)->toBe('not-icontains')
-        ->and($testCase->assertions()[1]->type)->toBe('not-icontains-all')
-        ->and($testCase->assertions()[2]->type)->toBe('not-icontains-any')
-        ->and($testCase->assertions()[3]->type)->toBe('not-contains-json')
-        ->and($testCase->assertions()[4]->type)->toBe('not-llm-rubric');
+    expect($testCase->build()->assertions)->toHaveCount(5)
+        ->and($testCase->build()->assertions[0]->type)->toBe('not-icontains')
+        ->and($testCase->build()->assertions[1]->type)->toBe('not-icontains-all')
+        ->and($testCase->build()->assertions[2]->type)->toBe('not-icontains-any')
+        ->and($testCase->build()->assertions[3]->type)->toBe('not-contains-json')
+        ->and($testCase->build()->assertions[4]->type)->toBe('not-llm-rubric');
 });
 
 test('not() method and not property can be mixed', function () {
@@ -307,10 +307,10 @@ test('not() method and not property can be mixed', function () {
         ->toContain('regular');
 
     // Assert
-    expect($testCase->assertions())->toHaveCount(3)
-        ->and($testCase->assertions()[0]->type)->toBe('not-icontains')
-        ->and($testCase->assertions()[1]->type)->toBe('not-icontains')
-        ->and($testCase->assertions()[2]->type)->toBe('icontains');
+    expect($testCase->build()->assertions)->toHaveCount(3)
+        ->and($testCase->build()->assertions[0]->type)->toBe('not-icontains')
+        ->and($testCase->build()->assertions[1]->type)->toBe('not-icontains')
+        ->and($testCase->build()->assertions[2]->type)->toBe('icontains');
 });
 
 test('not() method preserves threshold and options', function () {
@@ -322,8 +322,8 @@ test('not() method preserves threshold and options', function () {
     $testCase->not()->toContain('value', threshold: 0.9, options: ['custom' => 'option']);
 
     // Assert
-    expect($testCase->assertions())->toHaveCount(1)
-        ->and($testCase->assertions()[0]->type)->toBe('not-icontains')
-        ->and($testCase->assertions()[0]->threshold)->toBe(0.9)
-        ->and($testCase->assertions()[0]->options)->toBe(['custom' => 'option']);
+    expect($testCase->build()->assertions)->toHaveCount(1)
+        ->and($testCase->build()->assertions[0]->type)->toBe('not-icontains')
+        ->and($testCase->build()->assertions[0]->threshold)->toBe(0.9)
+        ->and($testCase->build()->assertions[0]->options)->toBe(['custom' => 'option']);
 });

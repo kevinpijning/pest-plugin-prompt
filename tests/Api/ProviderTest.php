@@ -11,13 +11,14 @@ test('a complete provider object', function () {
         ->presencePenalty(.3)
         ->stop(['\n', 'Human:', 'AI:']);
 
+    $built = $provider->build();
     expect($provider)->toBeInstanceOf(Provider::class)
-        ->build()->label->toBe('Custom label')
-        ->build()->maxTokens->toBe(1234)
-        ->getTopP()->toBe(.1)
-        ->getFrequencyPenalty()->toBe(.2)
-        ->getPresencePenalty()->toBe(.3)
-        ->getStop()->toBe(['\n', 'Human:', 'AI:']);
+        ->and($built->label)->toBe('Custom label')
+        ->and($built->maxTokens)->toBe(1234)
+        ->and($built->topP)->toBe(.1)
+        ->and($built->frequencyPenalty)->toBe(.2)
+        ->and($built->presencePenalty)->toBe(.3)
+        ->and($built->stop)->toBe(['\n', 'Human:', 'AI:']);
 });
 
 test('the provider accepts a provider id', function () {
@@ -51,21 +52,21 @@ test('the max token can be set', function () {
 test('the top p can be set', function () {
     $provider = Provider::create('openai:gpt-4o-mini')
         ->topP(.8);
-    expect($provider->getTopP())->toBe(.8);
+    expect($provider->build()->topP)->toBe(.8);
 });
 
 test('the frequency penalty can be set', function () {
     $provider = Provider::create('openai:gpt-4o-mini')
         ->frequencyPenalty(.1);
 
-    expect($provider->getFrequencyPenalty())->toBe(.1);
+    expect($provider->build()->frequencyPenalty)->toBe(.1);
 });
 
 test('the presence penalty can be set', function () {
     $provider = Provider::create('openai:gpt-4o-mini')
         ->presencePenalty(.2);
 
-    expect($provider->getPresencePenalty())->toBe(.2);
+    expect($provider->build()->presencePenalty)->toBe(.2);
 });
 
 test('custom config can be set', function () {
@@ -74,7 +75,7 @@ test('custom config can be set', function () {
             'apiKey' => 'fake-api-key',
         ]);
 
-    expect($provider->getConfig())->toBe(['apiKey' => 'fake-api-key']);
+    expect($provider->build()->config)->toBe(['apiKey' => 'fake-api-key']);
 });
 
 test('id method sets the provider id and returns self', function () {
