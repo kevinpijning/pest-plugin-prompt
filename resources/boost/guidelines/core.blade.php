@@ -19,7 +19,7 @@ test('greeting works', function () {
 
 **`prompt(string ...$prompts)`**: Create evaluation. Use `\{\{variable\}\}` for interpolation. Accepts multiple prompts.
 
-**`provider(string $name)`**: Register reusable provider. Returns chainable `Provider` instance.
+**`provider(string $name, ?callable $config = null)`**: Register reusable provider. Returns chainable `Provider` instance.
 
 @verbatim
 <code-snippet name="Provider registration" lang="php">
@@ -36,13 +36,13 @@ provider('openai-gpt4')
 
 **`describe(string $description)`**: Add description for test output.
 
-**`usingProvider(string|Provider ...$providers)`**: Set provider(s). Accepts IDs, `Provider` instances, or registered names.
+**`usingProvider(string|Provider|callable ...$providers)`**: Set provider(s). Accepts IDs, `Provider` instances, callables, or registered names.
 
-**`alwaysExpect(array $defaultVariables = [])`**: Set default assertions and variables that apply to all test cases. Returns a `TestCase` for chaining assertions.
+**`alwaysExpect(array $defaultVariables = [], ?callable $callback = null)`**: Set default assertions and variables that apply to all test cases. Returns a `TestCase` for chaining assertions.
 
-**`expect(array $variables = [])`**: Create test case with variables for `\{\{variable\}\}` substitution.
+**`expect(array $variables = [], ?callable $callback = null)`**: Create test case with variables for `\{\{variable\}\}` substitution.
 
-**`and(array $variables)`**: Chain additional test cases.
+**`and(array $variables, ?callable $callback = null)`**: Chain additional test cases.
 
 @verbatim
 <code-snippet name="Multiple test cases" lang="php">
@@ -57,17 +57,17 @@ prompt('Greet \{\{name\}\}.')
 
 ### Assertion Methods
 
-**Text matching**: `toContain(string $text, bool $strict = false, ?float $threshold = null)`, `toContainAll(array $texts, bool $strict = false, ?float $threshold = null)`, `toContainAny(array $texts, bool $strict = false, ?float $threshold = null)`, `startsWith(string $prefix, bool $strict = false, ?float $threshold = null)`, `toMatchRegex(string $pattern, ?float $threshold = null)`.
+**Text matching**: `toContain(string $text, bool $strict = false)`, `toContainAll(array $texts, bool $strict = false)`, `toContainAny(array $texts, bool $strict = false)`, `startsWith(string $prefix)`, `toMatchRegex(string $pattern)`.
 
-**Format validators (contains)**: `toContainJson()`, `toContainHtml()`, `toContainSql()`, `toContainXml()`.
+**Format validators (contains)**: `toContainJson(?array $schema = null)`, `toContainHtml()`, `toContainSql(?array $config = null)`, `toContainXml(?array $config = null)`.
 
-**Format validators (is)**: `toBeJson(?array $schema = null)`, `toBeHtml()`, `toBeSql(?array $authorityList = null)`, `toBeXml()`.
+**Format validators (is)**: `toBeJson(?array $schema = null)`, `toBeHtml()`, `toBeSql(?array $config = null)`, `toBeXml(?array $config = null)`.
 
-**Equality**: `toEqual(mixed $value, ?float $threshold = null)`, `toBe(mixed $value, ?float $threshold = null)`.
+**Equality**: `toEqual(mixed $value)`, `toBe(mixed $value)`.
 
 **Similarity metrics**: `toBeSimilar(string|array $expected, ?float $threshold = null, ?string $provider = null)`, `toHaveLevenshtein(string $expected, ?float $threshold = null)`, `toHaveRougeN(int $n, string|array $expected, ?float $threshold = null)`, `toHaveFScore(string|array $expected, ?float $threshold = null)`, `toHavePerplexity(?float $threshold = null)`, `toHavePerplexityScore(?float $threshold = null)`.
 
-**Performance**: `toHaveCost(?float $maxCost = null)`, `toHaveLatency(?int $maxMilliseconds = null)`.
+**Performance**: `toHaveCost(float $maxCost)`, `toHaveLatency(int $maxMilliseconds)`.
 
 **Function/tool calls**: `toHaveValidFunctionCall(?array $schema = null)`, `toHaveValidOpenaiFunctionCall(?array $schema = null)`, `toHaveValidOpenaiToolsCall(?array $schema = null)`, `toHaveToolCallF1(array $expected, ?float $threshold = null)`.
 
@@ -75,11 +75,11 @@ prompt('Greet \{\{name\}\}.')
 
 **Classification**: `toBeClassified(string $provider, string $expectedClass, ?float $threshold = null)`.
 
-**Scoring**: `toBeJudged(string $rubric, ?float $threshold = null, array $options = [])` (LLM-based), `toBeScoredByPi(string $rubric, ?float $threshold = null)`.
+**Scoring**: `toBeJudged(string $rubric, ?float $threshold = null, ?string $provider = null)` (LLM-based), `toBeScoredByPi(string $rubric, ?float $threshold = null)`.
 
 **Refusal detection**: `toBeRefused()`.
 
-**Custom validation**: `toPassJavascript(string $code)`, `toPassPython(string $code)`, `toPassWebhook(string $url)`.
+**Custom validation**: `toPassJavascript(string $code, ?float $threshold = null, ?array $config = null)`, `toPassPython(string $code, ?float $threshold = null, ?array $config = null)`, `toPassWebhook(string $url)`.
 
 **Tracing**: `toHaveTraceSpanCount(array $patterns, ?int $min = null, ?int $max = null)`, `toHaveTraceSpanDuration(array $patterns, ?float $percentile = null, ?float $maxDuration = null)`, `toHaveTraceErrorSpans()`.
 
