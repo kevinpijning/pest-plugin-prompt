@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use KevinPijning\Prompt\Evaluation;
-use KevinPijning\Prompt\Promptfoo\EvaluationCommandBuilder;
+use KevinPijning\Prompt\Promptfoo\EvaluationContext;
 use KevinPijning\Prompt\Promptfoo\Promptfoo;
 
 beforeEach(function () {
@@ -13,9 +13,9 @@ beforeEach(function () {
 test('create creates a PendingEvaluation instance', function () {
     $evaluation = new Evaluation(['test prompt']);
 
-    $pending = EvaluationCommandBuilder::create($evaluation);
+    $pending = EvaluationContext::create($evaluation);
 
-    expect($pending)->toBeInstanceOf(EvaluationCommandBuilder::class)
+    expect($pending)->toBeInstanceOf(EvaluationContext::class)
         ->and($pending->evaluation)->toBe($evaluation)
         ->and($pending->configPath)->toBeString()
         ->and($pending->outputPath)->toBeString()
@@ -25,8 +25,8 @@ test('create creates a PendingEvaluation instance', function () {
 test('create generates unique config and output paths', function () {
     $evaluation = new Evaluation(['test prompt']);
 
-    $pending1 = EvaluationCommandBuilder::create($evaluation);
-    $pending2 = EvaluationCommandBuilder::create($evaluation);
+    $pending1 = EvaluationContext::create($evaluation);
+    $pending2 = EvaluationContext::create($evaluation);
 
     expect($pending1->configPath)->not->toBe($pending2->configPath)
         ->and($pending1->outputPath)->not->toBe($pending2->outputPath);
@@ -38,7 +38,7 @@ test('create sets userOutputPath when output folder is configured', function () 
     $evaluation = new Evaluation(['test prompt']);
     $evaluation->describe('Test Description');
 
-    $pending = EvaluationCommandBuilder::create($evaluation);
+    $pending = EvaluationContext::create($evaluation);
 
     expect($pending->userOutputPath)->not->toBeNull()
         ->and($pending->userOutputPath)->toContain('/test/output')
@@ -50,7 +50,7 @@ test('create uses test name when description is not set', function () {
 
     $evaluation = new Evaluation(['test prompt']);
 
-    $pending = EvaluationCommandBuilder::create($evaluation);
+    $pending = EvaluationContext::create($evaluation);
 
     expect($pending->userOutputPath)->not->toBeNull()
         ->and($pending->userOutputPath)->toContain('/test/output');

@@ -20,7 +20,7 @@ class PromptfooClient implements EvaluatorClient
 
     public function evaluate(Evaluation $evaluation): EvaluationResult
     {
-        $pendingEvaluation = EvaluationCommandBuilder::create($evaluation);
+        $pendingEvaluation = EvaluationContext::create($evaluation);
 
         try {
             $this->generateConfig($pendingEvaluation);
@@ -79,7 +79,7 @@ class PromptfooClient implements EvaluatorClient
     /**
      * @return string[]
      */
-    private function generateCommand(EvaluationCommandBuilder $pendingEvaluation): array
+    private function generateCommand(EvaluationContext $pendingEvaluation): array
     {
         $command = [
             ...explode(' ', $this->promptfooCommand), 'eval',
@@ -96,7 +96,7 @@ class PromptfooClient implements EvaluatorClient
         return $command;
     }
 
-    private function generateConfig(EvaluationCommandBuilder $pendingEvaluation): void
+    private function generateConfig(EvaluationContext $pendingEvaluation): void
     {
         $configYaml = ConfigBuilder::fromEvaluation($pendingEvaluation->evaluation)->toYaml();
 
@@ -108,7 +108,7 @@ class PromptfooClient implements EvaluatorClient
         return EvaluationResultBuilder::fromJson($outputPath);
     }
 
-    private function cleanup(EvaluationCommandBuilder $pendingEvaluation): void
+    private function cleanup(EvaluationContext $pendingEvaluation): void
     {
         if (file_exists($pendingEvaluation->outputPath)) {
             unlink($pendingEvaluation->outputPath);
