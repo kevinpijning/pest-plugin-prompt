@@ -21,24 +21,6 @@ final class PromptfooExecutor implements EvaluatorClient
 
     public function evaluate(Evaluation $evaluation): EvaluationResult
     {
-        // #region agent log
-        $logData = [
-            'sessionId' => 'debug-session',
-            'runId' => 'pre-fix',
-            'location' => __FILE__.':'.__LINE__,
-            'message' => 'evaluate() entry',
-            'data' => [
-                'pid' => getmypid(),
-                'hasPromptfooCachePath' => isset($_ENV['PROMPTFOO_CACHE_PATH']),
-                'promptfooCachePath' => $_ENV['PROMPTFOO_CACHE_PATH'] ?? 'NOT_SET',
-                'defaultCachePath' => (getenv('HOME') ?: sys_get_temp_dir()).'/.promptfoo/cache',
-            ],
-            'timestamp' => (int) (microtime(true) * 1000),
-            'hypothesisId' => 'A,B',
-        ];
-        file_put_contents('/Users/kevinpijning/workspace/pest-plugin-prompts/.cursor/debug.log', json_encode($logData)."\n", FILE_APPEND);
-        // #endregion
-
         // Lazy merge: if we're not in parallel mode and parallel caches exist, merge them now
         // This handles the case where afterAll doesn't fire in parallel mode
         if (! $this->isRunningInParallel()) {
@@ -51,21 +33,6 @@ final class PromptfooExecutor implements EvaluatorClient
             $this->writeConfig($context);
 
             $command = $this->buildCommand($context);
-            // #region agent log
-            $logData = [
-                'sessionId' => 'debug-session',
-                'runId' => 'pre-fix',
-                'location' => __FILE__.':'.__LINE__,
-                'message' => 'command built',
-                'data' => [
-                    'command' => implode(' ', $command),
-                    'pid' => getmypid(),
-                ],
-                'timestamp' => (int) (microtime(true) * 1000),
-                'hypothesisId' => 'C',
-            ];
-            file_put_contents('/Users/kevinpijning/workspace/pest-plugin-prompts/.cursor/debug.log', json_encode($logData)."\n", FILE_APPEND);
-            // #endregion
             $this->execute($command);
 
             $result = $this->parseOutput($context->outputPath);
@@ -85,22 +52,22 @@ final class PromptfooExecutor implements EvaluatorClient
     {
         // Detect if we're running in parallel mode
         $isParallel = $this->isRunningInParallel();
-        
+
         $env = $_ENV;
         $processId = getmypid();
         $defaultCachePath = (getenv('HOME') ?: sys_get_temp_dir()).'/.promptfoo/cache';
-        
+
         if ($isParallel) {
             // In parallel mode: use process-specific cache to prevent overwrites
             // We'll merge these into the main cache after all tests complete
             $processCachePath = $defaultCachePath.'_parallel_'.$processId;
             $env['PROMPTFOO_CACHE_PATH'] = $processCachePath;
-            
+
             // Ensure the process-specific cache directory exists
             if (! is_dir($processCachePath)) {
                 @mkdir($processCachePath, 0755, true);
             }
-            
+
             // Register this cache path for later merging
             self::registerParallelCachePath($processCachePath);
         } else {
@@ -109,102 +76,11 @@ final class PromptfooExecutor implements EvaluatorClient
             // This ensures cache is predictable and reusable across runs
         }
 
-        // #region agent log
-        $cacheJsonPath = $defaultCachePath.'/cache.json';
-        $cacheFileExists = file_exists($cacheJsonPath);
-        $cacheFileSize = $cacheFileExists ? filesize($cacheJsonPath) : 0;
-        $cacheFileMtime = $cacheFileExists ? filemtime($cacheJsonPath) : 0;
-        $logData = [
-            'sessionId' => 'debug-session',
-            'runId' => 'post-fix-v2',
-            'location' => __FILE__.':'.__LINE__,
-            'message' => 'execute() before Process creation - PREDICTABLE CACHE FIX',
-            'data' => [
-                'pid' => $processId,
-                'isParallel' => $isParallel,
-                'envHasPromptfooCachePath' => isset($env['PROMPTFOO_CACHE_PATH']),
-                'envPromptfooCachePath' => $env['PROMPTFOO_CACHE_PATH'] ?? 'NOT_SET (using default)',
-                'cacheEnabled' => $env['PROMPTFOO_CACHE_ENABLED'] ?? 'true (default)',
-                'defaultCachePath' => $defaultCachePath,
-                'cacheFileExists' => $cacheFileExists,
-                'cacheFileSize' => $cacheFileSize,
-                'cacheFileMtime' => $cacheFileMtime,
-                'cacheFileMtimeReadable' => $cacheFileMtime > 0 ? date('Y-m-d H:i:s', $cacheFileMtime) : 'N/A',
-            ],
-            'timestamp' => (int) (microtime(true) * 1000),
-            'hypothesisId' => 'A,B,E',
-        ];
-        file_put_contents('/Users/kevinpijning/workspace/pest-plugin-prompts/.cursor/debug.log', json_encode($logData)."\n", FILE_APPEND);
-        // #endregion
-
         $process = new Process($command, env: $env);
-
-        // #region agent log
-        $logData = [
-            'sessionId' => 'debug-session',
-            'runId' => 'post-fix-v2',
-            'location' => __FILE__.':'.__LINE__,
-            'message' => 'Process created - PREDICTABLE CACHE FIX',
-            'data' => [
-                'pid' => $processId,
-                'isParallel' => $isParallel,
-                'cacheEnabled' => $env['PROMPTFOO_CACHE_ENABLED'] ?? 'true (default)',
-                'cachePath' => $env['PROMPTFOO_CACHE_PATH'] ?? 'default (~/.promptfoo/cache)',
-            ],
-            'timestamp' => (int) (microtime(true) * 1000),
-            'hypothesisId' => 'E',
-        ];
-        file_put_contents('/Users/kevinpijning/workspace/pest-plugin-prompts/.cursor/debug.log', json_encode($logData)."\n", FILE_APPEND);
-        // #endregion
-
         $process->setTimeout($this->config->timeout());
 
         try {
-            // #region agent log
-            $logData = [
-                'sessionId' => 'debug-session',
-                'runId' => 'post-fix-v2',
-                'location' => __FILE__.':'.__LINE__,
-                'message' => 'process->run() starting - PREDICTABLE CACHE FIX',
-                'data' => [
-                    'pid' => $processId,
-                    'isParallel' => $isParallel,
-                    'timestamp' => microtime(true),
-                    'cachePath' => $defaultCachePath,
-                ],
-                'timestamp' => (int) (microtime(true) * 1000),
-                'hypothesisId' => 'D',
-            ];
-            file_put_contents('/Users/kevinpijning/workspace/pest-plugin-prompts/.cursor/debug.log', json_encode($logData)."\n", FILE_APPEND);
-            // #endregion
             $process->run();
-            // #region agent log
-            $cacheFileExistsAfter = file_exists($cacheJsonPath);
-            $cacheFileSizeAfter = $cacheFileExistsAfter ? filesize($cacheJsonPath) : 0;
-            $cacheFileMtimeAfter = $cacheFileExistsAfter ? filemtime($cacheJsonPath) : 0;
-            $logData = [
-                'sessionId' => 'debug-session',
-                'runId' => 'post-fix-v2',
-                'location' => __FILE__.':'.__LINE__,
-                'message' => 'process->run() completed - PREDICTABLE CACHE FIX',
-                'data' => [
-                    'pid' => $processId,
-                    'isParallel' => $isParallel,
-                    'exitCode' => $process->getExitCode(),
-                    'isSuccessful' => $process->isSuccessful(),
-                    'cachePath' => $defaultCachePath,
-                    'cacheFileExists' => $cacheFileExistsAfter,
-                    'cacheFileSizeBefore' => $cacheFileSize,
-                    'cacheFileSizeAfter' => $cacheFileSizeAfter,
-                    'cacheFileMtimeBefore' => $cacheFileMtime,
-                    'cacheFileMtimeAfter' => $cacheFileMtimeAfter,
-                    'cacheFileModified' => $cacheFileMtimeAfter > 0 && $cacheFileMtimeAfter !== $cacheFileMtime,
-                ],
-                'timestamp' => (int) (microtime(true) * 1000),
-                'hypothesisId' => 'A,D',
-            ];
-            file_put_contents('/Users/kevinpijning/workspace/pest-plugin-prompts/.cursor/debug.log', json_encode($logData)."\n", FILE_APPEND);
-            // #endregion
         } catch (ProcessTimedOutException) {
             throw new ExecutionException(
                 sprintf('Promptfoo command timed out after %d seconds. The process may be hanging or waiting for a response.', $this->config->timeout()),
@@ -271,31 +147,15 @@ final class PromptfooExecutor implements EvaluatorClient
      */
     public static function mergeParallelCaches(): void
     {
-        // #region agent log
-        $logData = [
-            'sessionId' => 'debug-session',
-            'runId' => 'post-fix-v3',
-            'location' => __FILE__.':'.__LINE__,
-            'message' => 'mergeParallelCaches() CALLED',
-            'data' => [
-                'pid' => getmypid(),
-                'timestamp' => microtime(true),
-            ],
-            'timestamp' => (int) (microtime(true) * 1000),
-            'hypothesisId' => 'MERGE',
-        ];
-        file_put_contents('/Users/kevinpijning/workspace/pest-plugin-prompts/.cursor/debug.log', json_encode($logData)."\n", FILE_APPEND);
-        // #endregion
-
         $defaultCachePath = (getenv('HOME') ?: sys_get_temp_dir()).'/.promptfoo/cache';
         $mainCacheFile = $defaultCachePath.'/cache.json';
-        
+
         // Find all parallel cache directories (not just the ones registered in this process)
         // This is necessary because in parallel mode, each process has its own static array
         $parallelCacheDirs = [];
         $baseDir = dirname($defaultCachePath);
         $cacheDirName = basename($defaultCachePath);
-        
+
         if (is_dir($baseDir)) {
             $entries = @scandir($baseDir);
             if ($entries !== false) {
@@ -303,7 +163,7 @@ final class PromptfooExecutor implements EvaluatorClient
                     if ($entry === '.' || $entry === '..') {
                         continue;
                     }
-                    
+
                     $fullPath = $baseDir.'/'.$entry;
                     if (is_dir($fullPath) && str_starts_with($entry, $cacheDirName.'_parallel_')) {
                         $parallelCacheDirs[] = $fullPath;
@@ -311,31 +171,13 @@ final class PromptfooExecutor implements EvaluatorClient
                 }
             }
         }
-        
+
         // Also include any registered paths (for this process)
         $parallelCacheDirs = array_unique(array_merge($parallelCacheDirs, self::$parallelCachePaths));
-        
+
         if (empty($parallelCacheDirs)) {
             return;
         }
-
-        // #region agent log
-        $logData = [
-            'sessionId' => 'debug-session',
-            'runId' => 'post-fix-v3',
-            'location' => __FILE__.':'.__LINE__,
-            'message' => 'mergeParallelCaches() starting',
-            'data' => [
-                'pid' => getmypid(),
-                'parallelCacheDirsCount' => count($parallelCacheDirs),
-                'parallelCacheDirs' => $parallelCacheDirs,
-                'registeredPathsCount' => count(self::$parallelCachePaths),
-            ],
-            'timestamp' => (int) (microtime(true) * 1000),
-            'hypothesisId' => 'MERGE',
-        ];
-        file_put_contents('/Users/kevinpijning/workspace/pest-plugin-prompts/.cursor/debug.log', json_encode($logData)."\n", FILE_APPEND);
-        // #endregion
 
         // Load main cache if it exists
         $mainCache = [];
@@ -350,7 +192,7 @@ final class PromptfooExecutor implements EvaluatorClient
         // Merge all parallel caches
         foreach ($parallelCacheDirs as $parallelCachePath) {
             $parallelCacheFile = $parallelCachePath.'/cache.json';
-            
+
             if (! file_exists($parallelCacheFile)) {
                 continue;
             }
@@ -384,7 +226,7 @@ final class PromptfooExecutor implements EvaluatorClient
                     // Keep the entry with the latest expire time
                     $existingExpire = $mainCache[$existingIndex][1]['expire'] ?? 0;
                     $newExpire = $value['expire'] ?? 0;
-                    
+
                     if ($newExpire > $existingExpire) {
                         $mainCache[$existingIndex] = $entry;
                         $mergedCount++;
@@ -426,25 +268,6 @@ final class PromptfooExecutor implements EvaluatorClient
         }
 
         file_put_contents($mainCacheFile, json_encode($mergedCacheData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
-
-        // #region agent log
-        $logData = [
-            'sessionId' => 'debug-session',
-            'runId' => 'post-fix-v3',
-            'location' => __FILE__.':'.__LINE__,
-            'message' => 'mergeParallelCaches() completed',
-            'data' => [
-                'pid' => getmypid(),
-                'totalEntriesBefore' => $totalEntriesBefore,
-                'totalEntriesAfter' => count($mainCache),
-                'mergedCount' => $mergedCount,
-                'mainCacheFile' => $mainCacheFile,
-            ],
-            'timestamp' => (int) (microtime(true) * 1000),
-            'hypothesisId' => 'MERGE',
-        ];
-        file_put_contents('/Users/kevinpijning/workspace/pest-plugin-prompts/.cursor/debug.log', json_encode($logData)."\n", FILE_APPEND);
-        // #endregion
 
         // Clear registered paths
         self::$parallelCachePaths = [];
