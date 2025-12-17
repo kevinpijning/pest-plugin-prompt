@@ -20,7 +20,7 @@ test('toArray returns array with all fields when populated', function () {
     $evaluation->usingProvider('openai:gpt-4', 'anthropic:claude-3');
 
     $testCase = $evaluation->expect(['key1' => 'value1']);
-    $testCase->assert(new Assertion('contains', 'expected value', 0.8, ['option1' => 'value1']));
+    $testCase->assert(new Assertion('contains', 'expected value', 0.8, config: ['option1' => 'value1']));
 
     $builder = ConfigBuilder::fromEvaluation($evaluation);
     $result = $builder->toArray();
@@ -43,11 +43,11 @@ test('toArray returns array with all fields when populated', function () {
         ->and($result['tests'][0]['assert'][0])->toHaveKey('type')
         ->and($result['tests'][0]['assert'][0])->toHaveKey('value')
         ->and($result['tests'][0]['assert'][0])->toHaveKey('threshold')
-        ->and($result['tests'][0]['assert'][0])->toHaveKey('options')
+        ->and($result['tests'][0]['assert'][0])->toHaveKey('config')
         ->and($result['tests'][0]['assert'][0]['type'])->toBe('contains')
         ->and($result['tests'][0]['assert'][0]['value'])->toBe('expected value')
         ->and($result['tests'][0]['assert'][0]['threshold'])->toBe(0.8)
-        ->and($result['tests'][0]['assert'][0]['options'])->toBe(['option1' => 'value1']);
+        ->and($result['tests'][0]['assert'][0]['config'])->toBe(['option1' => 'value1']);
 });
 
 test('toArray filters out null description', function () {
@@ -79,15 +79,15 @@ test('toArray filters out null threshold in assertions', function () {
     expect($result['tests'][0]['assert'][0])->not->toHaveKey('threshold');
 });
 
-test('toArray filters out null options in assertions', function () {
+test('toArray filters out null config in assertions', function () {
     $evaluation = new Evaluation(['prompt1']);
     $testCase = $evaluation->expect(['key' => 'value']);
-    $testCase->assert(new Assertion('contains', 'test', null, null));
+    $testCase->assert(new Assertion('contains', 'test', null, null, null, null, null, null, null));
 
     $builder = ConfigBuilder::fromEvaluation($evaluation);
     $result = $builder->toArray();
 
-    expect($result['tests'][0]['assert'][0])->not->toHaveKey('options');
+    expect($result['tests'][0]['assert'][0])->not->toHaveKey('config');
 });
 
 test('toArray handles multiple test cases', function () {
@@ -156,7 +156,7 @@ test('toYaml returns valid YAML string', function () {
     $evaluation->usingProvider('openai:gpt-4');
 
     $testCase = $evaluation->expect(['key' => 'value']);
-    $testCase->toContain('test', true, 0.9);
+    $testCase->toContain('test', true);
 
     $builder = ConfigBuilder::fromEvaluation($evaluation);
     $yaml = $builder->toYaml();
@@ -188,8 +188,8 @@ test('toYaml handles complex nested structure', function () {
     $evaluation->usingProvider('openai:gpt-4', 'anthropic:claude-3');
 
     $testCase1 = $evaluation->expect(['var1' => 'value1', 'var2' => 'value2']);
-    $testCase1->toContain('expected1', true, 0.8, ['option1' => 'val1']);
-    $testCase1->toContain('expected2', false, 0.9);
+    $testCase1->toContain('expected1', true);
+    $testCase1->toContain('expected2', false);
 
     $testCase2 = $evaluation->expect(['var3' => 'value3']);
     $testCase2->toContain('expected3');
@@ -217,33 +217,33 @@ test('toArray handles assertion with only type and value', function () {
         ->and($result['tests'][0]['assert'][0]['type'])->toBe('contains')
         ->and($result['tests'][0]['assert'][0]['value'])->toBe('test value')
         ->and($result['tests'][0]['assert'][0])->not->toHaveKey('threshold')
-        ->and($result['tests'][0]['assert'][0])->not->toHaveKey('options');
+        ->and($result['tests'][0]['assert'][0])->not->toHaveKey('config');
 });
 
-test('toArray handles assertion with threshold but no options', function () {
+test('toArray handles assertion with threshold but no config', function () {
     $evaluation = new Evaluation(['prompt1']);
     $testCase = $evaluation->expect(['key' => 'value']);
-    $testCase->assert(new Assertion('contains', 'test', 0.75, null));
+    $testCase->assert(new Assertion('contains', 'test', 0.75));
 
     $builder = ConfigBuilder::fromEvaluation($evaluation);
     $result = $builder->toArray();
 
     expect($result['tests'][0]['assert'][0])->toHaveKey('threshold')
         ->and($result['tests'][0]['assert'][0]['threshold'])->toBe(0.75)
-        ->and($result['tests'][0]['assert'][0])->not->toHaveKey('options');
+        ->and($result['tests'][0]['assert'][0])->not->toHaveKey('config');
 });
 
-test('toArray handles assertion with options but no threshold', function () {
+test('toArray handles assertion with config but no threshold', function () {
     $evaluation = new Evaluation(['prompt1']);
     $testCase = $evaluation->expect(['key' => 'value']);
-    $testCase->assert(new Assertion('contains', 'test', null, ['key' => 'value']));
+    $testCase->assert(new Assertion('contains', 'test', null, config: ['key' => 'value']));
 
     $builder = ConfigBuilder::fromEvaluation($evaluation);
     $result = $builder->toArray();
 
     expect($result['tests'][0]['assert'][0])->not->toHaveKey('threshold')
-        ->and($result['tests'][0]['assert'][0])->toHaveKey('options')
-        ->and($result['tests'][0]['assert'][0]['options'])->toBe(['key' => 'value']);
+        ->and($result['tests'][0]['assert'][0])->toHaveKey('config')
+        ->and($result['tests'][0]['assert'][0]['config'])->toBe(['key' => 'value']);
 });
 
 test('toArray handles FinishReason enum correctly', function () {

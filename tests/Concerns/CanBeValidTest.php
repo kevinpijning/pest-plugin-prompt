@@ -32,30 +32,6 @@ test('toBeJson accepts schema parameter', function () {
     expect($assertion->value)->toBe($schema);
 });
 
-test('toBeJson accepts options parameter', function () {
-    $evaluation = new Evaluation(['prompt1']);
-    $testCase = new TestCase([], $evaluation);
-    $options = ['strict' => true];
-
-    $testCase->toBeJson(null, $options);
-
-    $assertion = $testCase->build()->assertions[0];
-    expect($assertion->options)->toBe($options);
-});
-
-test('toBeJson accepts both schema and options parameters', function () {
-    $evaluation = new Evaluation(['prompt1']);
-    $testCase = new TestCase([], $evaluation);
-    $schema = ['type' => 'object'];
-    $options = ['strict' => true];
-
-    $testCase->toBeJson($schema, $options);
-
-    $assertion = $testCase->build()->assertions[0];
-    expect($assertion->value)->toBe($schema)
-        ->and($assertion->options)->toBe($options);
-});
-
 test('toBeHtml creates an is-html assertion', function () {
     $evaluation = new Evaluation(['prompt1']);
     $testCase = new TestCase([], $evaluation);
@@ -82,15 +58,15 @@ test('toBeSql creates an is-sql assertion', function () {
     expect($assertion->type)->toBe('is-sql');
 });
 
-test('toBeSql accepts options parameter', function () {
+test('toBeSql accepts config parameter with databaseType', function () {
     $evaluation = new Evaluation(['prompt1']);
     $testCase = new TestCase([], $evaluation);
-    $options = ['authorityList' => ['SELECT', 'INSERT']];
+    $config = ['databaseType' => 'mysql'];
 
-    $testCase->toBeSql($options);
+    $testCase->toBeSql($config);
 
     $assertion = $testCase->build()->assertions[0];
-    expect($assertion->options)->toBe($options);
+    expect($assertion->value)->toBe($config);
 });
 
 test('toBeXml creates an is-xml assertion', function () {
@@ -104,6 +80,17 @@ test('toBeXml creates an is-xml assertion', function () {
 
     $assertion = $testCase->build()->assertions[0];
     expect($assertion->type)->toBe('is-xml');
+});
+
+test('toBeXml accepts config parameter with requiredElements', function () {
+    $evaluation = new Evaluation(['prompt1']);
+    $testCase = new TestCase([], $evaluation);
+    $config = ['requiredElements' => ['root.child', 'root.sibling']];
+
+    $testCase->toBeXml($config);
+
+    $assertion = $testCase->build()->assertions[0];
+    expect($assertion->value)->toBe($config);
 });
 
 test('can chain validation methods', function () {

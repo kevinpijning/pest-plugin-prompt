@@ -31,14 +31,3 @@ test('toBeScoredByPi can be called without threshold', function () {
     $assertion = $testCase->build()->assertions[0];
     expect($assertion->threshold)->toBeNull();
 });
-
-test('toBeScoredByPi accepts options parameter', function () {
-    $evaluation = new Evaluation(['prompt1']);
-    $testCase = new TestCase([], $evaluation);
-    $options = ['custom' => 'value'];
-
-    $testCase->toBeScoredByPi('rubric', options: $options);
-
-    $assertion = $testCase->build()->assertions[0];
-    expect($assertion->options)->toHaveKey('custom');
-});

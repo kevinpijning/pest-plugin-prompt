@@ -9,55 +9,59 @@ use KevinPijning\Prompt\Assertion;
 trait CanBeValid
 {
     /**
-     * @param  array<string,mixed>|null  $schema
-     * @param  array<string,mixed>  $options
+     * Assert that the output is valid JSON, optionally validating against a JSON schema.
+     *
+     * @param  array<string,mixed>|null  $schema  Optional JSON schema to validate against
+     *
+     * @see https://www.promptfoo.dev/docs/configuration/expected-outputs/deterministic/#is-json
      */
-    public function toBeJson(?array $schema = null, array $options = []): self
+    public function toBeJson(?array $schema = null): self
     {
         return $this->assert(new Assertion(
             type: 'is-json',
             value: $schema,
-            threshold: null,
-            options: $options,
         ));
     }
 
     /**
-     * @param  array<string,mixed>  $options
+     * Assert that the output is valid HTML.
+     *
+     * @see https://www.promptfoo.dev/docs/configuration/expected-outputs/deterministic/#is-html
      */
-    public function toBeHtml(array $options = []): self
+    public function toBeHtml(): self
     {
         return $this->assert(new Assertion(
             type: 'is-html',
-            value: null,
-            threshold: null,
-            options: $options,
         ));
     }
 
     /**
-     * @param  array<string,mixed>  $options
+     * Assert that the output is a valid SQL statement, optionally specifying database type for syntax validation.
+     *
+     * @param  array{databaseType?: string}|null  $config  Optional config with databaseType (e.g., "mysql", "postgresql")
+     *
+     * @see https://www.promptfoo.dev/docs/configuration/expected-outputs/deterministic/#is-sql
      */
-    public function toBeSql(array $options = []): self
+    public function toBeSql(?array $config = null): self
     {
         return $this->assert(new Assertion(
             type: 'is-sql',
-            value: null,
-            threshold: null,
-            options: $options,
+            value: $config,
         ));
     }
 
     /**
-     * @param  array<string,mixed>  $options
+     * Assert that the output is valid XML, optionally specifying required elements.
+     *
+     * @param  array{requiredElements?: string[]}|null  $config  Optional config with requiredElements (e.g., ["root.child", "root.sibling"])
+     *
+     * @see https://www.promptfoo.dev/docs/configuration/expected-outputs/deterministic/#is-xml
      */
-    public function toBeXml(array $options = []): self
+    public function toBeXml(?array $config = null): self
     {
         return $this->assert(new Assertion(
             type: 'is-xml',
-            value: null,
-            threshold: null,
-            options: $options,
+            value: $config,
         ));
     }
 }

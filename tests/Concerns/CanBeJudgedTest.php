@@ -10,9 +10,9 @@ test('toBeJudged creates an assertion with default parameters', function () {
     $evaluation = new Evaluation(['prompt1', 'prompt2']);
     $variables = ['key1' => 'value1', 'key2' => 'value2'];
     $testCase = new TestCase($variables, $evaluation);
-    $contains = 'The response should be helpful and accurate';
+    $rubric = 'The response should be helpful and accurate';
 
-    $result = $testCase->toBeJudged($contains);
+    $result = $testCase->toBeJudged($rubric);
 
     expect($result)->toBe($testCase)
         ->and($testCase->build()->assertions)->toHaveCount(1);
@@ -20,64 +20,63 @@ test('toBeJudged creates an assertion with default parameters', function () {
     $assertion = $testCase->build()->assertions[0];
     expect($assertion)->toBeInstanceOf(Assertion::class)
         ->and($assertion->type)->toBe('llm-rubric')
-        ->and($assertion->value)->toBe($contains)
+        ->and($assertion->value)->toBe($rubric)
         ->and($assertion->threshold)->toBeNull()
-        ->and($assertion->options)->toBe([]);
+        ->and($assertion->provider)->toBeNull();
 });
 
 test('toBeJudged accepts a threshold parameter', function () {
     $evaluation = new Evaluation(['prompt1', 'prompt2']);
     $variables = ['key1' => 'value1', 'key2' => 'value2'];
     $testCase = new TestCase($variables, $evaluation);
-    $contains = 'The response should be helpful and accurate';
+    $rubric = 'The response should be helpful and accurate';
     $threshold = 0.8;
 
-    $testCase->toBeJudged($contains, threshold: $threshold);
+    $testCase->toBeJudged($rubric, threshold: $threshold);
 
     expect($testCase->build()->assertions)->toHaveCount(1);
     $assertion = $testCase->build()->assertions[0];
     expect($assertion)->toBeInstanceOf(Assertion::class)
         ->and($assertion->type)->toBe('llm-rubric')
-        ->and($assertion->value)->toBe($contains)
-        ->and($assertion->threshold)->toBe(0.8)
-        ->and($assertion->options)->toBe([]);
+        ->and($assertion->value)->toBe($rubric)
+        ->and($assertion->threshold)->toBe(0.8);
 });
 
-test('toBeJudged accepts options parameter', function () {
+test('toBeJudged accepts provider parameter', function () {
     $evaluation = new Evaluation(['prompt1', 'prompt2']);
     $variables = ['key1' => 'value1', 'key2' => 'value2'];
     $testCase = new TestCase($variables, $evaluation);
-    $contains = 'The response should be helpful and accurate';
-    $options = ['option1' => 'value1', 'option2' => 'value2'];
+    $rubric = 'The response should be helpful and accurate';
+    $provider = 'openai:gpt-4';
 
-    $testCase->toBeJudged($contains, options: $options);
+    $testCase->toBeJudged($rubric, provider: $provider);
 
     expect($testCase->build()->assertions)->toHaveCount(1);
     $assertion = $testCase->build()->assertions[0];
     expect($assertion)->toBeInstanceOf(Assertion::class)
         ->and($assertion->type)->toBe('llm-rubric')
-        ->and($assertion->value)->toBe($contains)
+        ->and($assertion->value)->toBe($rubric)
         ->and($assertion->threshold)->toBeNull()
-        ->and($assertion->options)->toBe($options);
+        ->and($assertion->provider)->toBe($provider);
 });
 
-test('toBeJudged accepts both threshold and options parameters', function () {
+test('toBeJudged accepts both threshold and provider parameters', function () {
     $evaluation = new Evaluation(['prompt1', 'prompt2']);
     $variables = ['key1' => 'value1', 'key2' => 'value2'];
     $testCase = new TestCase($variables, $evaluation);
-    $contains = 'The response should be helpful and accurate';
+    $rubric = 'The response should be helpful and accurate';
     $threshold = 0.9;
-    $options = ['option1' => 'value1', 'option2' => 'value2'];
+    $provider = 'anthropic:claude-3';
 
-    $testCase->toBeJudged($contains, threshold: $threshold, options: $options);
+    $testCase->toBeJudged($rubric, threshold: $threshold, provider: $provider);
 
     expect($testCase->build()->assertions)->toHaveCount(1);
     $assertion = $testCase->build()->assertions[0];
     expect($assertion)->toBeInstanceOf(Assertion::class)
         ->and($assertion->type)->toBe('llm-rubric')
-        ->and($assertion->value)->toBe($contains)
+        ->and($assertion->value)->toBe($rubric)
         ->and($assertion->threshold)->toBe(0.9)
-        ->and($assertion->options)->toBe($options);
+        ->and($assertion->provider)->toBe($provider);
 });
 
 test('toBeJudged can be chained', function () {

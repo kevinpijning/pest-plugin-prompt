@@ -19,9 +19,30 @@ test('toPassJavascript creates a javascript assertion', function () {
     $assertion = $testCase->build()->assertions[0];
     expect($assertion)->toBeInstanceOf(Assertion::class)
         ->and($assertion->type)->toBe('javascript')
-        ->and($assertion->value)->toBe($code)
-        ->and($assertion->options)->toHaveKey('code')
-        ->and($assertion->options['code'])->toBe($code);
+        ->and($assertion->value)->toBe($code);
+});
+
+test('toPassJavascript accepts threshold parameter', function () {
+    $evaluation = new Evaluation(['prompt1']);
+    $testCase = new TestCase([], $evaluation);
+    $code = 'return output.length / 100;';
+
+    $testCase->toPassJavascript($code, threshold: 0.5);
+
+    $assertion = $testCase->build()->assertions[0];
+    expect($assertion->threshold)->toBe(0.5);
+});
+
+test('toPassJavascript accepts config parameter', function () {
+    $evaluation = new Evaluation(['prompt1']);
+    $testCase = new TestCase([], $evaluation);
+    $code = 'return output.length > config.minLength;';
+    $config = ['minLength' => 10];
+
+    $testCase->toPassJavascript($code, config: $config);
+
+    $assertion = $testCase->build()->assertions[0];
+    expect($assertion->config)->toBe($config);
 });
 
 test('toPassPython creates a python assertion', function () {
@@ -37,9 +58,30 @@ test('toPassPython creates a python assertion', function () {
     $assertion = $testCase->build()->assertions[0];
     expect($assertion)->toBeInstanceOf(Assertion::class)
         ->and($assertion->type)->toBe('python')
-        ->and($assertion->value)->toBe($code)
-        ->and($assertion->options)->toHaveKey('code')
-        ->and($assertion->options['code'])->toBe($code);
+        ->and($assertion->value)->toBe($code);
+});
+
+test('toPassPython accepts threshold parameter', function () {
+    $evaluation = new Evaluation(['prompt1']);
+    $testCase = new TestCase([], $evaluation);
+    $code = 'return len(output) / 100';
+
+    $testCase->toPassPython($code, threshold: 0.5);
+
+    $assertion = $testCase->build()->assertions[0];
+    expect($assertion->threshold)->toBe(0.5);
+});
+
+test('toPassPython accepts config parameter', function () {
+    $evaluation = new Evaluation(['prompt1']);
+    $testCase = new TestCase([], $evaluation);
+    $code = 'return len(output) > config["minLength"]';
+    $config = ['minLength' => 10];
+
+    $testCase->toPassPython($code, config: $config);
+
+    $assertion = $testCase->build()->assertions[0];
+    expect($assertion->config)->toBe($config);
 });
 
 test('toPassWebhook creates a webhook assertion', function () {
@@ -55,19 +97,5 @@ test('toPassWebhook creates a webhook assertion', function () {
     $assertion = $testCase->build()->assertions[0];
     expect($assertion)->toBeInstanceOf(Assertion::class)
         ->and($assertion->type)->toBe('webhook')
-        ->and($assertion->value)->toBe($url)
-        ->and($assertion->options)->toHaveKey('url')
-        ->and($assertion->options['url'])->toBe($url);
-});
-
-test('custom validation methods accept options parameter', function () {
-    $evaluation = new Evaluation(['prompt1']);
-    $testCase = new TestCase([], $evaluation);
-    $options = ['custom' => 'value'];
-
-    $testCase->toPassJavascript('code', $options);
-
-    $assertion = $testCase->build()->assertions[0];
-    expect($assertion->options)->toHaveKey('custom')
-        ->and($assertion->options)->toHaveKey('code');
+        ->and($assertion->value)->toBe($url);
 });

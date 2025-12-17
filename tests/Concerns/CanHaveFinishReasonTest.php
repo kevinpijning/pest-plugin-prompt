@@ -42,17 +42,6 @@ test('toHaveFinishReason accepts different reason values', function () {
     expect($assertion->value)->toBe('length');
 });
 
-test('toHaveFinishReason accepts options parameter', function () {
-    $evaluation = new Evaluation(['prompt1']);
-    $testCase = new TestCase([], $evaluation);
-    $options = ['custom' => 'value'];
-
-    $testCase->toHaveFinishReason('stop', $options);
-
-    $assertion = $testCase->build()->assertions[0];
-    expect($assertion->options)->toHaveKey('custom');
-});
-
 test('toHaveFinishReasonStop creates assertion with stop reason', function () {
     $evaluation = new Evaluation(['prompt1']);
     $testCase = new TestCase([], $evaluation);
@@ -107,15 +96,4 @@ test('toHaveFinishReasonToolCalls creates assertion with tool_calls reason', fun
     $assertion = $testCase->build()->assertions[0];
     expect($assertion->type)->toBe('finish-reason')
         ->and($assertion->value)->toBe('tool_calls');
-});
-
-test('convenience methods accept options parameter', function () {
-    $evaluation = new Evaluation(['prompt1']);
-    $testCase = new TestCase([], $evaluation);
-    $options = ['custom' => 'value'];
-
-    $testCase->toHaveFinishReasonStop($options);
-
-    $assertion = $testCase->build()->assertions[0];
-    expect($assertion->options)->toHaveKey('custom');
 });

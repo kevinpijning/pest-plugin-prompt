@@ -273,7 +273,7 @@ test('build handles missing optional fields gracefully', function () {
         ->and($result->results[0]->response->cost)->toBe(0.0);
 });
 
-test('build handles assertion with optional threshold and options', function () {
+test('build handles assertion with optional threshold and config', function () {
     $data = [
         'results' => [
             'results' => [
@@ -294,7 +294,7 @@ test('build handles assertion with optional threshold and options', function () 
                                     'type' => 'contains',
                                     'value' => 'test',
                                     'threshold' => 0.8,
-                                    'options' => ['key' => 'value'],
+                                    'config' => ['key' => 'value'],
                                 ],
                             ],
                         ],
@@ -332,7 +332,7 @@ test('build handles assertion with optional threshold and options', function () 
     $assertion = $result->results[0]->gradingResult->componentResults[0]->assertion;
 
     expect($assertion->threshold)->toBe(0.8)
-        ->and($assertion->options)->toBe(['key' => 'value']);
+        ->and($assertion->config)->toBe(['key' => 'value']);
 });
 
 test('build handles assertion without value key (e.g., toBeJson)', function () {
@@ -394,10 +394,10 @@ test('build handles assertion without value key (e.g., toBeJson)', function () {
     expect($assertion->type)->toBe('is-json')
         ->and($assertion->value)->toBeNull()
         ->and($assertion->threshold)->toBeNull()
-        ->and($assertion->options)->toBeNull();
+        ->and($assertion->config)->toBeNull();
 });
 
-test('build handles assertion without threshold and options keys', function () {
+test('build handles assertion without threshold and config keys', function () {
     $data = [
         'results' => [
             'results' => [
@@ -417,7 +417,7 @@ test('build handles assertion without threshold and options keys', function () {
                                 'assertion' => [
                                     'type' => 'contains',
                                     'value' => 'test',
-                                    // threshold and options keys are missing (filtered out when null)
+                                    // threshold and config keys are missing (filtered out when null)
                                 ],
                             ],
                         ],
@@ -457,5 +457,5 @@ test('build handles assertion without threshold and options keys', function () {
     expect($assertion->type)->toBe('contains')
         ->and($assertion->value)->toBe('test')
         ->and($assertion->threshold)->toBeNull()
-        ->and($assertion->options)->toBeNull();
+        ->and($assertion->config)->toBeNull();
 });

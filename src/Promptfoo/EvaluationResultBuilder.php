@@ -107,7 +107,12 @@ class EvaluationResultBuilder
             type: $data['type'],
             value: $data['value'] ?? null,
             threshold: $data['threshold'] ?? null,
-            options: $data['options'] ?? null,
+            weight: isset($data['weight']) ? (float) $data['weight'] : null,
+            provider: $data['provider'] ?? null,
+            rubricPrompt: $data['rubricPrompt'] ?? null,
+            config: $data['config'] ?? null,
+            transform: $data['transform'] ?? null,
+            metric: $data['metric'] ?? null,
         );
     }
 

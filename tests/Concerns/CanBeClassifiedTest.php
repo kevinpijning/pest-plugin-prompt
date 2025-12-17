@@ -20,18 +20,16 @@ test('toBeClassified creates a classifier assertion', function () {
         ->and($assertion->type)->toBe('classifier')
         ->and($assertion->value)->toBe('positive')
         ->and($assertion->threshold)->toBe(0.8)
-        ->and($assertion->options)->toHaveKey('provider')
-        ->and($assertion->options['provider'])->toBe('huggingface:model');
+        ->and($assertion->provider)->toBe('huggingface:model');
 });
 
-test('toBeClassified accepts options parameter', function () {
+test('toBeClassified can be called without threshold', function () {
     $evaluation = new Evaluation(['prompt1']);
     $testCase = new TestCase([], $evaluation);
-    $options = ['custom' => 'value'];
 
-    $testCase->toBeClassified('provider', 'class', options: $options);
+    $testCase->toBeClassified('provider', 'class');
 
     $assertion = $testCase->build()->assertions[0];
-    expect($assertion->options)->toHaveKey('custom')
-        ->and($assertion->options)->toHaveKey('provider');
+    expect($assertion->threshold)->toBeNull()
+        ->and($assertion->provider)->toBe('provider');
 });
