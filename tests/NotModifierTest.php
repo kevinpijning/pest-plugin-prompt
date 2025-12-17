@@ -138,19 +138,18 @@ test('not modifier works with toBeJudged', function () {
         ->and($testCase->build()->assertions[0]->type)->toBe('not-llm-rubric');
 });
 
-test('not modifier preserves threshold and options', function () {
+test('not modifier preserves value', function () {
     // Arrange
     $evaluation = new Evaluation(['prompt']);
     $testCase = $evaluation->expect();
 
     // Act
-    $testCase->not->toContain('value', threshold: 0.8, options: ['key' => 'value']);
+    $testCase->not->toContain('value');
 
     // Assert
     expect($testCase->build()->assertions)->toHaveCount(1)
         ->and($testCase->build()->assertions[0]->type)->toBe('not-icontains')
-        ->and($testCase->build()->assertions[0]->threshold)->toBe(0.8)
-        ->and($testCase->build()->assertions[0]->options)->toBe(['key' => 'value']);
+        ->and($testCase->build()->assertions[0]->value)->toBe('value');
 });
 
 test('not modifier can be used multiple times independently', function () {
@@ -313,17 +312,16 @@ test('not() method and not property can be mixed', function () {
         ->and($testCase->build()->assertions[2]->type)->toBe('icontains');
 });
 
-test('not() method preserves threshold and options', function () {
+test('not() method preserves value', function () {
     // Arrange
     $evaluation = new Evaluation(['prompt']);
     $testCase = $evaluation->expect();
 
     // Act
-    $testCase->not()->toContain('value', threshold: 0.9, options: ['custom' => 'option']);
+    $testCase->not()->toContain('value');
 
     // Assert
     expect($testCase->build()->assertions)->toHaveCount(1)
         ->and($testCase->build()->assertions[0]->type)->toBe('not-icontains')
-        ->and($testCase->build()->assertions[0]->threshold)->toBe(0.9)
-        ->and($testCase->build()->assertions[0]->options)->toBe(['custom' => 'option']);
+        ->and($testCase->build()->assertions[0]->value)->toBe('value');
 });

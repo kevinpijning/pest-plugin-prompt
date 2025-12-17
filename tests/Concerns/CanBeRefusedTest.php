@@ -20,14 +20,3 @@ test('toBeRefused creates an is-refusal assertion', function () {
         ->and($assertion->type)->toBe('is-refusal')
         ->and($assertion->value)->toBeNull();
 });
-
-test('toBeRefused accepts options parameter', function () {
-    $evaluation = new Evaluation(['prompt1']);
-    $testCase = new TestCase([], $evaluation);
-    $options = ['custom' => 'value'];
-
-    $testCase->toBeRefused($options);
-
-    $assertion = $testCase->build()->assertions[0];
-    expect($assertion->options)->toHaveKey('custom');
-});

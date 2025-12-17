@@ -9,23 +9,26 @@ use KevinPijning\Prompt\Assertion;
 trait CanEqual
 {
     /**
-     * @param  array<string,mixed>  $options
+     * Assert that the output matches the expected value exactly.
+     *
+     * @see https://www.promptfoo.dev/docs/configuration/expected-outputs/deterministic/#equality
      */
-    public function toEqual(mixed $value, ?float $threshold = null, array $options = []): self
+    public function toEqual(mixed $value): self
     {
         return $this->assert(new Assertion(
             type: 'equals',
             value: $value,
-            threshold: $threshold,
-            options: $options,
         ));
     }
 
     /**
-     * @param  array<string,mixed>  $options
+     * Assert that the output matches the expected value exactly.
+     * Alias for toEqual().
+     *
+     * @see https://www.promptfoo.dev/docs/configuration/expected-outputs/deterministic/#equality
      */
-    public function toBe(mixed $value, ?float $threshold = null, array $options = []): self
+    public function toBe(mixed $value): self
     {
-        return $this->toEqual($value, $threshold, $options);
+        return $this->toEqual($value);
     }
 }

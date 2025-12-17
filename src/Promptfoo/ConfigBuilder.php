@@ -99,7 +99,12 @@ final readonly class ConfigBuilder
             'type' => $assertion->type,
             'value' => $assertion->value,
             'threshold' => $assertion->threshold,
-            'options' => $assertion->options,
+            'weight' => $assertion->weight,
+            'provider' => $assertion->provider,
+            'rubricPrompt' => $assertion->rubricPrompt,
+            'config' => $assertion->config,
+            'transform' => $assertion->transform,
+            'metric' => $assertion->metric,
         ]), $assertions);
     }
 }

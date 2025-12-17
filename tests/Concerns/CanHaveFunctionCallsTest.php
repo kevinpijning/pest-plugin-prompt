@@ -28,8 +28,7 @@ test('toHaveValidFunctionCall accepts schema parameter', function () {
     $testCase->toHaveValidFunctionCall($schema);
 
     $assertion = $testCase->build()->assertions[0];
-    expect($assertion->options)->toHaveKey('schema')
-        ->and($assertion->options['schema'])->toBe($schema);
+    expect($assertion->value)->toBe($schema);
 });
 
 test('toHaveValidOpenaiFunctionCall creates an is-valid-openai-function-call assertion', function () {

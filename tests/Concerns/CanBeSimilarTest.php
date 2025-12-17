@@ -40,8 +40,7 @@ test('toBeSimilar accepts threshold and provider', function () {
 
     $assertion = $testCase->build()->assertions[0];
     expect($assertion->threshold)->toBe(0.8)
-        ->and($assertion->options)->toHaveKey('provider')
-        ->and($assertion->options['provider'])->toBe('huggingface:model');
+        ->and($assertion->provider)->toBe('huggingface:model');
 });
 
 test('toHaveLevenshtein creates a levenshtein assertion', function () {
@@ -72,8 +71,8 @@ test('toHaveRougeN creates a rouge-n assertion', function () {
     expect($assertion->type)->toBe('rouge-n')
         ->and($assertion->value)->toBe('expected')
         ->and($assertion->threshold)->toBe(0.8)
-        ->and($assertion->options)->toHaveKey('n')
-        ->and($assertion->options['n'])->toBe(1);
+        ->and($assertion->config)->toHaveKey('n')
+        ->and($assertion->config['n'])->toBe(1);
 });
 
 test('toHaveFScore creates an f-score assertion', function () {

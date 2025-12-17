@@ -9,38 +9,32 @@ use KevinPijning\Prompt\Assertion;
 trait CanHavePerformance
 {
     /**
-     * @param  array<string,mixed>  $options
+     * Assert that the inference cost is below a threshold.
+     *
+     * @param  float  $maxCost  Maximum cost threshold
+     *
+     * @see https://www.promptfoo.dev/docs/configuration/expected-outputs/deterministic/#cost
      */
-    public function toHaveCost(?float $maxCost = null, array $options = []): self
+    public function toHaveCost(float $maxCost): self
     {
-        $assertionOptions = $options;
-        if ($maxCost !== null) {
-            $assertionOptions['maxCost'] = $maxCost;
-        }
-
         return $this->assert(new Assertion(
             type: 'cost',
-            value: $maxCost,
             threshold: $maxCost,
-            options: $assertionOptions,
         ));
     }
 
     /**
-     * @param  array<string,mixed>  $options
+     * Assert that the latency is below a threshold.
+     *
+     * @param  int  $maxMilliseconds  Maximum latency in milliseconds
+     *
+     * @see https://www.promptfoo.dev/docs/configuration/expected-outputs/deterministic/#latency
      */
-    public function toHaveLatency(?int $maxMilliseconds = null, array $options = []): self
+    public function toHaveLatency(int $maxMilliseconds): self
     {
-        $assertionOptions = $options;
-        if ($maxMilliseconds !== null) {
-            $assertionOptions['maxLatency'] = $maxMilliseconds;
-        }
-
         return $this->assert(new Assertion(
             type: 'latency',
-            value: $maxMilliseconds,
-            threshold: $maxMilliseconds !== null ? (float) $maxMilliseconds : null,
-            options: $assertionOptions,
+            threshold: (float) $maxMilliseconds,
         ));
     }
 }
