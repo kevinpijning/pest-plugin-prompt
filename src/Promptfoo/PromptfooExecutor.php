@@ -69,7 +69,7 @@ final class PromptfooExecutor implements EvaluatorClient
             }
 
             // Register this cache path for later merging
-            self::registerParallelCachePath($processCachePath);
+            $this->registerParallelCachePath($processCachePath);
         } else {
             // In sequential mode: use predictable default cache path
             // Don't set PROMPTFOO_CACHE_PATH, let promptfoo use default ~/.promptfoo/cache
@@ -124,17 +124,13 @@ final class PromptfooExecutor implements EvaluatorClient
         }
 
         // Check for PARATEST environment variable (used by some parallel test runners)
-        if (getenv('PARATEST') !== false) {
-            return true;
-        }
-
-        return false;
+        return getenv('PARATEST') !== false;
     }
 
     /**
      * Register a parallel cache path for later merging.
      */
-    private static function registerParallelCachePath(string $cachePath): void
+    private function registerParallelCachePath(string $cachePath): void
     {
         if (! in_array($cachePath, self::$parallelCachePaths, true)) {
             self::$parallelCachePaths[] = $cachePath;
@@ -160,10 +156,12 @@ final class PromptfooExecutor implements EvaluatorClient
             $entries = @scandir($baseDir);
             if ($entries !== false) {
                 foreach ($entries as $entry) {
-                    if ($entry === '.' || $entry === '..') {
+                    if ($entry === '.') {
                         continue;
                     }
-
+                    if ($entry === '..') {
+                        continue;
+                    }
                     $fullPath = $baseDir.'/'.$entry;
                     if (is_dir($fullPath) && str_starts_with($entry, $cacheDirName.'_parallel_')) {
                         $parallelCacheDirs[] = $fullPath;
@@ -175,7 +173,7 @@ final class PromptfooExecutor implements EvaluatorClient
         // Also include any registered paths (for this process)
         $parallelCacheDirs = array_unique(array_merge($parallelCacheDirs, self::$parallelCachePaths));
 
-        if (empty($parallelCacheDirs)) {
+        if ($parallelCacheDirs === []) {
             return;
         }
 
@@ -187,7 +185,6 @@ final class PromptfooExecutor implements EvaluatorClient
         }
 
         $mergedCount = 0;
-        $totalEntriesBefore = count($mainCache);
 
         // Merge all parallel caches
         foreach ($parallelCacheDirs as $parallelCachePath) {
@@ -202,14 +199,18 @@ final class PromptfooExecutor implements EvaluatorClient
 
             // Merge entries: use the one with the latest expire time for duplicates
             foreach ($parallelCache as $entry) {
-                if (! is_array($entry) || count($entry) < 2) {
+                if (! is_array($entry)) {
                     continue;
                 }
-
+                if (count($entry) < 2) {
+                    continue;
+                }
                 $key = $entry[0] ?? null;
                 $value = $entry[1] ?? null;
-
-                if ($key === null || $value === null) {
+                if ($key === null) {
+                    continue;
+                }
+                if ($value === null) {
                     continue;
                 }
 
