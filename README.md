@@ -39,6 +39,13 @@ This plugin brings LLM prompt testing to your Pest test suite, powered by [promp
     - [`startsWith()`](#startswith)
     - [`toMatchRegex()`](#tomatchregex)
     - [`toBeJson()`](#tobejson)
+    - [`toEqualJson()`](#toequaljson)
+    - [`toMatchJsonStructure()`](#tomatchjsonstructure)
+    - [`toHaveJsonFragment()`](#tohavejsonfragment)
+    - [`toHaveJsonFragments()`](#tohavejsonfragments)
+    - [`toHaveJsonPath()`](#tohavejsonpath)
+    - [`toHaveJsonPaths()`](#tohavejsonpaths)
+    - [`toHaveJsonType()`](#tohavejsontype)
     - [`toBeHtml()`](#tobehtml)
     - [`toBeSql()`](#tobesql)
     - [`toBeXml()`](#tobexml)
@@ -645,6 +652,193 @@ prompt('Return user data as JSON.')
         ],
         'required' => ['name', 'age'],
     ]);
+```
+
+#### `toEqualJson()`
+
+Assert that the JSON output exactly equals the expected value. Object key order is ignored, but array order is preserved. This is similar to Laravel's `assertExactJson()`.
+
+```php
+prompt('Extract the person info from: {{text}}')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect(['text' => 'John is 30 years old'])
+    ->toEqualJson([
+        'name' => 'John',
+        'age' => 30,
+    ]);
+
+// Works with nested structures
+prompt('Extract address info.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toEqualJson([
+        'user' => [
+            'name' => 'John',
+            'address' => [
+                'city' => 'Amsterdam',
+            ],
+        ],
+    ]);
+```
+
+#### `toMatchJsonStructure()`
+
+Assert that the JSON output contains all expected keys. This validates structure without checking values, similar to Laravel's `assertJsonStructure()`.
+
+```php
+// Simple key validation
+prompt('Return user data as JSON.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toMatchJsonStructure(['name', 'age', 'email']);
+
+// Nested structure validation
+prompt('Return user with address.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toMatchJsonStructure([
+        'name',
+        'address' => ['street', 'city', 'country'],
+    ]);
+
+// Array items with wildcard (*)
+prompt('Return a list of users.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toMatchJsonStructure([
+        'users' => [
+            '*' => ['id', 'name', 'email'],
+        ],
+    ]);
+```
+
+#### `toHaveJsonFragment()`
+
+Assert that the JSON output contains specific key-value pairs. Similar to Laravel's `assertJsonFragment()`.
+
+```php
+prompt('Extract person info from: {{text}}')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect(['text' => 'John Doe is 30 years old'])
+    ->toHaveJsonFragment(['name' => 'John Doe'])
+    ->toHaveJsonFragment(['age' => 30]);
+
+// Works with nested values
+prompt('Extract user with address.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toHaveJsonFragment([
+        'address' => ['city' => 'Amsterdam'],
+    ]);
+```
+
+#### `toHaveJsonFragments()`
+
+Assert that the JSON output contains all specified fragments.
+
+```php
+prompt('Extract person info from: {{text}}')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect(['text' => 'Jane Smith is 25 years old and lives in Berlin'])
+    ->toHaveJsonFragments([
+        ['name' => 'Jane Smith'],
+        ['age' => 25],
+        ['city' => 'Berlin'],
+    ]);
+```
+
+#### `toHaveJsonPath()`
+
+Assert that a value exists at a specific JSON path. Supports dot notation, numeric array indices, and wildcards.
+
+```php
+// Check path exists
+prompt('Return user with address.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toHaveJsonPath('name')
+    ->toHaveJsonPath('address.city');
+
+// Check path has specific value
+prompt('Extract person info.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toHaveJsonPath('name', 'John Doe')
+    ->toHaveJsonPath('address.city', 'Amsterdam');
+
+// Array index access
+prompt('Return list of users.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toHaveJsonPath('users.0.name')
+    ->toHaveJsonPath('users.1.name', 'Jane');
+
+// Wildcard for all array items
+prompt('Return list of users.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toHaveJsonPath('users.*.name')
+    ->toHaveJsonPath('users.*.status', 'active');
+```
+
+#### `toHaveJsonPaths()`
+
+Assert that multiple JSON paths exist, optionally with expected values.
+
+```php
+// Check paths exist (array of strings)
+prompt('Return user data.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toHaveJsonPaths(['name', 'email', 'address.city']);
+
+// Check paths with values (associative array)
+prompt('Extract person info from: {{text}}')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect(['text' => 'Grace Lee is 28 years old and lives in Seoul'])
+    ->toHaveJsonPaths([
+        'name' => 'Grace Lee',
+        'age' => 28,
+        'city' => 'Seoul',
+    ]);
+
+// Mix of existence and value checks with wildcards
+prompt('Return users list.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toHaveJsonPaths([
+        'users.*.name',
+        'users.*.type' => 'customer',
+    ]);
+```
+
+#### `toHaveJsonType()`
+
+Assert that the value at a JSON path has the expected type. Supports: `string`, `number`, `boolean`, `array`, `object`, `null`.
+
+```php
+// Basic type validation
+prompt('Return user data.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toHaveJsonType('name', 'string')
+    ->toHaveJsonType('age', 'number')
+    ->toHaveJsonType('active', 'boolean');
+
+// Nested path type validation
+prompt('Return user with address.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toHaveJsonType('address', 'object')
+    ->toHaveJsonType('address.city', 'string');
+
+// Array and wildcard type validation
+prompt('Return list of users.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect()
+    ->toHaveJsonType('users', 'array')
+    ->toHaveJsonType('users.*.name', 'string')
+    ->toHaveJsonType('users.*.age', 'number');
 ```
 
 #### `toBeHtml()`
@@ -1267,6 +1461,100 @@ test('response quality meets standards', function () {
         ->usingProvider('openai:gpt-4o-mini')
         ->expect()
         ->toBeJudged('The explanation should be clear, accurate, use simple language, and include examples.', threshold: 0.85);
+});
+```
+
+#### Structured JSON Output Testing
+
+Test structured JSON outputs from LLMs, particularly useful with OpenAI's Responses API and structured output features.
+
+```php
+// Register a provider with structured output schema
+provider('person-extractor', static fn (Provider $provider): Provider => $provider
+    ->id('openai:responses:gpt-4o-mini')
+    ->config([
+        'response_format' => [
+            'name' => 'person_info',
+            'type' => 'json_schema',
+            'strict' => true,
+            'schema' => [
+                'type' => 'object',
+                'properties' => [
+                    'name' => ['type' => 'string'],
+                    'age' => ['type' => 'number'],
+                    'city' => ['type' => 'string'],
+                ],
+                'required' => ['name', 'age', 'city'],
+                'additionalProperties' => false,
+            ],
+        ],
+    ]));
+
+test('extracts person info with full validation', function () {
+    prompt('Extract the person info from this text: {{text}}')
+        ->describe('Testing structured JSON output')
+        ->usingProvider('person-extractor')
+        ->expect(['text' => 'John Doe is 30 years old and lives in Amsterdam.'])
+        // Validate structure
+        ->toMatchJsonStructure(['name', 'age', 'city'])
+        // Validate specific values
+        ->toHaveJsonFragment(['name' => 'John Doe', 'city' => 'Amsterdam'])
+        // Validate types
+        ->toHaveJsonType('name', 'string')
+        ->toHaveJsonType('age', 'number')
+        // Validate exact match
+        ->toEqualJson([
+            'name' => 'John Doe',
+            'age' => 30,
+            'city' => 'Amsterdam',
+        ]);
+});
+
+// Testing array outputs with nested structures
+provider('people-extractor', static fn (Provider $provider): Provider => $provider
+    ->id('openai:responses:gpt-4o-mini')
+    ->config([
+        'response_format' => [
+            'name' => 'people_list',
+            'type' => 'json_schema',
+            'strict' => true,
+            'schema' => [
+                'type' => 'object',
+                'properties' => [
+                    'people' => [
+                        'type' => 'array',
+                        'items' => [
+                            'type' => 'object',
+                            'properties' => [
+                                'name' => ['type' => 'string'],
+                                'role' => ['type' => 'string'],
+                            ],
+                            'required' => ['name', 'role'],
+                        ],
+                    ],
+                ],
+                'required' => ['people'],
+            ],
+        ],
+    ]));
+
+test('extracts multiple people with array validation', function () {
+    prompt('Extract all people from: {{text}}')
+        ->usingProvider('people-extractor')
+        ->expect(['text' => 'The team has Mike (developer) and Sarah (designer).'])
+        // Validate array structure with wildcard
+        ->toMatchJsonStructure([
+            'people' => [
+                '*' => ['name', 'role'],
+            ],
+        ])
+        // Validate array item access
+        ->toHaveJsonPath('people.0.name')
+        ->toHaveJsonPath('people.1.name')
+        // Validate all items have specific type
+        ->toHaveJsonType('people', 'array')
+        ->toHaveJsonType('people.*.name', 'string')
+        ->toHaveJsonType('people.*.role', 'string');
 });
 ```
 

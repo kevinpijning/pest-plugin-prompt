@@ -19,6 +19,7 @@ use KevinPijning\Prompt\Concerns\CanHaveFunctionCalls;
 use KevinPijning\Prompt\Concerns\CanHavePerformance;
 use KevinPijning\Prompt\Concerns\CanHaveTraces;
 use KevinPijning\Prompt\Concerns\CanMatch;
+use KevinPijning\Prompt\Concerns\CanValidateJson;
 use KevinPijning\Prompt\Internal\BuiltTestCase;
 use RuntimeException;
 
@@ -27,7 +28,7 @@ use RuntimeException;
  */
 class TestCase
 {
-    use CanBeClassified, CanBeJudged, CanBeRefused, CanBeScored, CanBeSimilar, CanBeValid, CanContain, CanEnclose, CanEqual, CanHaveCustomValidation, CanHaveFinishReason, CanHaveFunctionCalls, CanHavePerformance, CanHaveTraces, CanMatch;
+    use CanBeClassified, CanBeJudged, CanBeRefused, CanBeScored, CanBeSimilar, CanBeValid, CanContain, CanEnclose, CanEqual, CanHaveCustomValidation, CanHaveFinishReason, CanHaveFunctionCalls, CanHavePerformance, CanHaveTraces, CanMatch, CanValidateJson;
 
     /** @var Assertion[] */
     private array $assertions = [];
