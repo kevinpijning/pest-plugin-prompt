@@ -19,6 +19,7 @@ This plugin brings LLM prompt testing to your Pest test suite, powered by [promp
   - [Core Functions](#core-functions)
     - [`prompt()`](#prompt)
     - [`provider()`](#provider)
+    - [`assertion()`](#assertion)
   - [Evaluation Methods](#evaluation-methods)
     - [`describe()`](#describe)
     - [`usingProvider()`](#usingprovider)
@@ -207,6 +208,39 @@ prompt('Hello')
     ->toContain('Hi');
 ```
 
+#### `assertion()`
+
+Register a reusable assertion group by name. Groups can be defined fluently or with a callback that receives the `TestCase` (and optional parameters), and then reused via `to()` / `group()` or magic `toXxx` methods.
+
+```php
+// Fluent group definition
+assertion('be nice')
+    ->toBeJudged('friendly')
+    ->toContain('please');
+
+prompt('Explain {{topic}}.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect(['topic' => 'AI'])
+    ->to('be nice');
+
+// Callback group with arguments
+assertion('be kind', function (TestCase $tc, string $tone): void {
+    $tc->toBeJudged("response is {$tone} and helpful")
+        ->toContain($tone);
+});
+
+prompt('Explain {{topic}}.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect(['topic' => 'AI'])
+    ->to('be kind', ['tone' => 'friendly']);
+
+// Magic method equivalent of to('be nice') / to('be kind', ...)
+prompt('Explain {{topic}}.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect(['topic' => 'AI'])
+    ->toBeNice()
+    ->toBeKind(['tone' => 'friendly']);
+```
 ### Evaluation Methods
 
 #### `describe()`

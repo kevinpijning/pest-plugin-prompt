@@ -21,6 +21,8 @@ test('greeting works', function () {
 
 **`provider(string $name, ?callable $config = null)`**: Register reusable provider. Returns chainable `Provider` instance.
 
+**`assertion(string $name, ?callable $config = null)`**: Register reusable assertion group. Returns chainable `AssertionGroup`-like instance for defining shared assertions.
+
 @verbatim
 <code-snippet name="Provider registration" lang="php">
 use \KevinPijning\Prompt\Provider;
@@ -44,7 +46,7 @@ provider('openai-gpt4')
 
 **`and(array $variables, ?callable $callback = null)`**: Chain additional test cases.
 
-**`to(callable|string $callback)`** / **`group(callable|string $callback)`**: Group assertions using a callback or invokable class FQN. Both methods are aliases. Accepts closures or invokable class names for reusable assertion logic.
+**`to(callable|string $callback, array $args = [])`** / **`group(callable|string $callback, array $args = [])`**: Group assertions using a callback, invokable class FQN, or named assertion group. When a string matches a registered group from `assertion()`, its assertions are applied to the current `TestCase`. When a callback or invokable class is passed, the current `TestCase` is provided as the first argument.
 
 @verbatim
 <code-snippet name="Multiple test cases" lang="php">
@@ -67,6 +69,36 @@ prompt('Explain \{\{topic\}\}.')
            ->toBeJudged('clear and accurate')
            ->toHaveLatency(2000);
     });
+</code-snippet>
+@endverbatim
+
+@verbatim
+<code-snippet name="Named assertion groups" lang="php">
+use \KevinPijning\Prompt\TestCase;
+
+// Define a reusable assertion group
+assertion('be nice')
+    ->toBeJudged('friendly')
+    ->toContain('please');
+
+// Use via to()/group()
+prompt('Explain \{\{topic\}\}.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect(['topic' => 'AI'])
+    ->to('be nice')
+    ->group('be nice');
+
+// Define a group with parameters
+assertion('be kind', function (TestCase $tc, string $tone): void {
+    $tc->toBeJudged("response is {$tone} and helpful")
+       ->toContain($tone);
+});
+
+prompt('Explain \{\{topic\}\}.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect(['topic' => 'AI'])
+    ->to('be kind', ['tone' => 'friendly'])
+    ->toBeKind(['tone' => 'friendly']);
 </code-snippet>
 @endverbatim
 
