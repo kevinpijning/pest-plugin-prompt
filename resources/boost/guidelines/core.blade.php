@@ -83,6 +83,8 @@ prompt('Greet \{\{name\}\}.')
 
 **Tracing**: `toHaveTraceSpanCount(array $patterns, ?int $min = null, ?int $max = null)`, `toHaveTraceSpanDuration(array $patterns, ?float $percentile = null, ?float $maxDuration = null)`, `toHaveTraceErrorSpans()`.
 
+**JSON validation**: `toEqualJson(array $expected)`, `toMatchJsonStructure(array $structure)`, `toHaveJsonFragment(array $fragment)`, `toHaveJsonFragments(array $fragments)`, `toHaveJsonPath(string $path, mixed $expected = null)`, `toHaveJsonPaths(array $paths)`, `toHaveJsonType(string $path, string $type)`. Supports dot notation (`address.city`), array indices (`items.0.name`), and wildcards (`items.*.id`).
+
 @verbatim
 <code-snippet name="Assertions" lang="php">
 prompt('Explain AI.')
@@ -92,6 +94,18 @@ prompt('Explain AI.')
     ->toContainAll(['machine', 'learning'])
     ->toContainJson()
     ->toBeJudged('Should be clear and accurate.', threshold: 0.8);
+</code-snippet>
+@endverbatim
+
+@verbatim
+<code-snippet name="JSON validation" lang="php">
+prompt('Extract person info from: \{\{text\}\}')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect(['text' => 'John is 30 years old from Amsterdam'])
+    ->toMatchJsonStructure(['name', 'age', 'city'])
+    ->toHaveJsonFragment(['name' => 'John'])
+    ->toHaveJsonPath('age', 30)
+    ->toHaveJsonType('name', 'string');
 </code-snippet>
 @endverbatim
 
