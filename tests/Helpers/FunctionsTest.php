@@ -2,8 +2,10 @@
 
 declare(strict_types=1);
 
+use KevinPijning\Prompt\AssertionGroup;
 use KevinPijning\Prompt\Internal\TestContext;
 use KevinPijning\Prompt\Provider;
+use KevinPijning\Prompt\TestCase;
 
 beforeEach(function () {
     TestContext::clear();
@@ -62,4 +64,43 @@ test('provider function returns the same instance that is stored in TestContext'
     $stored = TestContext::getProvider('my-provider');
 
     expect($provider)->toBe($stored);
+});
+
+test('assertion function creates and registers an assertion group without callback', function () {
+    $group = assertion('be nice');
+
+    expect($group)->toBeInstanceOf(AssertionGroup::class)
+        ->and(TestContext::hasAssertionGroup('be nice'))->toBeTrue()
+        ->and(TestContext::getAssertionGroup('be nice'))->toBe($group);
+});
+
+test('assertion function creates and registers an assertion group with callback', function () {
+    $callback = function (TestCase $tc): void {
+        $tc->toContain('hello')
+            ->toBeJudged('friendly');
+    };
+
+    $group = assertion('be nice', $callback);
+
+    expect($group)->toBeInstanceOf(AssertionGroup::class)
+        ->and(TestContext::hasAssertionGroup('be nice'))->toBeTrue()
+        ->and(TestContext::getAssertionGroup('be nice'))->toBe($group);
+});
+
+test('assertion function overwrites existing assertion group with same name', function () {
+    $group1 = assertion('be nice');
+    $group2 = assertion('be nice', function (TestCase $tc): void {
+        $tc->toContain('hello');
+    });
+
+    expect(TestContext::getAssertionGroup('be nice'))->toBe($group2)
+        ->and(TestContext::getAssertionGroup('be nice'))->not->toBe($group1);
+});
+
+test('assertion function returns the same instance that is stored in TestContext', function () {
+    $group = assertion('be nice');
+
+    $stored = TestContext::getAssertionGroup('be nice');
+
+    expect($group)->toBe($stored);
 });
