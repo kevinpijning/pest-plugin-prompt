@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace KevinPijning\Prompt\Internal;
 
+use KevinPijning\Prompt\AssertionGroup;
 use KevinPijning\Prompt\Evaluation;
 use KevinPijning\Prompt\Provider;
 
@@ -19,6 +20,11 @@ class TestContext
      * @var array<string, Provider>
      */
     private static array $providers = [];
+
+    /**
+     * @var array<string, AssertionGroup>
+     */
+    private static array $assertionGroups = [];
 
     /**
      * @return Evaluation[]
@@ -55,5 +61,22 @@ class TestContext
     public static function getProvider(string $name): Provider
     {
         return self::$providers[$name];
+    }
+
+    public static function addAssertionGroup(string $name, AssertionGroup $group): AssertionGroup
+    {
+        self::$assertionGroups[$name] = $group;
+
+        return self::$assertionGroups[$name];
+    }
+
+    public static function hasAssertionGroup(string $name): bool
+    {
+        return isset(self::$assertionGroups[$name]);
+    }
+
+    public static function getAssertionGroup(string $name): AssertionGroup
+    {
+        return self::$assertionGroups[$name];
     }
 }

@@ -188,3 +188,80 @@ test('clear does not remove providers, only evaluations', function () {
         ->and(TestContext::getProvider('my-provider'))->toBe($provider)
         ->and(TestContext::getCurrentEvaluations())->toBeEmpty();
 });
+
+test('addAssertionGroup adds an assertion group to the context and returns it', function () {
+    $group = new \KevinPijning\Prompt\AssertionGroup('be nice');
+
+    $result = TestContext::addAssertionGroup('be nice', $group);
+
+    expect($result)->toBe($group)
+        ->and(TestContext::hasAssertionGroup('be nice'))->toBeTrue()
+        ->and(TestContext::getAssertionGroup('be nice'))->toBe($group);
+});
+
+test('addAssertionGroup can add multiple assertion groups with different names', function () {
+    $group1 = new \KevinPijning\Prompt\AssertionGroup('be nice');
+    $group2 = new \KevinPijning\Prompt\AssertionGroup('be professional');
+    $group3 = new \KevinPijning\Prompt\AssertionGroup('be concise');
+
+    TestContext::addAssertionGroup('be nice', $group1);
+    TestContext::addAssertionGroup('be professional', $group2);
+    TestContext::addAssertionGroup('be concise', $group3);
+
+    expect(TestContext::hasAssertionGroup('be nice'))->toBeTrue()
+        ->and(TestContext::hasAssertionGroup('be professional'))->toBeTrue()
+        ->and(TestContext::hasAssertionGroup('be concise'))->toBeTrue()
+        ->and(TestContext::getAssertionGroup('be nice'))->toBe($group1)
+        ->and(TestContext::getAssertionGroup('be professional'))->toBe($group2)
+        ->and(TestContext::getAssertionGroup('be concise'))->toBe($group3);
+});
+
+test('hasAssertionGroup returns false for non-existent assertion group', function () {
+    expect(TestContext::hasAssertionGroup('non-existent'))->toBeFalse();
+});
+
+test('hasAssertionGroup returns true for existing assertion group', function () {
+    $group = new \KevinPijning\Prompt\AssertionGroup('be nice');
+    TestContext::addAssertionGroup('be nice', $group);
+
+    expect(TestContext::hasAssertionGroup('be nice'))->toBeTrue();
+});
+
+test('getAssertionGroup returns the correct assertion group', function () {
+    $group = new \KevinPijning\Prompt\AssertionGroup('be nice');
+    TestContext::addAssertionGroup('be nice', $group);
+
+    $retrieved = TestContext::getAssertionGroup('be nice');
+
+    expect($retrieved)->toBe($group)
+        ->and($retrieved->name)->toBe('be nice');
+});
+
+test('addAssertionGroup overwrites existing assertion group with same name', function () {
+    $group1 = new \KevinPijning\Prompt\AssertionGroup('be nice');
+    $group2 = new \KevinPijning\Prompt\AssertionGroup('be nice');
+
+    TestContext::addAssertionGroup('be nice', $group1);
+    expect(TestContext::getAssertionGroup('be nice'))->toBe($group1);
+
+    TestContext::addAssertionGroup('be nice', $group2);
+    expect(TestContext::getAssertionGroup('be nice'))->toBe($group2)
+        ->and(TestContext::getAssertionGroup('be nice'))->not->toBe($group1);
+});
+
+test('clear does not remove assertion groups, only evaluations', function () {
+    $group = new \KevinPijning\Prompt\AssertionGroup('be nice');
+    $evaluation = new Evaluation(['test prompt']);
+
+    TestContext::addAssertionGroup('be nice', $group);
+    TestContext::addEvaluation($evaluation);
+
+    expect(TestContext::hasAssertionGroup('be nice'))->toBeTrue()
+        ->and(TestContext::getCurrentEvaluations())->toHaveCount(1);
+
+    TestContext::clear();
+
+    expect(TestContext::hasAssertionGroup('be nice'))->toBeTrue()
+        ->and(TestContext::getAssertionGroup('be nice'))->toBe($group)
+        ->and(TestContext::getCurrentEvaluations())->toBeEmpty();
+});

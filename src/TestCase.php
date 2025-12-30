@@ -4,22 +4,7 @@ declare(strict_types=1);
 
 namespace KevinPijning\Prompt;
 
-use KevinPijning\Prompt\Concerns\CanBeClassified;
-use KevinPijning\Prompt\Concerns\CanBeJudged;
-use KevinPijning\Prompt\Concerns\CanBeRefused;
-use KevinPijning\Prompt\Concerns\CanBeScored;
-use KevinPijning\Prompt\Concerns\CanBeSimilar;
-use KevinPijning\Prompt\Concerns\CanBeValid;
-use KevinPijning\Prompt\Concerns\CanContain;
-use KevinPijning\Prompt\Concerns\CanEnclose;
-use KevinPijning\Prompt\Concerns\CanEqual;
-use KevinPijning\Prompt\Concerns\CanHaveCustomValidation;
-use KevinPijning\Prompt\Concerns\CanHaveFinishReason;
-use KevinPijning\Prompt\Concerns\CanHaveFunctionCalls;
-use KevinPijning\Prompt\Concerns\CanHavePerformance;
-use KevinPijning\Prompt\Concerns\CanHaveTraces;
-use KevinPijning\Prompt\Concerns\CanMatch;
-use KevinPijning\Prompt\Concerns\CanValidateJson;
+use KevinPijning\Prompt\Concerns\CanUseAssertions;
 use KevinPijning\Prompt\Internal\BuiltTestCase;
 use RuntimeException;
 
@@ -28,7 +13,7 @@ use RuntimeException;
  */
 class TestCase
 {
-    use CanBeClassified, CanBeJudged, CanBeRefused, CanBeScored, CanBeSimilar, CanBeValid, CanContain, CanEnclose, CanEqual, CanHaveCustomValidation, CanHaveFinishReason, CanHaveFunctionCalls, CanHavePerformance, CanHaveTraces, CanMatch, CanValidateJson;
+    use CanUseAssertions;
 
     /** @var Assertion[] */
     private array $assertions = [];
