@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace KevinPijning\Prompt\Internal;
 
 use InvalidArgumentException;
+use KevinPijning\Prompt\Assertion;
 use KevinPijning\Prompt\Internal\Results\ComponentResult;
 use KevinPijning\Prompt\Internal\Results\GradingResult;
 use KevinPijning\Prompt\Internal\Results\Result;
@@ -80,8 +81,14 @@ class TestLifecycle
 
         $message = "{$bold}{$red}✗ Assertion failed{$reset} {$dim}(evaluated by promptfoo){$reset}\n";
         $message .= "{$bold}{$cyan}Provider:{$reset} {$blue}{$result->provider->id}{$reset} ";
-        $message .= "{$bold}{$cyan}Assertion:{$reset} {$yellow}{$componentResult->assertion->type}{$reset} ";
-        $message .= "{$bold}{$cyan}Expected:{$reset} {$green}".json_encode($componentResult->assertion->value, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)."{$reset}\n";
+
+        if ($componentResult->assertion instanceof Assertion) {
+            $message .= "{$bold}{$cyan}Assertion:{$reset} {$yellow}{$componentResult->assertion->type}{$reset} ";
+            $message .= "{$bold}{$cyan}Expected:{$reset} {$green}".json_encode($componentResult->assertion->value, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)."{$reset}\n";
+        } else {
+            $message .= "\n";
+        }
+
         $message .= "{$bold}{$cyan}Variables:{$reset} {$blue}".json_encode($result->vars, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)."{$reset}\n";
         $message .= "{$bold}{$yellow}Reason:{$reset} {$red}{$componentResult->reason}{$reset}\n";
         $message .= "{$bold}{$cyan}Prompt:{$reset} {$blue}{$result->prompt->raw}{$reset}\n";

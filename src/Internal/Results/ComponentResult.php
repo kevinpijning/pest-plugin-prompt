@@ -15,6 +15,6 @@ final readonly class ComponentResult
         public bool $pass,
         public float $score,
         public string $reason,
-        public Assertion $assertion,
+        public ?Assertion $assertion = null,
     ) {}
 }

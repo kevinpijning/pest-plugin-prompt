@@ -61,7 +61,9 @@ class PromptfooClient implements EvaluatorClient
         $combinedOutput = $process->getOutput().$process->getErrorOutput();
 
         $evaluationComplete = str_contains($combinedOutput, 'Evaluation complete') ||
-            str_contains($combinedOutput, '✔ Evaluation complete');
+            str_contains($combinedOutput, 'Eval complete') ||
+            str_contains($combinedOutput, '✔ Evaluation complete') ||
+            str_contains($combinedOutput, '✓ Eval complete');
 
         if (! $process->isSuccessful() && ! $evaluationComplete) {
             throw new ExecutionException(

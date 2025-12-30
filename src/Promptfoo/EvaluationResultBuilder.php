@@ -96,7 +96,7 @@ class EvaluationResultBuilder
             pass: $this->castToBool($data['pass']),
             score: (float) $data['score'],
             reason: $data['reason'] ?? '',
-            assertion: $this->buildAssertion($data['assertion']),
+            assertion: isset($data['assertion']) ? $this->buildAssertion($data['assertion']) : null,
         );
     }
 
