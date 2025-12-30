@@ -44,6 +44,8 @@ provider('openai-gpt4')
 
 **`and(array $variables, ?callable $callback = null)`**: Chain additional test cases.
 
+**`to(callable|string $callback)`** / **`group(callable|string $callback)`**: Group assertions using a callback or invokable class FQN. Both methods are aliases. Accepts closures or invokable class names for reusable assertion logic.
+
 @verbatim
 <code-snippet name="Multiple test cases" lang="php">
 prompt('Greet \{\{name\}\}.')
@@ -52,6 +54,48 @@ prompt('Greet \{\{name\}\}.')
     ->toContain('Alice')
     ->and(['name' => 'Bob'])
     ->toContain('Bob');
+</code-snippet>
+@endverbatim
+
+@verbatim
+<code-snippet name="Grouping with callbacks" lang="php">
+prompt('Explain \{\{topic\}\}.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect(['topic' => 'AI'])
+    ->to(function (\KevinPijning\Prompt\TestCase $tc) {
+        $tc->toContain('artificial intelligence')
+           ->toBeJudged('clear and accurate')
+           ->toHaveLatency(2000);
+    });
+</code-snippet>
+@endverbatim
+
+@verbatim
+<code-snippet name="Reusable invokable classes" lang="php">
+use \KevinPijning\Prompt\TestCase;
+
+class QualityAssertions
+{
+    public function __invoke(TestCase $testCase): void
+    {
+        $testCase
+            ->toBeJudged('professional and accurate')
+            ->toHaveLatency(2000)
+            ->not->toBeRefused();
+    }
+}
+
+// Use by class name
+prompt('Explain \{\{topic\}\}.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect(['topic' => 'AI'])
+    ->to(QualityAssertions::class);
+
+// Or use instance
+prompt('Analyze \{\{data\}\}.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect(['data' => 'metrics'])
+    ->group(new QualityAssertions);
 </code-snippet>
 @endverbatim
 
@@ -130,6 +174,7 @@ $provider = Provider::create('openai:gpt-4')
 - Use `describe()` for clarity
 - Test multiple providers for consistency
 - Combine assertion types (content + format + LLM evaluation)
+- Create invokable classes for reusable assertion patterns across tests
 
 ### Requirements
 

@@ -384,7 +384,9 @@ prompt('Greet {{name}} warmly.')
 
 #### `to()` and `group()`
 
-Group multiple assertions together using a callback. Both `to()` and `group()` are aliases that execute a callback with the current test case, allowing you to organize assertions logically.
+Group multiple assertions together using a callback or invokable class. Both `to()` and `group()` are aliases that execute a callback with the current test case, allowing you to organize assertions logically.
+
+**Using callbacks:**
 
 ```php
 prompt('Explain {{topic}} in detail.')
@@ -417,9 +419,46 @@ prompt('Review {{document}}.')
     ->to(fn (TestCase $tc) => $tc->toHaveLatency(1500));
 ```
 
+**Using invokable classes:**
+
+You can also pass an invokable class (a class with an `__invoke()` method) to reuse assertion logic across multiple tests.
+
+```php
+// Define an invokable class
+class QualityAssertions
+{
+    public function __invoke(TestCase $testCase): void
+    {
+        $testCase
+            ->toBeJudged('response is professional and accurate')
+            ->toHaveLatency(2000)
+            ->not->toBeRefused();
+    }
+}
+
+// Use the class by FQN
+prompt('Explain {{topic}}.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect(['topic' => 'AI'])
+    ->to(QualityAssertions::class);
+
+// Or use an instance
+prompt('Explain {{topic}}.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect(['topic' => 'AI'])
+    ->to(new QualityAssertions);
+
+// Works with group() too
+prompt('Analyze {{data}}.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect(['data' => 'metrics'])
+    ->group(QualityAssertions::class);
+```
+
 **Key points:**
 - `to()` and `group()` are functionally identical - use whichever reads better in your context
-- The callback receives the current `TestCase` instance
+- Accepts either a callable or an invokable class FQN (fully qualified name)
+- The callback/invokable receives the current `TestCase` instance
 - Useful for organizing related assertions together
 - Can be chained multiple times
 - Works with all assertion methods
@@ -427,7 +466,8 @@ prompt('Review {{document}}.')
 **Use cases:**
 - Group related assertions for better code organization
 - Apply conditional logic based on test case variables
-- Reuse assertion patterns across multiple test cases
+- Reuse assertion patterns across multiple test cases with invokable classes
+- Create reusable assertion libraries for common quality checks
 
 ### Assertion Methods
 

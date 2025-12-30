@@ -94,3 +94,66 @@ test('to and group methods can be mixed', function () {
     expect($result)->toBe($testCase)
         ->and($testCase->build()->assertions)->toHaveCount(3);
 });
+
+test('to method accepts invokable class FQN', function () {
+    $evaluation = new Evaluation(['prompt1', 'prompt2']);
+    $variables = ['key1' => 'value1'];
+    $testCase = new TestCase($variables, $evaluation);
+
+    $result = $testCase->to(InvokableTestClass::class);
+
+    expect($result)->toBe($testCase)
+        ->and($testCase->build()->assertions)->toHaveCount(1)
+        ->and($testCase->build()->assertions[0]->type)->toBe('icontains')
+        ->and($testCase->build()->assertions[0]->value)->toBe('invokable');
+});
+
+test('to method accepts invokable class instance', function () {
+    $evaluation = new Evaluation(['prompt1', 'prompt2']);
+    $variables = ['key1' => 'value1'];
+    $testCase = new TestCase($variables, $evaluation);
+
+    $result = $testCase->to(new InvokableTestClass);
+
+    expect($result)->toBe($testCase)
+        ->and($testCase->build()->assertions)->toHaveCount(1)
+        ->and($testCase->build()->assertions[0]->type)->toBe('icontains')
+        ->and($testCase->build()->assertions[0]->value)->toBe('invokable');
+});
+
+test('to method throws exception for non-invokable class FQN', function () {
+    $evaluation = new Evaluation(['prompt1', 'prompt2']);
+    $variables = ['key1' => 'value1'];
+    $testCase = new TestCase($variables, $evaluation);
+
+    $testCase->to(NonInvokableTestClass::class);
+})->throws(InvalidArgumentException::class, 'must be callable or an invokable class');
+
+test('group method accepts invokable class FQN', function () {
+    $evaluation = new Evaluation(['prompt1', 'prompt2']);
+    $variables = ['key1' => 'value1'];
+    $testCase = new TestCase($variables, $evaluation);
+
+    $result = $testCase->group(InvokableTestClass::class);
+
+    expect($result)->toBe($testCase)
+        ->and($testCase->build()->assertions)->toHaveCount(1)
+        ->and($testCase->build()->assertions[0]->type)->toBe('icontains')
+        ->and($testCase->build()->assertions[0]->value)->toBe('invokable');
+});
+
+class InvokableTestClass
+{
+    public function __invoke(TestCase $testCase): void
+    {
+        $testCase->toContain('invokable');
+    }
+}
+
+class NonInvokableTestClass
+{
+    public function handle(TestCase $testCase): void
+    {
+        $testCase->toContain('non-invokable');
+    }
+}
