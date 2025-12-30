@@ -10,43 +10,43 @@ use KevinPijning\Prompt\Internal\TestContext;
 trait CanEnclose
 {
     /**
-     * @param  callable(self): void|class-string|string  $callback
+     * @param  callable(self): void|class-string|string  $expect
      * @param  array<int|string,mixed>  $args
      */
-    public function to(callable|string $callback, array $args = []): self
+    public function to(callable|string $expect, array $args = []): self
     {
-        if (is_string($callback)) {
+        if (is_string($expect)) {
             // First, try to resolve as a named assertion group
-            if (TestContext::hasAssertionGroup($callback)) {
-                TestContext::getAssertionGroup($callback)->apply($this, $args);
+            if (TestContext::hasAssertionGroup($expect)) {
+                TestContext::getAssertionGroup($expect)->apply($this, $args);
 
                 return $this;
             }
 
             // Fallback to existing invokable class FQN behavior
-            if (! class_exists($callback)) {
-                throw new InvalidArgumentException("Class {$callback} does not exist.");
+            if (! class_exists($expect)) {
+                throw new InvalidArgumentException("Class {$expect} does not exist.");
             }
 
-            if (! method_exists($callback, '__invoke')) {
-                throw new InvalidArgumentException("Class {$callback} must be callable or an invokable class.");
+            if (! method_exists($expect, '__invoke')) {
+                throw new InvalidArgumentException("Class {$expect} must be callable or an invokable class.");
             }
 
-            $callback = new $callback;
+            $expect = new $expect;
         }
 
         // For non-string callables, preserve existing behavior and ignore $args
-        $callback($this);
+        $expect($this);
 
         return $this;
     }
 
     /**
-     * @param  callable(self): void|class-string|string  $callback
+     * @param  callable(self): void|class-string|string  $expectations
      * @param  array<int|string,mixed>  $args
      */
-    public function group(callable|string $callback, array $args = []): self
+    public function group(callable|string $expectations, array $args = []): self
     {
-        return $this->to($callback, $args);
+        return $this->to($expectations, $args);
     }
 }
