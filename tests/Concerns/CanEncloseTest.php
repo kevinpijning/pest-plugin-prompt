@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use KevinPijning\Prompt\Assertion;
 use KevinPijning\Prompt\Evaluation;
+use KevinPijning\Prompt\Internal\TestContext;
 use KevinPijning\Prompt\TestCase;
 
 test('to method executes callback with test case and returns self', function () {
@@ -140,6 +141,68 @@ test('group method accepts invokable class FQN', function () {
         ->and($testCase->build()->assertions)->toHaveCount(1)
         ->and($testCase->build()->assertions[0]->type)->toBe('icontains')
         ->and($testCase->build()->assertions[0]->value)->toBe('invokable');
+});
+
+test('to method can use named assertion group without arguments', function () {
+    TestContext::clear();
+
+    assertion('be nice')
+        ->toContain('hello')
+        ->toBeJudged('friendly');
+
+    $evaluation = new Evaluation(['prompt1']);
+    $testCase = new TestCase([], $evaluation);
+
+    $result = $testCase->to('be nice');
+
+    $built = $testCase->build();
+
+    expect($result)->toBe($testCase)
+        ->and($built->assertions)->toHaveCount(2)
+        ->and($built->assertions[0]->type)->toBe('icontains')
+        ->and($built->assertions[0]->value)->toBe('hello')
+        ->and($built->assertions[1]->type)->toBe('llm-rubric')
+        ->and($built->assertions[1]->value)->toBe('friendly');
+});
+
+test('to method can use named assertion group with arguments', function () {
+    TestContext::clear();
+
+    assertion('be kind', function (TestCase $tc, string $word): void {
+        $tc->toContain($word)
+            ->toBeJudged("be {$word}");
+    });
+
+    $evaluation = new Evaluation(['prompt1']);
+    $testCase = new TestCase([], $evaluation);
+
+    $result = $testCase->to('be kind', ['word' => 'gentle']);
+
+    $built = $testCase->build();
+
+    expect($result)->toBe($testCase)
+        ->and($built->assertions)->toHaveCount(2)
+        ->and($built->assertions[0]->value)->toBe('gentle')
+        ->and($built->assertions[1]->value)->toBe('be gentle');
+});
+
+test('group method can use named assertion group', function () {
+    TestContext::clear();
+
+    assertion('be polite')
+        ->toContain('please');
+
+    $evaluation = new Evaluation(['prompt1']);
+    $testCase = new TestCase([], $evaluation);
+
+    $result = $testCase->group('be polite');
+
+    $built = $testCase->build();
+
+    expect($result)->toBe($testCase)
+        ->and($built->assertions)->toHaveCount(1)
+        ->and($built->assertions[0]->type)->toBe('icontains')
+        ->and($built->assertions[0]->value)->toBe('please');
 });
 
 class InvokableTestClass

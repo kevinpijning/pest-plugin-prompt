@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace KevinPijning\Prompt;
 
+use KevinPijning\Prompt\Concerns\CanEnclose;
 use KevinPijning\Prompt\Concerns\CanUseAssertions;
 use KevinPijning\Prompt\Internal\BuiltTestCase;
 use RuntimeException;
@@ -13,6 +14,7 @@ use RuntimeException;
  */
 class TestCase
 {
+    use CanEnclose;
     use CanUseAssertions;
 
     /** @var Assertion[] */
