@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace KevinPijning\Prompt;
 
+use BadMethodCallException;
+use InvalidArgumentException;
 use KevinPijning\Prompt\Concerns\CanEnclose;
 use KevinPijning\Prompt\Concerns\CanUseAssertions;
+use KevinPijning\Prompt\Helpers\AssertionGroupName;
 use KevinPijning\Prompt\Internal\BuiltTestCase;
+use KevinPijning\Prompt\Internal\TestContext;
 use RuntimeException;
 
 /**
@@ -58,6 +62,37 @@ class TestCase
         }
 
         throw new RuntimeException(sprintf('Undefined property: %s::$%s', static::class, $name));
+    }
+
+    /**
+     * @param  array<int,mixed>  $arguments
+     */
+    public function __call(string $name, array $arguments): self
+    {
+        $groupName = AssertionGroupName::fromMethodName($name);
+
+        if ($groupName !== null && TestContext::hasAssertionGroup($groupName)) {
+            if (count($arguments) === 0) {
+                $args = [];
+            } elseif (count($arguments) === 1 && is_array($arguments[0])) {
+                $args = $arguments[0];
+            } else {
+                throw new InvalidArgumentException(sprintf(
+                    'Assertion group "%s" expects a single array argument.',
+                    $groupName
+                ));
+            }
+
+            TestContext::getAssertionGroup($groupName)->apply($this, $args);
+
+            return $this;
+        }
+
+        throw new BadMethodCallException(sprintf(
+            'Call to undefined method %s::%s()',
+            static::class,
+            $name
+        ));
     }
 
     /**
