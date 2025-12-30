@@ -160,6 +160,26 @@ test('assertion group supports nullable parameters', function () {
     expect($testCase->build()->assertions)->toHaveCount(0);
 });
 
+test('assertion group callback can receive assertion group instance as first parameter', function () {
+    $evaluation = new Evaluation(['prompt']);
+    $testCase = $evaluation->expect();
+
+    $group = new AssertionGroup('be nice', function (AssertionGroup $group, string $word): void {
+        $group->toContain($word)
+            ->toBeJudged('friendly');
+    });
+
+    $group->apply($testCase, ['word' => 'hello']);
+
+    $built = $testCase->build();
+
+    expect($built->assertions)->toHaveCount(2)
+        ->and($built->assertions[0]->type)->toBe('icontains')
+        ->and($built->assertions[0]->value)->toBe('hello')
+        ->and($built->assertions[1]->type)->toBe('llm-rubric')
+        ->and($built->assertions[1]->value)->toBe('friendly');
+});
+
 test('assertion group can use multiple assertion traits', function () {
     $group = new AssertionGroup('comprehensive');
 

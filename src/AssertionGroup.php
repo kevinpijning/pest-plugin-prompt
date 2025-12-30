@@ -71,11 +71,18 @@ final class AssertionGroup
 
         $boundArgs = [];
         $usedKeys = [];
+        $usesGroupInstance = false;
 
         foreach ($parameters as $index => $parameter) {
-            // First parameter is always the TestCase
             if ($index === 0) {
-                $boundArgs[] = $testCase;
+                $type = $parameter->getType();
+
+                if ($type instanceof \ReflectionNamedType && $type->getName() === self::class) {
+                    $usesGroupInstance = true;
+                    $boundArgs[] = $this;
+                } else {
+                    $boundArgs[] = $testCase;
+                }
 
                 continue;
             }
@@ -136,6 +143,16 @@ final class AssertionGroup
             ));
         }
 
+        if ($usesGroupInstance) {
+            $this->assertions = [];
+        }
+
         $closure(...$boundArgs);
+
+        if ($usesGroupInstance) {
+            foreach ($this->assertions as $assertion) {
+                $testCase->assert($assertion);
+            }
+        }
     }
 }
