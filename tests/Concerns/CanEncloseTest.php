@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use KevinPijning\Prompt\Assertion;
 use KevinPijning\Prompt\Evaluation;
-use KevinPijning\Prompt\Internal\TestContext;
+use KevinPijning\Prompt\Internal\EvaluationContext;
 use KevinPijning\Prompt\TestCase;
 
 test('to method executes callback with test case and returns self', function () {
@@ -144,7 +144,7 @@ test('group method accepts invokable class FQN', function () {
 });
 
 test('to method can use named assertion group without arguments', function () {
-    TestContext::clear();
+    EvaluationContext::clear();
 
     assertion('be nice')
         ->toContain('hello')
@@ -166,7 +166,7 @@ test('to method can use named assertion group without arguments', function () {
 });
 
 test('to method can use named assertion group with arguments', function () {
-    TestContext::clear();
+    EvaluationContext::clear();
 
     assertion('be kind', function (TestCase $tc, string $word): void {
         $tc->toContain($word)
@@ -187,7 +187,7 @@ test('to method can use named assertion group with arguments', function () {
 });
 
 test('group method can use named assertion group', function () {
-    TestContext::clear();
+    EvaluationContext::clear();
 
     assertion('be polite')
         ->toContain('please');

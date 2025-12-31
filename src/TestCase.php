@@ -9,8 +9,8 @@ use InvalidArgumentException;
 use KevinPijning\Prompt\Concerns\CanEnclose;
 use KevinPijning\Prompt\Concerns\CanUseAssertions;
 use KevinPijning\Prompt\Helpers\AssertionGroupName;
+use KevinPijning\Prompt\Internal\AssertionGroupContext;
 use KevinPijning\Prompt\Internal\BuiltTestCase;
-use KevinPijning\Prompt\Internal\TestContext;
 use RuntimeException;
 
 /**
@@ -71,7 +71,7 @@ class TestCase
     {
         $groupName = AssertionGroupName::fromMethodName($name);
 
-        if ($groupName !== null && TestContext::hasAssertionGroup($groupName)) {
+        if ($groupName !== null && AssertionGroupContext::has($groupName)) {
             if (count($arguments) === 0) {
                 $args = [];
             } elseif (count($arguments) === 1 && is_array($arguments[0])) {
@@ -83,7 +83,7 @@ class TestCase
                 ));
             }
 
-            TestContext::getAssertionGroup($groupName)->apply($this, $args);
+            AssertionGroupContext::get($groupName)->apply($this, $args);
 
             return $this;
         }

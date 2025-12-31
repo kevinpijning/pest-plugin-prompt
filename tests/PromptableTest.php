@@ -3,12 +3,13 @@
 declare(strict_types=1);
 
 use KevinPijning\Prompt\Evaluation;
-use KevinPijning\Prompt\Internal\TestContext;
+use KevinPijning\Prompt\Internal\EvaluationContext;
+use KevinPijning\Prompt\Internal\ProviderContext;
 use KevinPijning\Prompt\Promptable;
 use KevinPijning\Prompt\Provider;
 
 beforeEach(function () {
-    TestContext::clear();
+    EvaluationContext::clear();
 });
 
 test('Promptable trait provides prompt method that delegates to global prompt function', function () {
@@ -20,8 +21,8 @@ test('Promptable trait provides prompt method that delegates to global prompt fu
     $evaluation = $testObject->prompt('test prompt');
 
     expect($evaluation)->toBeInstanceOf(Evaluation::class)
-        ->and(TestContext::getCurrentEvaluations())->toHaveCount(1)
-        ->and(TestContext::getCurrentEvaluations()[0])->toBe($evaluation);
+        ->and(EvaluationContext::getCurrentEvaluations())->toHaveCount(1)
+        ->and(EvaluationContext::getCurrentEvaluations()[0])->toBe($evaluation);
 });
 
 test('Promptable trait provides provider method that delegates to global provider function', function () {
@@ -37,8 +38,8 @@ test('Promptable trait provides provider method that delegates to global provide
     });
 
     expect($provider)->toBeInstanceOf(Provider::class)
-        ->and(TestContext::hasProvider('my-provider'))->toBeTrue()
-        ->and(TestContext::getProvider('my-provider'))->toBe($provider)
+        ->and(ProviderContext::has('my-provider'))->toBeTrue()
+        ->and(ProviderContext::get('my-provider'))->toBe($provider)
         ->and($provider->build()->id)->toBe('openai:gpt-4')
         ->and($provider->build()->label)->toBe('Test Provider')
         ->and($provider->build()->temperature)->toBe(0.7);
@@ -53,8 +54,8 @@ test('Promptable trait provider method works without config', function () {
     $provider = $testObject->provider('simple-provider');
 
     expect($provider)->toBeInstanceOf(Provider::class)
-        ->and(TestContext::hasProvider('simple-provider'))->toBeTrue()
-        ->and(TestContext::getProvider('simple-provider'))->toBe($provider);
+        ->and(ProviderContext::has('simple-provider'))->toBeTrue()
+        ->and(ProviderContext::get('simple-provider'))->toBe($provider);
 });
 
 test('Promptable trait methods can be chained in test context', function () {

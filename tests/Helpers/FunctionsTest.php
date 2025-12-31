@@ -3,20 +3,22 @@
 declare(strict_types=1);
 
 use KevinPijning\Prompt\AssertionGroup;
-use KevinPijning\Prompt\Internal\TestContext;
+use KevinPijning\Prompt\Internal\AssertionGroupContext;
+use KevinPijning\Prompt\Internal\EvaluationContext;
+use KevinPijning\Prompt\Internal\ProviderContext;
 use KevinPijning\Prompt\Provider;
 use KevinPijning\Prompt\TestCase;
 
 beforeEach(function () {
-    TestContext::clear();
+    EvaluationContext::clear();
 });
 
 test('provider function creates and registers a provider without config', function () {
     $provider = provider('my-provider');
 
     expect($provider)->toBeInstanceOf(Provider::class)
-        ->and(TestContext::hasProvider('my-provider'))->toBeTrue()
-        ->and(TestContext::getProvider('my-provider'))->toBe($provider);
+        ->and(ProviderContext::has('my-provider'))->toBeTrue()
+        ->and(ProviderContext::get('my-provider'))->toBe($provider);
 });
 
 test('provider function creates and registers a provider with config callable', function () {
@@ -28,8 +30,8 @@ test('provider function creates and registers a provider with config callable', 
     });
 
     expect($provider)->toBeInstanceOf(Provider::class)
-        ->and(TestContext::hasProvider('my-provider'))->toBeTrue()
-        ->and(TestContext::getProvider('my-provider'))->toBe($provider)
+        ->and(ProviderContext::has('my-provider'))->toBeTrue()
+        ->and(ProviderContext::get('my-provider'))->toBe($provider)
         ->and($provider->build()->id)->toBe('openai:gpt-4')
         ->and($provider->build()->label)->toBe('Custom Provider')
         ->and($provider->build()->temperature)->toBe(0.7)
@@ -41,27 +43,27 @@ test('provider function can register multiple providers with different names', f
     $provider2 = provider('anthropic', fn (Provider $p) => $p->id('anthropic:claude-3'));
     $provider3 = provider('google', fn (Provider $p) => $p->id('google:gemini'));
 
-    expect(TestContext::hasProvider('openai'))->toBeTrue()
-        ->and(TestContext::hasProvider('anthropic'))->toBeTrue()
-        ->and(TestContext::hasProvider('google'))->toBeTrue()
-        ->and(TestContext::getProvider('openai'))->toBe($provider1)
-        ->and(TestContext::getProvider('anthropic'))->toBe($provider2)
-        ->and(TestContext::getProvider('google'))->toBe($provider3);
+    expect(ProviderContext::has('openai'))->toBeTrue()
+        ->and(ProviderContext::has('anthropic'))->toBeTrue()
+        ->and(ProviderContext::has('google'))->toBeTrue()
+        ->and(ProviderContext::get('openai'))->toBe($provider1)
+        ->and(ProviderContext::get('anthropic'))->toBe($provider2)
+        ->and(ProviderContext::get('google'))->toBe($provider3);
 });
 
 test('provider function overwrites existing provider with same name', function () {
     $provider1 = provider('my-provider', fn (Provider $p) => $p->id('openai:gpt-4'));
     $provider2 = provider('my-provider', fn (Provider $p) => $p->id('anthropic:claude-3'));
 
-    expect(TestContext::getProvider('my-provider'))->toBe($provider2)
-        ->and(TestContext::getProvider('my-provider'))->not->toBe($provider1)
+    expect(ProviderContext::get('my-provider'))->toBe($provider2)
+        ->and(ProviderContext::get('my-provider'))->not->toBe($provider1)
         ->and($provider2->build()->id)->toBe('anthropic:claude-3');
 });
 
 test('provider function returns the same instance that is stored in TestContext', function () {
     $provider = provider('my-provider');
 
-    $stored = TestContext::getProvider('my-provider');
+    $stored = ProviderContext::get('my-provider');
 
     expect($provider)->toBe($stored);
 });
@@ -70,8 +72,8 @@ test('assertion function creates and registers an assertion group without callba
     $group = assertion('be nice');
 
     expect($group)->toBeInstanceOf(AssertionGroup::class)
-        ->and(TestContext::hasAssertionGroup('be nice'))->toBeTrue()
-        ->and(TestContext::getAssertionGroup('be nice'))->toBe($group);
+        ->and(AssertionGroupContext::has('be nice'))->toBeTrue()
+        ->and(AssertionGroupContext::get('be nice'))->toBe($group);
 });
 
 test('assertion function creates and registers an assertion group with callback', function () {
@@ -83,8 +85,8 @@ test('assertion function creates and registers an assertion group with callback'
     $group = assertion('be nice', $callback);
 
     expect($group)->toBeInstanceOf(AssertionGroup::class)
-        ->and(TestContext::hasAssertionGroup('be nice'))->toBeTrue()
-        ->and(TestContext::getAssertionGroup('be nice'))->toBe($group);
+        ->and(AssertionGroupContext::has('be nice'))->toBeTrue()
+        ->and(AssertionGroupContext::get('be nice'))->toBe($group);
 });
 
 test('assertion function overwrites existing assertion group with same name', function () {
@@ -93,14 +95,14 @@ test('assertion function overwrites existing assertion group with same name', fu
         $tc->toContain('hello');
     });
 
-    expect(TestContext::getAssertionGroup('be nice'))->toBe($group2)
-        ->and(TestContext::getAssertionGroup('be nice'))->not->toBe($group1);
+    expect(AssertionGroupContext::get('be nice'))->toBe($group2)
+        ->and(AssertionGroupContext::get('be nice'))->not->toBe($group1);
 });
 
 test('assertion function returns the same instance that is stored in TestContext', function () {
     $group = assertion('be nice');
 
-    $stored = TestContext::getAssertionGroup('be nice');
+    $stored = AssertionGroupContext::get('be nice');
 
     expect($group)->toBe($stored);
 });

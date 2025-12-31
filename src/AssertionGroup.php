@@ -8,6 +8,7 @@ use Closure;
 use InvalidArgumentException;
 use KevinPijning\Prompt\Concerns\CanUseAssertions;
 use ReflectionFunction;
+use ReflectionNamedType;
 
 final class AssertionGroup
 {
@@ -72,18 +73,41 @@ final class AssertionGroup
         $boundArgs = [];
         $usedKeys = [];
         $usesGroupInstance = false;
+        $firstIsContext = false;
 
-        foreach ($parameters as $index => $parameter) {
-            if ($index === 0) {
-                $type = $parameter->getType();
+        if (isset($parameters[0])) {
+            $firstParam = $parameters[0];
+            $type = $firstParam->getType();
 
-                if ($type instanceof \ReflectionNamedType && $type->getName() === self::class) {
+            if ($type instanceof ReflectionNamedType) {
+                $name = $type->getName();
+
+                if ($name === self::class) {
+                    // AssertionGroup $group, ...
+                    $firstIsContext = true;
                     $usesGroupInstance = true;
                     $boundArgs[] = $this;
-                } else {
+                } elseif ($name === TestCase::class) {
+                    // TestCase $tc, ...
+                    $firstIsContext = true;
                     $boundArgs[] = $testCase;
                 }
+            }
 
+            if (! $firstIsContext) {
+                // No explicit context parameter; allow $this as AssertionGroup inside the callback
+                $usesGroupInstance = true;
+            }
+        }
+
+        if ($usesGroupInstance) {
+            $this->assertions = [];
+            $closure = $closure->bindTo($this);
+        }
+
+        foreach ($parameters as $index => $parameter) {
+            if ($firstIsContext && $index === 0) {
+                // Context argument already bound
                 continue;
             }
 
@@ -93,20 +117,16 @@ final class AssertionGroup
 
             // Try to find value by name (associative array) or position (list)
             if (array_is_list($args)) {
-                // Positional arguments
-                $argIndex = $index - 1; // Subtract 1 because first param is TestCase
+                $argIndex = $firstIsContext ? $index - 1 : $index;
                 if (array_key_exists($argIndex, $args)) {
                     $value = $args[$argIndex];
                     $found = true;
                     $usedKeys[] = $argIndex;
                 }
-            } else {
-                // Named arguments
-                if (array_key_exists($paramName, $args)) {
-                    $value = $args[$paramName];
-                    $found = true;
-                    $usedKeys[] = $paramName;
-                }
+            } elseif (array_key_exists($paramName, $args)) {
+                $value = $args[$paramName];
+                $found = true;
+                $usedKeys[] = $paramName;
             }
 
             // Handle missing values
@@ -141,10 +161,6 @@ final class AssertionGroup
                 $this->name,
                 implode(', ', $extraKeyNames)
             ));
-        }
-
-        if ($usesGroupInstance) {
-            $this->assertions = [];
         }
 
         $closure(...$boundArgs);
