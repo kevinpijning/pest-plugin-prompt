@@ -6,9 +6,10 @@ use KevinPijning\Prompt\Plugin;
 use KevinPijning\Prompt\Promptfoo\Promptfoo;
 
 beforeEach(function () {
-    // Reset output folder before each test
     Promptfoo::setOutputFolder(null);
 });
+
+
 
 test('handle arguments uses default path when --output is provided without value', function () {
     $plugin = new Plugin;
@@ -67,7 +68,10 @@ test('in method returns correct path', function () {
 
     $result = $method->invoke($plugin);
 
-    // Should return a path that includes the test path
     expect($result)->toBeString()
         ->and($result)->not->toBeEmpty();
+});
+
+test('isRunningInParallel delegates to Pest Parallel class', function () {
+    expect(Plugin::isRunningInParallel())->toBeBool();
 });
