@@ -3,7 +3,8 @@
 declare(strict_types=1);
 
 use KevinPijning\Prompt\Evaluation;
-use KevinPijning\Prompt\Internal\TestContext;
+use KevinPijning\Prompt\Internal\EvaluationContext;
+use KevinPijning\Prompt\Internal\ProviderContext;
 use KevinPijning\Prompt\Provider;
 use KevinPijning\Prompt\TestCase;
 
@@ -195,13 +196,13 @@ test('usingProvider method can accept multiple callables', function () {
 });
 
 test('usingProvider method can use global provider from TestContext', function () {
-    TestContext::clear();
+    EvaluationContext::clear();
     $evaluation = new Evaluation(['prompt1']);
 
     $globalProvider = Provider::create('openai:gpt-4')
         ->label('Global Provider')
         ->temperature(0.8);
-    TestContext::addProvider('my-global-provider', $globalProvider);
+    ProviderContext::add('my-global-provider', $globalProvider);
 
     $result = $evaluation->usingProvider('my-global-provider');
 
@@ -213,11 +214,11 @@ test('usingProvider method can use global provider from TestContext', function (
 });
 
 test('usingProvider method can mix global providers, callables, and direct providers', function () {
-    TestContext::clear();
+    EvaluationContext::clear();
     $evaluation = new Evaluation(['prompt1']);
 
     $globalProvider = Provider::create('openai:gpt-4');
-    TestContext::addProvider('global', $globalProvider);
+    ProviderContext::add('global', $globalProvider);
 
     $directProvider = Provider::create('anthropic:claude-3');
 
@@ -235,7 +236,7 @@ test('usingProvider method can mix global providers, callables, and direct provi
 });
 
 test('usingProvider method treats string as provider ID when not found in TestContext', function () {
-    TestContext::clear();
+    EvaluationContext::clear();
     $evaluation = new Evaluation(['prompt1']);
 
     $result = $evaluation->usingProvider('openai:gpt-4o-mini');

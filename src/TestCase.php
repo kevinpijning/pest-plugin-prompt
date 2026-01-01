@@ -4,22 +4,12 @@ declare(strict_types=1);
 
 namespace KevinPijning\Prompt;
 
-use KevinPijning\Prompt\Concerns\CanBeClassified;
-use KevinPijning\Prompt\Concerns\CanBeJudged;
-use KevinPijning\Prompt\Concerns\CanBeRefused;
-use KevinPijning\Prompt\Concerns\CanBeScored;
-use KevinPijning\Prompt\Concerns\CanBeSimilar;
-use KevinPijning\Prompt\Concerns\CanBeValid;
-use KevinPijning\Prompt\Concerns\CanContain;
+use BadMethodCallException;
+use InvalidArgumentException;
 use KevinPijning\Prompt\Concerns\CanEnclose;
-use KevinPijning\Prompt\Concerns\CanEqual;
-use KevinPijning\Prompt\Concerns\CanHaveCustomValidation;
-use KevinPijning\Prompt\Concerns\CanHaveFinishReason;
-use KevinPijning\Prompt\Concerns\CanHaveFunctionCalls;
-use KevinPijning\Prompt\Concerns\CanHavePerformance;
-use KevinPijning\Prompt\Concerns\CanHaveTraces;
-use KevinPijning\Prompt\Concerns\CanMatch;
-use KevinPijning\Prompt\Concerns\CanValidateJson;
+use KevinPijning\Prompt\Concerns\CanUseAssertions;
+use KevinPijning\Prompt\Helpers\AssertionGroupName;
+use KevinPijning\Prompt\Internal\AssertionGroupContext;
 use KevinPijning\Prompt\Internal\BuiltTestCase;
 use RuntimeException;
 
@@ -28,7 +18,8 @@ use RuntimeException;
  */
 class TestCase
 {
-    use CanBeClassified, CanBeJudged, CanBeRefused, CanBeScored, CanBeSimilar, CanBeValid, CanContain, CanEnclose, CanEqual, CanHaveCustomValidation, CanHaveFinishReason, CanHaveFunctionCalls, CanHavePerformance, CanHaveTraces, CanMatch, CanValidateJson;
+    use CanEnclose;
+    use CanUseAssertions;
 
     /** @var Assertion[] */
     private array $assertions = [];
@@ -71,6 +62,37 @@ class TestCase
         }
 
         throw new RuntimeException(sprintf('Undefined property: %s::$%s', static::class, $name));
+    }
+
+    /**
+     * @param  array<int,mixed>  $arguments
+     */
+    public function __call(string $name, array $arguments): self
+    {
+        $groupName = AssertionGroupName::fromMethodName($name);
+
+        if ($groupName !== null && AssertionGroupContext::has($groupName)) {
+            if (count($arguments) === 0) {
+                $args = [];
+            } elseif (count($arguments) === 1 && is_array($arguments[0])) {
+                $args = $arguments[0];
+            } else {
+                throw new InvalidArgumentException(sprintf(
+                    'Assertion group "%s" expects a single array argument.',
+                    $groupName
+                ));
+            }
+
+            AssertionGroupContext::get($groupName)->apply($this, $args);
+
+            return $this;
+        }
+
+        throw new BadMethodCallException(sprintf(
+            'Call to undefined method %s::%s()',
+            static::class,
+            $name
+        ));
     }
 
     /**

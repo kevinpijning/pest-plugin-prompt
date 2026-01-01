@@ -21,6 +21,8 @@ test('greeting works', function () {
 
 **`provider(string $name, ?callable $config = null)`**: Register reusable provider. Returns chainable `Provider` instance.
 
+**`assertion(string $name, ?callable $config = null)`**: Register reusable assertion group. Returns chainable `AssertionGroup`-like instance for defining shared assertions.
+
 @verbatim
 <code-snippet name="Provider registration" lang="php">
 use \KevinPijning\Prompt\Provider;
@@ -44,6 +46,8 @@ provider('openai-gpt4')
 
 **`and(array $variables, ?callable $callback = null)`**: Chain additional test cases.
 
+**`to(callable|string $callback, array $args = [])`** / **`group(callable|string $callback, array $args = [])`**: Group assertions using a callback, invokable class FQN, or named assertion group. When a string matches a registered group from `assertion()`, its assertions are applied to the current `TestCase`. When a callback or invokable class is passed, the current `TestCase` is provided as the first argument.
+
 @verbatim
 <code-snippet name="Multiple test cases" lang="php">
 prompt('Greet \{\{name\}\}.')
@@ -52,6 +56,78 @@ prompt('Greet \{\{name\}\}.')
     ->toContain('Alice')
     ->and(['name' => 'Bob'])
     ->toContain('Bob');
+</code-snippet>
+@endverbatim
+
+@verbatim
+<code-snippet name="Grouping with callbacks" lang="php">
+prompt('Explain \{\{topic\}\}.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect(['topic' => 'AI'])
+    ->to(function (\KevinPijning\Prompt\TestCase $tc) {
+        $tc->toContain('artificial intelligence')
+           ->toBeJudged('clear and accurate')
+           ->toHaveLatency(2000);
+    });
+</code-snippet>
+@endverbatim
+
+@verbatim
+<code-snippet name="Named assertion groups" lang="php">
+use \KevinPijning\Prompt\TestCase;
+
+// Define a reusable assertion group
+assertion('be nice')
+    ->toBeJudged('friendly')
+    ->toContain('please');
+
+// Use via to()/group()
+prompt('Explain \{\{topic\}\}.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect(['topic' => 'AI'])
+    ->to('be nice')
+    ->group('be nice');
+
+// Define a group with parameters
+assertion('be kind', function (TestCase $tc, string $tone): void {
+    $tc->toBeJudged("response is {$tone} and helpful")
+       ->toContain($tone);
+});
+
+prompt('Explain \{\{topic\}\}.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect(['topic' => 'AI'])
+    ->to('be kind', ['tone' => 'friendly'])
+    ->toBeKind(['tone' => 'friendly']);
+</code-snippet>
+@endverbatim
+
+@verbatim
+<code-snippet name="Reusable invokable classes" lang="php">
+use \KevinPijning\Prompt\TestCase;
+
+class QualityAssertions
+{
+    public function __invoke(TestCase $testCase): void
+    {
+        $testCase
+            ->toBeJudged('professional and accurate')
+            ->toHaveLatency(2000)
+            ->not->toBeRefused();
+    }
+}
+
+// Use by class name
+prompt('Explain \{\{topic\}\}.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect(['topic' => 'AI'])
+    ->to(QualityAssertions::class);
+
+// Or use instance
+prompt('Analyze \{\{data\}\}.')
+    ->usingProvider('openai:gpt-4o-mini')
+    ->expect(['data' => 'metrics'])
+    ->group(new QualityAssertions);
 </code-snippet>
 @endverbatim
 
@@ -130,6 +206,7 @@ $provider = Provider::create('openai:gpt-4')
 - Use `describe()` for clarity
 - Test multiple providers for consistency
 - Combine assertion types (content + format + LLM evaluation)
+- Create invokable classes for reusable assertion patterns across tests
 
 ### Requirements
 

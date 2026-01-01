@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use KevinPijning\Prompt\Assertion;
 use KevinPijning\Prompt\Evaluation;
+use KevinPijning\Prompt\Internal\EvaluationContext;
 use KevinPijning\Prompt\TestCase;
 
 test('it can be instantiated with variables and evaluation', function () {
@@ -262,3 +263,68 @@ test('and method callback can be null', function () {
     expect($result)->toBeInstanceOf(TestCase::class)
         ->and($result->build()->variables)->toBe($newVariables);
 });
+
+test('magic toXxx method applies named assertion group without arguments', function () {
+    EvaluationContext::clear();
+
+    assertion('be nice')
+        ->toContain('hello')
+        ->toBeJudged('friendly');
+
+    $evaluation = new Evaluation(['prompt1']);
+    $testCase = new TestCase([], $evaluation);
+
+    $result = $testCase->toBeNice();
+
+    $built = $testCase->build();
+
+    expect($result)->toBe($testCase)
+        ->and($built->assertions)->toHaveCount(2)
+        ->and($built->assertions[0]->type)->toBe('icontains')
+        ->and($built->assertions[0]->value)->toBe('hello')
+        ->and($built->assertions[1]->type)->toBe('llm-rubric')
+        ->and($built->assertions[1]->value)->toBe('friendly');
+});
+
+test('magic toXxx method applies named assertion group with arguments', function () {
+    EvaluationContext::clear();
+
+    assertion('be kind', function (TestCase $tc, string $word): void {
+        $tc->toContain($word)
+            ->toBeJudged("be {$word}");
+    });
+
+    $evaluation = new Evaluation(['prompt1']);
+    $testCase = new TestCase([], $evaluation);
+
+    $result = $testCase->toBeKind(['word' => 'gentle']);
+
+    $built = $testCase->build();
+
+    expect($result)->toBe($testCase)
+        ->and($built->assertions)->toHaveCount(2)
+        ->and($built->assertions[0]->value)->toBe('gentle')
+        ->and($built->assertions[1]->value)->toBe('be gentle');
+});
+
+test('magic toXxx method expects at most one array argument', function () {
+    EvaluationContext::clear();
+
+    assertion('be kind', function (TestCase $tc, string $word): void {
+        $tc->toContain($word);
+    });
+
+    $evaluation = new Evaluation(['prompt1']);
+    $testCase = new TestCase([], $evaluation);
+
+    $testCase->toBeKind('gentle');
+})->throws(InvalidArgumentException::class, 'Assertion group "be kind" expects a single array argument.');
+
+test('magic toXxx method throws for unknown assertion group', function () {
+    EvaluationContext::clear();
+
+    $evaluation = new Evaluation(['prompt1']);
+    $testCase = new TestCase([], $evaluation);
+
+    $testCase->toBeTotallyUnknown();
+})->throws(BadMethodCallException::class, 'Call to undefined method KevinPijning\\Prompt\\TestCase::toBeTotallyUnknown()');

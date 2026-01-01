@@ -19,7 +19,7 @@ class TestLifecycle
     public static function evaluate(): void
     {
         try {
-            $evaluations = TestContext::getCurrentEvaluations();
+            $evaluations = EvaluationContext::getCurrentEvaluations();
 
             foreach ($evaluations as $evaluation) {
                 $built = $evaluation->build();
@@ -32,7 +32,7 @@ class TestLifecycle
             }
         } finally {
             // Always clear evaluations, even if an exception was thrown
-            TestContext::clear();
+            EvaluationContext::clear();
         }
     }
 
