@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use KevinPijning\Prompt\Assertion;
 use KevinPijning\Prompt\Evaluation;
-use KevinPijning\Prompt\Internal\EvaluationContext;
+use KevinPijning\Prompt\Internal\EvaluationRegistry;
 use KevinPijning\Prompt\TestCase;
 
 test('it can be instantiated with variables and evaluation', function () {
@@ -265,7 +265,7 @@ test('and method callback can be null', function () {
 });
 
 test('magic toXxx method applies named assertion group without arguments', function () {
-    EvaluationContext::clear();
+    EvaluationRegistry::clear();
 
     assertion('be nice')
         ->toContain('hello')
@@ -287,7 +287,7 @@ test('magic toXxx method applies named assertion group without arguments', funct
 });
 
 test('magic toXxx method applies named assertion group with arguments', function () {
-    EvaluationContext::clear();
+    EvaluationRegistry::clear();
 
     assertion('be kind', function (TestCase $tc, string $word): void {
         $tc->toContain($word)
@@ -308,7 +308,7 @@ test('magic toXxx method applies named assertion group with arguments', function
 });
 
 test('magic toXxx method expects at most one array argument', function () {
-    EvaluationContext::clear();
+    EvaluationRegistry::clear();
 
     assertion('be kind', function (TestCase $tc, string $word): void {
         $tc->toContain($word);
@@ -321,7 +321,7 @@ test('magic toXxx method expects at most one array argument', function () {
 })->throws(InvalidArgumentException::class, 'Assertion group "be kind" expects a single array argument.');
 
 test('magic toXxx method throws for unknown assertion group', function () {
-    EvaluationContext::clear();
+    EvaluationRegistry::clear();
 
     $evaluation = new Evaluation(['prompt1']);
     $testCase = new TestCase([], $evaluation);

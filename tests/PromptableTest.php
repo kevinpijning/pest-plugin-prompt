@@ -3,13 +3,13 @@
 declare(strict_types=1);
 
 use KevinPijning\Prompt\Evaluation;
-use KevinPijning\Prompt\Internal\EvaluationContext;
+use KevinPijning\Prompt\Internal\EvaluationRegistry;
 use KevinPijning\Prompt\Internal\ProviderContext;
 use KevinPijning\Prompt\Promptable;
 use KevinPijning\Prompt\Provider;
 
 beforeEach(function () {
-    EvaluationContext::clear();
+    EvaluationRegistry::clear();
 });
 
 test('Promptable trait provides prompt method that delegates to global prompt function', function () {
@@ -21,8 +21,8 @@ test('Promptable trait provides prompt method that delegates to global prompt fu
     $evaluation = $testObject->prompt('test prompt');
 
     expect($evaluation)->toBeInstanceOf(Evaluation::class)
-        ->and(EvaluationContext::getCurrentEvaluations())->toHaveCount(1)
-        ->and(EvaluationContext::getCurrentEvaluations()[0])->toBe($evaluation);
+        ->and(EvaluationRegistry::getCurrentEvaluations())->toHaveCount(1)
+        ->and(EvaluationRegistry::getCurrentEvaluations()[0])->toBe($evaluation);
 });
 
 test('Promptable trait provides provider method that delegates to global provider function', function () {

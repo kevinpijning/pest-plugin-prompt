@@ -3,7 +3,7 @@
 use KevinPijning\Prompt\AssertionGroup;
 use KevinPijning\Prompt\Evaluation;
 use KevinPijning\Prompt\Internal\AssertionGroupContext;
-use KevinPijning\Prompt\Internal\EvaluationContext;
+use KevinPijning\Prompt\Internal\EvaluationRegistry;
 use KevinPijning\Prompt\Internal\ProviderContext;
 use KevinPijning\Prompt\Provider;
 
@@ -33,6 +33,6 @@ if (! function_exists('assertion')) {
 if (! function_exists('prompt')) {
     function prompt(string ...$prompts): Evaluation
     {
-        return EvaluationContext::addEvaluation(new Evaluation($prompts));
+        return EvaluationRegistry::addEvaluation(new Evaluation($prompts));
     }
 }

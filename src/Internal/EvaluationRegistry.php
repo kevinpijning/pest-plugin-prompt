@@ -9,7 +9,7 @@ use KevinPijning\Prompt\Evaluation;
 /**
  * @internal
  */
-class EvaluationContext
+class EvaluationRegistry
 {
     /** @var Evaluation[] */
     private static array $evaluations = [];

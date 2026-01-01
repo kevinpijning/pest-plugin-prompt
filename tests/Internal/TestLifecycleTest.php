@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use KevinPijning\Prompt\Assertion;
 use KevinPijning\Prompt\Evaluation;
-use KevinPijning\Prompt\Internal\EvaluationContext;
+use KevinPijning\Prompt\Internal\EvaluationRegistry;
 use KevinPijning\Prompt\Internal\EvaluationResult;
 use KevinPijning\Prompt\Internal\Results\ComponentResult;
 use KevinPijning\Prompt\Internal\Results\GradingResult;
@@ -16,19 +16,19 @@ use KevinPijning\Prompt\Internal\Results\TestCase;
 use KevinPijning\Prompt\Internal\TestLifecycle;
 
 beforeEach(function () {
-    EvaluationContext::clear();
+    EvaluationRegistry::clear();
 });
 
 test('evaluate skips evaluations with empty test cases', function () {
     $evaluation = new Evaluation(['test prompt']);
     // No test cases added
 
-    EvaluationContext::addEvaluation($evaluation);
+    EvaluationRegistry::addEvaluation($evaluation);
 
     // Should not throw and should clear context
     TestLifecycle::evaluate();
 
-    expect(EvaluationContext::getCurrentEvaluations())->toBeEmpty();
+    expect(EvaluationRegistry::getCurrentEvaluations())->toBeEmpty();
 });
 
 // Note: We can't easily test evaluate() with real evaluations as it would try to execute promptfoo commands

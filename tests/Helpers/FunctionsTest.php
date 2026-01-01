@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 use KevinPijning\Prompt\AssertionGroup;
 use KevinPijning\Prompt\Internal\AssertionGroupContext;
-use KevinPijning\Prompt\Internal\EvaluationContext;
+use KevinPijning\Prompt\Internal\EvaluationRegistry;
 use KevinPijning\Prompt\Internal\ProviderContext;
 use KevinPijning\Prompt\Provider;
 use KevinPijning\Prompt\TestCase;
 
 beforeEach(function () {
-    EvaluationContext::clear();
+    EvaluationRegistry::clear();
 });
 
 test('provider function creates and registers a provider without config', function () {

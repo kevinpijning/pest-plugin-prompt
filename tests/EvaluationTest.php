@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use KevinPijning\Prompt\Evaluation;
-use KevinPijning\Prompt\Internal\EvaluationContext;
+use KevinPijning\Prompt\Internal\EvaluationRegistry;
 use KevinPijning\Prompt\Internal\ProviderContext;
 use KevinPijning\Prompt\Provider;
 use KevinPijning\Prompt\TestCase;
@@ -196,7 +196,7 @@ test('usingProvider method can accept multiple callables', function () {
 });
 
 test('usingProvider method can use global provider from TestContext', function () {
-    EvaluationContext::clear();
+    EvaluationRegistry::clear();
     $evaluation = new Evaluation(['prompt1']);
 
     $globalProvider = Provider::create('openai:gpt-4')
@@ -214,7 +214,7 @@ test('usingProvider method can use global provider from TestContext', function (
 });
 
 test('usingProvider method can mix global providers, callables, and direct providers', function () {
-    EvaluationContext::clear();
+    EvaluationRegistry::clear();
     $evaluation = new Evaluation(['prompt1']);
 
     $globalProvider = Provider::create('openai:gpt-4');
@@ -236,7 +236,7 @@ test('usingProvider method can mix global providers, callables, and direct provi
 });
 
 test('usingProvider method treats string as provider ID when not found in TestContext', function () {
-    EvaluationContext::clear();
+    EvaluationRegistry::clear();
     $evaluation = new Evaluation(['prompt1']);
 
     $result = $evaluation->usingProvider('openai:gpt-4o-mini');
