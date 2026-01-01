@@ -94,15 +94,10 @@ final class AssertionGroup
                 }
             }
 
-            if (! $firstIsContext) {
-                // No explicit context parameter; allow $this as AssertionGroup inside the callback
-                $usesGroupInstance = true;
-            }
         }
 
         if ($usesGroupInstance) {
             $this->assertions = [];
-            $closure = $closure->bindTo($this);
         }
 
         foreach ($parameters as $index => $parameter) {

@@ -11,7 +11,7 @@ trait CanEnclose
 {
     /**
      * @param  callable(self): void|class-string|string  $expect
-     * @param  array<int|string,mixed>  $args
+     * @param  array<int|string,mixed>  $args  Arguments for named assertion groups only; ignored for callables
      */
     public function to(callable|string $expect, array $args = []): self
     {
@@ -43,7 +43,7 @@ trait CanEnclose
 
     /**
      * @param  callable(self): void|class-string|string  $expectations
-     * @param  array<int|string,mixed>  $args
+     * @param  array<int|string,mixed>  $args  Arguments for named assertion groups only; ignored for callables
      */
     public function group(callable|string $expectations, array $args = []): self
     {
