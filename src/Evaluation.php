@@ -7,7 +7,7 @@ namespace KevinPijning\Prompt;
 use KevinPijning\Prompt\Internal\BuiltEvaluation;
 use KevinPijning\Prompt\Internal\BuiltProvider;
 use KevinPijning\Prompt\Internal\BuiltTestCase;
-use KevinPijning\Prompt\Internal\ProviderContext;
+use KevinPijning\Prompt\Internal\ProviderRegistry;
 use KevinPijning\Prompt\Promptfoo\Promptfoo;
 
 class Evaluation
@@ -60,8 +60,8 @@ class Evaluation
                 continue;
             }
 
-            if (ProviderContext::has($provider)) {
-                $this->addProvider(ProviderContext::get($provider));
+            if (ProviderRegistry::has($provider)) {
+                $this->addProvider(ProviderRegistry::get($provider));
 
                 continue;
             }

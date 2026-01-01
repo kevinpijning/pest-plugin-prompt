@@ -9,7 +9,7 @@ use KevinPijning\Prompt\AssertionGroup;
 /**
  * @internal
  */
-final class AssertionGroupContext
+final class AssertionGroupRegistry
 {
     /**
      * @var array<string, AssertionGroup>

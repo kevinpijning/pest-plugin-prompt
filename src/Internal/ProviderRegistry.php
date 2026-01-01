@@ -9,7 +9,7 @@ use KevinPijning\Prompt\Provider;
 /**
  * @internal
  */
-final class ProviderContext
+final class ProviderRegistry
 {
     /**
      * @var array<string, Provider>

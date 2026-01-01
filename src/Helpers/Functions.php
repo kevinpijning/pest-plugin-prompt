@@ -2,19 +2,19 @@
 
 use KevinPijning\Prompt\AssertionGroup;
 use KevinPijning\Prompt\Evaluation;
-use KevinPijning\Prompt\Internal\AssertionGroupContext;
+use KevinPijning\Prompt\Internal\AssertionGroupRegistry;
 use KevinPijning\Prompt\Internal\EvaluationRegistry;
-use KevinPijning\Prompt\Internal\ProviderContext;
+use KevinPijning\Prompt\Internal\ProviderRegistry;
 use KevinPijning\Prompt\Provider;
 
 if (! function_exists('provider')) {
     function provider(string $name, ?callable $config = null): Provider
     {
         if (is_null($config)) {
-            return ProviderContext::add($name, new Provider);
+            return ProviderRegistry::add($name, new Provider);
         }
 
-        return ProviderContext::add($name, $config(new Provider));
+        return ProviderRegistry::add($name, $config(new Provider));
     }
 }
 
@@ -26,7 +26,7 @@ if (! function_exists('assertion')) {
     {
         $group = new AssertionGroup($name, $config);
 
-        return AssertionGroupContext::add($name, $group);
+        return AssertionGroupRegistry::add($name, $group);
     }
 }
 

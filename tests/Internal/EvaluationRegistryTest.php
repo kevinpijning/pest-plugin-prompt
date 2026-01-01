@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 use KevinPijning\Prompt\AssertionGroup;
 use KevinPijning\Prompt\Evaluation;
-use KevinPijning\Prompt\Internal\AssertionGroupContext;
+use KevinPijning\Prompt\Internal\AssertionGroupRegistry;
 use KevinPijning\Prompt\Internal\EvaluationRegistry;
-use KevinPijning\Prompt\Internal\ProviderContext;
+use KevinPijning\Prompt\Internal\ProviderRegistry;
 use KevinPijning\Prompt\Provider;
 
 beforeEach(function () {
@@ -113,16 +113,16 @@ test('clear does not remove providers, only evaluations', function () {
     $provider = Provider::create('openai:gpt-4');
     $evaluation = new Evaluation(['test prompt']);
 
-    ProviderContext::add('my-provider', $provider);
+    ProviderRegistry::add('my-provider', $provider);
     EvaluationRegistry::addEvaluation($evaluation);
 
-    expect(ProviderContext::has('my-provider'))->toBeTrue()
+    expect(ProviderRegistry::has('my-provider'))->toBeTrue()
         ->and(EvaluationRegistry::getCurrentEvaluations())->toHaveCount(1);
 
     EvaluationRegistry::clear();
 
-    expect(ProviderContext::has('my-provider'))->toBeTrue()
-        ->and(ProviderContext::get('my-provider'))->toBe($provider)
+    expect(ProviderRegistry::has('my-provider'))->toBeTrue()
+        ->and(ProviderRegistry::get('my-provider'))->toBe($provider)
         ->and(EvaluationRegistry::getCurrentEvaluations())->toBeEmpty();
 });
 
@@ -130,15 +130,15 @@ test('clear does not remove assertion groups, only evaluations', function () {
     $group = new AssertionGroup('be nice');
     $evaluation = new Evaluation(['test prompt']);
 
-    AssertionGroupContext::add('be nice', $group);
+    AssertionGroupRegistry::add('be nice', $group);
     EvaluationRegistry::addEvaluation($evaluation);
 
-    expect(AssertionGroupContext::has('be nice'))->toBeTrue()
+    expect(AssertionGroupRegistry::has('be nice'))->toBeTrue()
         ->and(EvaluationRegistry::getCurrentEvaluations())->toHaveCount(1);
 
     EvaluationRegistry::clear();
 
-    expect(AssertionGroupContext::has('be nice'))->toBeTrue()
-        ->and(AssertionGroupContext::get('be nice'))->toBe($group)
+    expect(AssertionGroupRegistry::has('be nice'))->toBeTrue()
+        ->and(AssertionGroupRegistry::get('be nice'))->toBe($group)
         ->and(EvaluationRegistry::getCurrentEvaluations())->toBeEmpty();
 });

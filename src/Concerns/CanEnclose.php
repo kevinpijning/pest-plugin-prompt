@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace KevinPijning\Prompt\Concerns;
 
 use InvalidArgumentException;
-use KevinPijning\Prompt\Internal\AssertionGroupContext;
+use KevinPijning\Prompt\Internal\AssertionGroupRegistry;
 
 trait CanEnclose
 {
@@ -17,8 +17,8 @@ trait CanEnclose
     {
         if (is_string($expect)) {
             // First, try to resolve as a named assertion group
-            if (AssertionGroupContext::has($expect)) {
-                AssertionGroupContext::get($expect)->apply($this, $args);
+            if (AssertionGroupRegistry::has($expect)) {
+                AssertionGroupRegistry::get($expect)->apply($this, $args);
 
                 return $this;
             }
