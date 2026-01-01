@@ -1682,6 +1682,14 @@ vendor/bin/pest --output my-results/
 
 The output directory will contain HTML reports and JSON data from promptfoo evaluations.
 
+## Parallel Test Support
+
+This plugin supports parallel test execution with Pest's `--parallel` flag. Cache isolation and merging is handled automatically.
+
+```bash
+vendor/bin/pest --parallel
+```
+
 ## Credits & License
 
 **Created by:** Kevin Pijning

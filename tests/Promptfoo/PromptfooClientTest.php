@@ -7,12 +7,13 @@ use KevinPijning\Prompt\Promptfoo\EvaluationContext;
 use KevinPijning\Prompt\Promptfoo\PromptfooClient;
 
 beforeEach(function () {
-    // Clean up any test files
     $tempDir = sys_get_temp_dir();
     $files = glob($tempDir.'/promptfoo_*');
-    foreach ($files as $file) {
-        if (is_file($file)) {
-            @unlink($file);
+    if ($files !== false) {
+        foreach ($files as $file) {
+            if (is_file($file)) {
+                @unlink($file);
+            }
         }
     }
 });
@@ -24,11 +25,9 @@ test('evaluate generates config file', function () {
 
     $client = new PromptfooClient('echo "test"');
 
-    // Create a mock that writes the expected output
     $outputPath = sys_get_temp_dir().'/promptfoo_output_'.uniqid().'.json';
     $configPath = sys_get_temp_dir().'/promptfoo_config_'.uniqid().'.yaml';
 
-    // Create a test command that writes the output file
     $testCommand = sprintf(
         'php -r "file_put_contents(\'%s\', json_encode([\'results\' => [\'results\' => []]])); echo \'Evaluation complete\';"',
         $outputPath
@@ -36,13 +35,10 @@ test('evaluate generates config file', function () {
 
     $client = new PromptfooClient($testCommand);
 
-    // We need to mock the PendingEvaluation to use our test paths
     $reflection = new ReflectionClass(PromptfooClient::class);
 
-    // Actually, let's test the generateCommand and generateConfig methods via reflection
     $pending = EvaluationContext::create($evaluation);
 
-    // Test generateCommand
     $generateCommandMethod = $reflection->getMethod('generateCommand');
     $command = $generateCommandMethod->invoke($client, $pending);
 
@@ -56,7 +52,6 @@ test('generateCommand includes user output path when provided', function () {
     $evaluation = new Evaluation(['test prompt']);
     $pending = EvaluationContext::create($evaluation);
 
-    // Manually set userOutputPath via reflection
     $reflection = new ReflectionClass(EvaluationContext::class);
     $property = $reflection->getProperty('userOutputPath');
 
@@ -81,7 +76,6 @@ test('cleanup removes config and output files', function () {
     $evaluation = new Evaluation(['test prompt']);
     $pending = EvaluationContext::create($evaluation);
 
-    // Create test files
     file_put_contents($pending->configPath, 'test config');
     file_put_contents($pending->outputPath, 'test output');
 
@@ -102,7 +96,6 @@ test('cleanup handles non-existent files gracefully', function () {
     $evaluation = new Evaluation(['test prompt']);
     $pending = EvaluationContext::create($evaluation);
 
-    // Ensure files don't exist
     if (file_exists($pending->configPath)) {
         unlink($pending->configPath);
     }
@@ -114,8 +107,30 @@ test('cleanup handles non-existent files gracefully', function () {
     $reflection = new ReflectionClass(PromptfooClient::class);
     $method = $reflection->getMethod('cleanup');
 
-    // Should not throw an error
     $method->invoke($client, $pending);
 
-    expect(true)->toBeTrue(); // Just verify we got here without exception
+    expect(true)->toBeTrue();
+});
+
+test('parallelCachePath is null when not running in parallel', function () {
+    $client = new PromptfooClient('test-command');
+    $reflection = new ReflectionClass(PromptfooClient::class);
+    $property = $reflection->getProperty('parallelCachePath');
+
+    $cachePath = $property->getValue($client);
+
+    expect($cachePath)->toBeNull();
+});
+
+test('generateCommand does not include cache path when not running in parallel', function () {
+    $evaluation = new Evaluation(['test prompt']);
+    $pending = EvaluationContext::create($evaluation);
+
+    $client = new PromptfooClient('test-command');
+    $reflection = new ReflectionClass(PromptfooClient::class);
+    $method = $reflection->getMethod('generateCommand');
+
+    $command = $method->invoke($client, $pending);
+
+    expect($command)->not->toContain('--cache-path');
 });

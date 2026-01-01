@@ -5,17 +5,20 @@ declare(strict_types=1);
 namespace KevinPijning\Prompt;
 
 use KevinPijning\Prompt\Internal\TestLifecycle;
+use KevinPijning\Prompt\Promptfoo\CacheMerger;
 use KevinPijning\Prompt\Promptfoo\Promptfoo;
 use Pest\Contracts\Plugins\Bootable;
 use Pest\Contracts\Plugins\HandlesArguments;
+use Pest\Contracts\Plugins\Terminable;
 use Pest\Plugins\Concerns\HandleArguments;
+use Pest\Plugins\Parallel;
 use Pest\TestSuite;
 use Symfony\Component\Console\Input\ArgvInput;
 
 /**
  * @internal
  */
-final class Plugin implements Bootable, HandlesArguments
+final class Plugin implements Bootable, HandlesArguments, Terminable
 {
     use HandleArguments;
 
@@ -28,6 +31,21 @@ final class Plugin implements Bootable, HandlesArguments
         pest()->afterEach(function (): void {
             TestLifecycle::evaluate();
         })->in($this->in());
+    }
+
+    public function terminate(): void
+    {
+        // Only run in main process, not in workers
+        if (Parallel::isEnabled() && Parallel::isWorker()) {
+            return;
+        }
+
+        CacheMerger::mergeParallelCaches();
+    }
+
+    public static function isRunningInParallel(): bool
+    {
+        return Parallel::isEnabled();
     }
 
     /**
