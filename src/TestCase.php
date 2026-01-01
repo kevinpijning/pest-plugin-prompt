@@ -101,10 +101,6 @@ class TestCase
      */
     public function expect(array $variables, ?callable $callback = null): self
     {
-        if (is_callable($callback)) {
-            $this->to($callback);
-        }
-
         return $this->evaluation->expect($variables, $callback);
     }
 

@@ -7,7 +7,7 @@ namespace KevinPijning\Prompt\Promptfoo;
 use KevinPijning\Prompt\Evaluation;
 use KevinPijning\Prompt\Internal\EvaluationResult;
 
-class Promptfoo
+final class Promptfoo
 {
     private static string $promptfooCommand = 'npx promptfoo@latest';
 

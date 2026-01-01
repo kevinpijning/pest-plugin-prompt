@@ -15,10 +15,10 @@ use KevinPijning\Prompt\Internal\Results\Response;
 use KevinPijning\Prompt\Internal\Results\Result;
 use KevinPijning\Prompt\Internal\Results\TestCase;
 
-class EvaluationResultBuilder
+final readonly class EvaluationResultBuilder
 {
     /** @param array<string, mixed> $data */
-    public function __construct(private readonly array $data) {}
+    public function __construct(private array $data) {}
 
     public function build(): EvaluationResult
     {

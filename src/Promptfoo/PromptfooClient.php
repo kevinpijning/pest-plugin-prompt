@@ -12,7 +12,7 @@ use KevinPijning\Prompt\Plugin;
 use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\Process;
 
-class PromptfooClient implements EvaluatorClient
+final class PromptfooClient implements EvaluatorClient
 {
     private ?string $parallelCachePath = null;
 

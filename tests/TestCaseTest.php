@@ -179,7 +179,7 @@ test('expect method callback can be used to add assertions', function () {
     });
 
     expect($result->build()->assertions)->toHaveCount(2)
-        ->and($testCase->build()->assertions)->toHaveCount(2);
+        ->and($testCase->build()->assertions)->toHaveCount(0);
 });
 
 test('expect method works without callback', function () {
@@ -237,7 +237,7 @@ test('and method callback can be used to add assertions', function () {
     });
 
     expect($result->build()->assertions)->toHaveCount(2)
-        ->and($testCase->build()->assertions)->toHaveCount(2);
+        ->and($testCase->build()->assertions)->toHaveCount(0);
 });
 
 test('and method works without callback', function () {

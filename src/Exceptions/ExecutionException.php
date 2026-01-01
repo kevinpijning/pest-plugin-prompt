@@ -6,7 +6,7 @@ namespace KevinPijning\Prompt\Exceptions;
 
 use Exception;
 
-class ExecutionException extends Exception
+final class ExecutionException extends Exception
 {
     public function __construct(string $message, private readonly string $command, private readonly string $output = '', private readonly int $exitCode = 1)
     {

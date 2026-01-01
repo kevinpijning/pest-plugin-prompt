@@ -6,7 +6,7 @@ namespace KevinPijning\Prompt\Helpers;
 
 use Stringable;
 
-readonly class Path implements Stringable
+final readonly class Path implements Stringable
 {
     private function __construct(
         private string $name,

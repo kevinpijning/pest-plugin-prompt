@@ -9,6 +9,7 @@ use InvalidArgumentException;
 use KevinPijning\Prompt\Concerns\CanUseAssertions;
 use ReflectionFunction;
 use ReflectionNamedType;
+use ReflectionParameter;
 
 final class AssertionGroup
 {
@@ -70,100 +71,150 @@ final class AssertionGroup
         $reflection = new ReflectionFunction($closure);
         $parameters = $reflection->getParameters();
 
-        $boundArgs = [];
-        $usedKeys = [];
-        $usesGroupInstance = false;
-        $firstIsContext = false;
+        $context = $this->detectContextParameter($parameters, $testCase);
 
-        if (isset($parameters[0])) {
-            $firstParam = $parameters[0];
-            $type = $firstParam->getType();
-
-            if ($type instanceof ReflectionNamedType) {
-                $name = $type->getName();
-
-                if ($name === self::class) {
-                    // AssertionGroup $group, ...
-                    $firstIsContext = true;
-                    $usesGroupInstance = true;
-                    $boundArgs[] = $this;
-                } elseif ($name === TestCase::class) {
-                    // TestCase $tc, ...
-                    $firstIsContext = true;
-                    $boundArgs[] = $testCase;
-                }
-            }
-
-        }
-
-        if ($usesGroupInstance) {
+        if ($context['usesGroupInstance']) {
             $this->assertions = [];
         }
 
+        $binding = $this->bindArguments($parameters, $args, $context['hasContextParam']);
+        $boundArgs = array_merge($context['boundArgs'], $binding['boundArgs']);
+
+        $this->validateNoExtraArguments($args, $binding['usedKeys']);
+
+        $closure(...$boundArgs);
+
+        if ($context['usesGroupInstance']) {
+            $this->applyCollectedAssertions($testCase);
+        }
+    }
+
+    /**
+     * @param  ReflectionParameter[]  $parameters
+     * @return array{hasContextParam: bool, usesGroupInstance: bool, boundArgs: array<int, mixed>}
+     */
+    private function detectContextParameter(array $parameters, TestCase $testCase): array
+    {
+        if (! isset($parameters[0])) {
+            return ['hasContextParam' => false, 'usesGroupInstance' => false, 'boundArgs' => []];
+        }
+
+        $type = $parameters[0]->getType();
+
+        if (! $type instanceof ReflectionNamedType) {
+            return ['hasContextParam' => false, 'usesGroupInstance' => false, 'boundArgs' => []];
+        }
+
+        $typeName = $type->getName();
+
+        if ($typeName === self::class) {
+            return ['hasContextParam' => true, 'usesGroupInstance' => true, 'boundArgs' => [$this]];
+        }
+
+        if ($typeName === TestCase::class) {
+            return ['hasContextParam' => true, 'usesGroupInstance' => false, 'boundArgs' => [$testCase]];
+        }
+
+        return ['hasContextParam' => false, 'usesGroupInstance' => false, 'boundArgs' => []];
+    }
+
+    /**
+     * @param  ReflectionParameter[]  $parameters
+     * @param  array<int|string,mixed>  $args
+     * @return array{boundArgs: array<int, mixed>, usedKeys: array<int, int|string>}
+     */
+    private function bindArguments(array $parameters, array $args, bool $hasContextParam): array
+    {
+        $boundArgs = [];
+        $usedKeys = [];
+
         foreach ($parameters as $index => $parameter) {
-            if ($firstIsContext && $index === 0) {
-                // Context argument already bound
+            if ($hasContextParam && $index === 0) {
                 continue;
             }
 
             $paramName = $parameter->getName();
-            $value = null;
-            $found = false;
+            $resolved = $this->resolveArgumentValue($parameter, $args, $index, $hasContextParam);
 
-            // Try to find value by name (associative array) or position (list)
-            if (array_is_list($args)) {
-                $argIndex = $firstIsContext ? $index - 1 : $index;
-                if (array_key_exists($argIndex, $args)) {
-                    $value = $args[$argIndex];
-                    $found = true;
-                    $usedKeys[] = $argIndex;
-                }
-            } elseif (array_key_exists($paramName, $args)) {
-                $value = $args[$paramName];
-                $found = true;
-                $usedKeys[] = $paramName;
+            $boundArgs[] = $resolved['value'];
+
+            if ($resolved['usedKey'] !== null) {
+                $usedKeys[] = $resolved['usedKey'];
             }
-
-            // Handle missing values
-            if (! $found) {
-                if ($parameter->isDefaultValueAvailable()) {
-                    $value = $parameter->getDefaultValue();
-                } elseif ($parameter->allowsNull()) {
-                    $value = null;
-                } else {
-                    throw new InvalidArgumentException(sprintf(
-                        'Missing required argument "%s" for assertion group "%s".',
-                        $paramName,
-                        $this->name
-                    ));
-                }
-            }
-
-            $boundArgs[] = $value;
         }
 
-        // Check for extra arguments (strict mode)
-        $allKeys = array_keys($args);
-        $extraKeys = array_diff($allKeys, $usedKeys);
+        return ['boundArgs' => $boundArgs, 'usedKeys' => $usedKeys];
+    }
 
-        if ($extraKeys !== []) {
-            $extraKeyNames = array_is_list($args)
-                ? array_map(static fn (int $k): string => "position {$k}", $extraKeys)
-                : $extraKeys;
+    /**
+     * @param  array<int|string,mixed>  $args
+     * @return array{value: mixed, usedKey: int|string|null}
+     */
+    private function resolveArgumentValue(
+        ReflectionParameter $parameter,
+        array $args,
+        int $index,
+        bool $hasContextParam
+    ): array {
+        $paramName = $parameter->getName();
 
-            throw new InvalidArgumentException(sprintf(
-                'Unknown argument(s) for assertion group "%s": %s',
-                $this->name,
-                implode(', ', $extraKeyNames)
-            ));
+        if (array_is_list($args)) {
+            $argIndex = $hasContextParam ? $index - 1 : $index;
+
+            if (array_key_exists($argIndex, $args)) {
+                return ['value' => $args[$argIndex], 'usedKey' => $argIndex];
+            }
+        } elseif (array_key_exists($paramName, $args)) {
+            return ['value' => $args[$paramName], 'usedKey' => $paramName];
         }
 
-        $closure(...$boundArgs);
+        return ['value' => $this->getDefaultValue($parameter), 'usedKey' => null];
+    }
 
-        if ($usesGroupInstance) {
-            foreach ($this->assertions as $assertion) {
-                $testCase->assert($assertion);
-            }
+    private function getDefaultValue(ReflectionParameter $parameter): mixed
+    {
+        if ($parameter->isDefaultValueAvailable()) {
+            return $parameter->getDefaultValue();
+        }
+
+        if ($parameter->allowsNull()) {
+            return null;
+        }
+
+        throw new InvalidArgumentException(sprintf(
+            'Missing required argument "%s" for assertion group "%s".',
+            $parameter->getName(),
+            $this->name
+        ));
+    }
+
+    /**
+     * @param  array<int|string,mixed>  $args
+     * @param  array<int, int|string>  $usedKeys
+     */
+    private function validateNoExtraArguments(array $args, array $usedKeys): void
+    {
+        $extraKeys = array_diff(array_keys($args), $usedKeys);
+
+        if ($extraKeys === []) {
+            return;
+        }
+
+        $extraKeyNames = array_is_list($args)
+            ? array_map(static fn (int|string $k): string => "position {$k}", $extraKeys)
+            : $extraKeys;
+
+        throw new InvalidArgumentException(sprintf(
+            'Unknown argument(s) for assertion group "%s": %s',
+            $this->name,
+            implode(', ', $extraKeyNames)
+        ));
+    }
+
+    private function applyCollectedAssertions(TestCase $testCase): void
+    {
+        foreach ($this->assertions as $assertion) {
+            $testCase->assert($assertion);
         }
     }
 }
