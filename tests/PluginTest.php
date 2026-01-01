@@ -9,8 +9,6 @@ beforeEach(function () {
     Promptfoo::setOutputFolder(null);
 });
 
-
-
 test('handle arguments uses default path when --output is provided without value', function () {
     $plugin = new Plugin;
 

@@ -116,21 +116,21 @@ test('parallelCachePath is null when not running in parallel', function () {
     $client = new PromptfooClient('test-command');
     $reflection = new ReflectionClass(PromptfooClient::class);
     $property = $reflection->getProperty('parallelCachePath');
-    
+
     $cachePath = $property->getValue($client);
-    
+
     expect($cachePath)->toBeNull();
 });
 
 test('generateCommand does not include cache path when not running in parallel', function () {
     $evaluation = new Evaluation(['test prompt']);
     $pending = EvaluationContext::create($evaluation);
-    
+
     $client = new PromptfooClient('test-command');
     $reflection = new ReflectionClass(PromptfooClient::class);
     $method = $reflection->getMethod('generateCommand');
-    
+
     $command = $method->invoke($client, $pending);
-    
+
     expect($command)->not->toContain('--cache-path');
 });
