@@ -51,6 +51,14 @@ class TestLifecycle
     {
         $tracked = [];
 
+        // Include default test case assertions (from alwaysExpect())
+        if ($built->defaultTestCase instanceof BuiltTestCase) {
+            foreach ($built->defaultTestCase->trackedAssertions as $trackedAssertion) {
+                $tracked[] = $trackedAssertion;
+            }
+        }
+
+        // Include assertions from all test cases
         foreach ($built->testCases as $testCase) {
             foreach ($testCase->trackedAssertions as $trackedAssertion) {
                 $tracked[] = $trackedAssertion;
@@ -98,16 +106,30 @@ class TestLifecycle
 
     private static function findSourceLocation(?Assertion $returnedAssertion): SourceLocation
     {
-        if ($returnedAssertion instanceof Assertion) {
+        if (! $returnedAssertion instanceof Assertion) {
+            return new SourceLocation(__FILE__, __LINE__);
+        }
+
+        // 1. Prefer ID-based matching (unambiguous)
+        $returnedId = $returnedAssertion->getInternalId();
+
+        if ($returnedId !== null) {
             foreach (self::$currentTrackedAssertions as $tracked) {
-                if ($tracked->assertion->type === $returnedAssertion->type
-                    && $tracked->assertion->value === $returnedAssertion->value
-                    && $tracked->sourceLocation instanceof SourceLocation) {
+                $trackedId = $tracked->assertion->getInternalId();
+                if ($trackedId === $returnedId && $tracked->sourceLocation instanceof SourceLocation) {
                     return $tracked->sourceLocation;
                 }
             }
         }
 
+        // 2. Fallback: type + value match (for older outputs / edge cases)
+        foreach (self::$currentTrackedAssertions as $tracked) {
+            if ($tracked->matches($returnedAssertion) && $tracked->sourceLocation instanceof SourceLocation) {
+                return $tracked->sourceLocation;
+            }
+        }
+
+        // 3. Unknown source
         return new SourceLocation(__FILE__, __LINE__);
     }
 

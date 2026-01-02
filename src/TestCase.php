@@ -44,9 +44,17 @@ class TestCase
 
         $this->shouldNegateNextAssertion = false;
 
+        $sourceLocation = SourceLocation::capture();
+        $assertionIndex = count($this->trackedAssertions);
+
+        // Attach internal ID for unambiguous source location mapping
+        $assertionWithId = $sourceLocation instanceof SourceLocation
+            ? $finalAssertion->withInternalId($sourceLocation->file, $sourceLocation->line, $assertionIndex)
+            : $finalAssertion;
+
         $this->trackedAssertions[] = new TrackedAssertion(
-            assertion: $finalAssertion,
-            sourceLocation: SourceLocation::capture(),
+            assertion: $assertionWithId,
+            sourceLocation: $sourceLocation,
         );
 
         return $this;

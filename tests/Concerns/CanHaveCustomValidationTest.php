@@ -42,7 +42,10 @@ test('toPassJavascript accepts config parameter', function () {
     $testCase->toPassJavascript($code, config: $config);
 
     $assertion = $testCase->build()->assertions()[0];
-    expect($assertion->config)->toBe($config);
+    // User config is preserved alongside internal assertion_id
+    expect($assertion->config)->toHaveKey('minLength')
+        ->and($assertion->config['minLength'])->toBe(10)
+        ->and($assertion->config)->toHaveKey(Assertion::INTERNAL_CONFIG_KEY);
 });
 
 test('toPassPython creates a python assertion', function () {
@@ -81,7 +84,10 @@ test('toPassPython accepts config parameter', function () {
     $testCase->toPassPython($code, config: $config);
 
     $assertion = $testCase->build()->assertions()[0];
-    expect($assertion->config)->toBe($config);
+    // User config is preserved alongside internal assertion_id
+    expect($assertion->config)->toHaveKey('minLength')
+        ->and($assertion->config['minLength'])->toBe(10)
+        ->and($assertion->config)->toHaveKey(Assertion::INTERNAL_CONFIG_KEY);
 });
 
 test('toPassWebhook creates a webhook assertion', function () {

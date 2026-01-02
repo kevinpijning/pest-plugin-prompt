@@ -39,9 +39,12 @@ test('it can add an assertion', function () {
 
     $result = $testCase->assert($assertion);
 
+    // The stored assertion is a new instance with internal ID attached
     expect($result)->toBe($testCase)
         ->and($testCase->build()->assertions())->toHaveCount(1)
-        ->and($testCase->build()->assertions()[0])->toBe($assertion);
+        ->and($testCase->build()->assertions()[0]->type)->toBe($assertion->type)
+        ->and($testCase->build()->assertions()[0]->value)->toBe($assertion->value)
+        ->and($testCase->build()->assertions()[0]->getInternalId())->not->toBeNull();
 });
 
 test('it can add multiple assertions', function () {
@@ -54,9 +57,12 @@ test('it can add multiple assertions', function () {
     $testCase->assert($assertion1);
     $testCase->assert($assertion2);
 
+    // Each stored assertion is a new instance with internal ID attached
     expect($testCase->build()->assertions())->toHaveCount(2)
-        ->and($testCase->build()->assertions()[0])->toBe($assertion1)
-        ->and($testCase->build()->assertions()[1])->toBe($assertion2);
+        ->and($testCase->build()->assertions()[0]->type)->toBe($assertion1->type)
+        ->and($testCase->build()->assertions()[0]->value)->toBe($assertion1->value)
+        ->and($testCase->build()->assertions()[1]->type)->toBe($assertion2->type)
+        ->and($testCase->build()->assertions()[1]->value)->toBe($assertion2->value);
 });
 
 test('and method returns a new TestCase from evaluation', function () {

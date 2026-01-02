@@ -6,6 +6,9 @@ namespace KevinPijning\Prompt\Internal;
 
 use KevinPijning\Prompt\Assertion;
 
+/**
+ * @internal
+ */
 final readonly class BuiltTestCase
 {
     /**

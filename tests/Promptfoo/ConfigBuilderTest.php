@@ -47,7 +47,9 @@ test('toArray returns array with all fields when populated', function () {
         ->and($result['tests'][0]['assert'][0]['type'])->toBe('contains')
         ->and($result['tests'][0]['assert'][0]['value'])->toBe('expected value')
         ->and($result['tests'][0]['assert'][0]['threshold'])->toBe(0.8)
-        ->and($result['tests'][0]['assert'][0]['config'])->toBe(['option1' => 'value1']);
+        ->and($result['tests'][0]['assert'][0]['config'])->toHaveKey('option1')
+        ->and($result['tests'][0]['assert'][0]['config']['option1'])->toBe('value1')
+        ->and($result['tests'][0]['assert'][0]['config'])->toHaveKey(Assertion::INTERNAL_CONFIG_KEY);
 });
 
 test('toArray filters out null description', function () {
@@ -79,7 +81,7 @@ test('toArray filters out null threshold in assertions', function () {
     expect($result['tests'][0]['assert'][0])->not->toHaveKey('threshold');
 });
 
-test('toArray filters out null config in assertions', function () {
+test('toArray always includes internal config for assertion tracking', function () {
     $evaluation = new Evaluation(['prompt1']);
     $testCase = $evaluation->expect(['key' => 'value']);
     $testCase->assert(new Assertion('contains', 'test', null, null, null, null, null, null, null));
@@ -87,7 +89,10 @@ test('toArray filters out null config in assertions', function () {
     $builder = ConfigBuilder::fromEvaluation($evaluation);
     $result = $builder->toArray();
 
-    expect($result['tests'][0]['assert'][0])->not->toHaveKey('config');
+    // Assertions now always have internal config with assertion_id for source location tracking
+    expect($result['tests'][0]['assert'][0])->toHaveKey('config')
+        ->and($result['tests'][0]['assert'][0]['config'])->toHaveKey(Assertion::INTERNAL_CONFIG_KEY)
+        ->and($result['tests'][0]['assert'][0]['config'][Assertion::INTERNAL_CONFIG_KEY])->toHaveKey(Assertion::INTERNAL_ASSERTION_ID_KEY);
 });
 
 test('toArray handles multiple test cases', function () {
@@ -217,10 +222,12 @@ test('toArray handles assertion with only type and value', function () {
         ->and($result['tests'][0]['assert'][0]['type'])->toBe('contains')
         ->and($result['tests'][0]['assert'][0]['value'])->toBe('test value')
         ->and($result['tests'][0]['assert'][0])->not->toHaveKey('threshold')
-        ->and($result['tests'][0]['assert'][0])->not->toHaveKey('config');
+        // Config now always exists with internal assertion_id for source location tracking
+        ->and($result['tests'][0]['assert'][0])->toHaveKey('config')
+        ->and($result['tests'][0]['assert'][0]['config'])->toHaveKey(Assertion::INTERNAL_CONFIG_KEY);
 });
 
-test('toArray handles assertion with threshold but no config', function () {
+test('toArray handles assertion with threshold but no user config', function () {
     $evaluation = new Evaluation(['prompt1']);
     $testCase = $evaluation->expect(['key' => 'value']);
     $testCase->assert(new Assertion('contains', 'test', 0.75));
@@ -230,10 +237,12 @@ test('toArray handles assertion with threshold but no config', function () {
 
     expect($result['tests'][0]['assert'][0])->toHaveKey('threshold')
         ->and($result['tests'][0]['assert'][0]['threshold'])->toBe(0.75)
-        ->and($result['tests'][0]['assert'][0])->not->toHaveKey('config');
+        // Config now always exists with internal assertion_id for source location tracking
+        ->and($result['tests'][0]['assert'][0])->toHaveKey('config')
+        ->and($result['tests'][0]['assert'][0]['config'])->toHaveKey(Assertion::INTERNAL_CONFIG_KEY);
 });
 
-test('toArray handles assertion with config but no threshold', function () {
+test('toArray handles assertion with user config but no threshold', function () {
     $evaluation = new Evaluation(['prompt1']);
     $testCase = $evaluation->expect(['key' => 'value']);
     $testCase->assert(new Assertion('contains', 'test', null, config: ['key' => 'value']));
@@ -243,7 +252,10 @@ test('toArray handles assertion with config but no threshold', function () {
 
     expect($result['tests'][0]['assert'][0])->not->toHaveKey('threshold')
         ->and($result['tests'][0]['assert'][0])->toHaveKey('config')
-        ->and($result['tests'][0]['assert'][0]['config'])->toBe(['key' => 'value']);
+        // User config is preserved alongside internal assertion_id
+        ->and($result['tests'][0]['assert'][0]['config'])->toHaveKey('key')
+        ->and($result['tests'][0]['assert'][0]['config']['key'])->toBe('value')
+        ->and($result['tests'][0]['assert'][0]['config'])->toHaveKey(Assertion::INTERNAL_CONFIG_KEY);
 });
 
 test('toArray handles FinishReason enum correctly', function () {
@@ -368,4 +380,47 @@ test('toArray handles defaultTest with both vars and assert', function () {
         ->and($result['defaultTest'])->toHaveKey('assert')
         ->and($result['defaultTest']['vars'])->toBe(['default' => 'value', 'another' => 'test'])
         ->and($result['defaultTest']['assert'])->toHaveCount(2);
+});
+
+test('toArray includes internal assertion IDs in config', function () {
+    $evaluation = new Evaluation(['prompt1']);
+    $testCase = $evaluation->expect(['key' => 'value']);
+    $testCase->toContain('test1');
+    $testCase->toContain('test2');
+
+    $builder = ConfigBuilder::fromEvaluation($evaluation);
+    $result = $builder->toArray();
+
+    // Both assertions should have internal config with assertion IDs
+    expect($result['tests'][0]['assert'])->toHaveCount(2);
+
+    foreach ($result['tests'][0]['assert'] as $assertion) {
+        expect($assertion)->toHaveKey('config')
+            ->and($assertion['config'])->toHaveKey(Assertion::INTERNAL_CONFIG_KEY)
+            ->and($assertion['config'][Assertion::INTERNAL_CONFIG_KEY])->toHaveKey(Assertion::INTERNAL_ASSERTION_ID_KEY)
+            ->and($assertion['config'][Assertion::INTERNAL_CONFIG_KEY][Assertion::INTERNAL_ASSERTION_ID_KEY])->toBeString()
+            ->and($assertion['config'][Assertion::INTERNAL_CONFIG_KEY][Assertion::INTERNAL_ASSERTION_ID_KEY])->toHaveLength(40); // SHA1 hash length
+    }
+
+    // The two assertion IDs should be different (different indices)
+    $id1 = $result['tests'][0]['assert'][0]['config'][Assertion::INTERNAL_CONFIG_KEY][Assertion::INTERNAL_ASSERTION_ID_KEY];
+    $id2 = $result['tests'][0]['assert'][1]['config'][Assertion::INTERNAL_CONFIG_KEY][Assertion::INTERNAL_ASSERTION_ID_KEY];
+    expect($id1)->not->toBe($id2);
+});
+
+test('toArray preserves user config alongside internal assertion IDs', function () {
+    $evaluation = new Evaluation(['prompt1']);
+    $testCase = $evaluation->expect(['key' => 'value']);
+    $testCase->assert(new Assertion('contains', 'test', config: ['userKey' => 'userValue']));
+
+    $builder = ConfigBuilder::fromEvaluation($evaluation);
+    $result = $builder->toArray();
+
+    $assertionConfig = $result['tests'][0]['assert'][0]['config'];
+
+    // Should have both user config and internal config
+    expect($assertionConfig)->toHaveKey('userKey')
+        ->and($assertionConfig['userKey'])->toBe('userValue')
+        ->and($assertionConfig)->toHaveKey(Assertion::INTERNAL_CONFIG_KEY)
+        ->and($assertionConfig[Assertion::INTERNAL_CONFIG_KEY])->toHaveKey(Assertion::INTERNAL_ASSERTION_ID_KEY);
 });
