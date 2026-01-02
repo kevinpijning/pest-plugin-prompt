@@ -40,11 +40,11 @@ test('assertion group applies fluent assertions to test case', function () {
 
     $group->apply($testCase);
 
-    expect($testCase->build()->assertions)->toHaveCount(2)
-        ->and($testCase->build()->assertions[0]->type)->toBe('icontains')
-        ->and($testCase->build()->assertions[0]->value)->toBe('hello')
-        ->and($testCase->build()->assertions[1]->type)->toBe('icontains')
-        ->and($testCase->build()->assertions[1]->value)->toBe('world');
+    expect($testCase->build()->assertions())->toHaveCount(2)
+        ->and($testCase->build()->assertions()[0]->type)->toBe('icontains')
+        ->and($testCase->build()->assertions()[0]->value)->toBe('hello')
+        ->and($testCase->build()->assertions()[1]->type)->toBe('icontains')
+        ->and($testCase->build()->assertions()[1]->value)->toBe('world');
 });
 
 test('assertion group applies callback to test case', function () {
@@ -58,11 +58,11 @@ test('assertion group applies callback to test case', function () {
 
     $group->apply($testCase);
 
-    expect($testCase->build()->assertions)->toHaveCount(2)
-        ->and($testCase->build()->assertions[0]->type)->toBe('icontains')
-        ->and($testCase->build()->assertions[0]->value)->toBe('hello')
-        ->and($testCase->build()->assertions[1]->type)->toBe('llm-rubric')
-        ->and($testCase->build()->assertions[1]->value)->toBe('friendly');
+    expect($testCase->build()->assertions())->toHaveCount(2)
+        ->and($testCase->build()->assertions()[0]->type)->toBe('icontains')
+        ->and($testCase->build()->assertions()[0]->value)->toBe('hello')
+        ->and($testCase->build()->assertions()[1]->type)->toBe('llm-rubric')
+        ->and($testCase->build()->assertions()[1]->value)->toBe('friendly');
 });
 
 test('assertion group callback receives test case as first parameter', function () {
@@ -89,8 +89,8 @@ test('assertion group with callback and extra parameters', function () {
 
     $group->apply($testCase, ['word' => 'hello']);
 
-    expect($testCase->build()->assertions)->toHaveCount(1)
-        ->and($testCase->build()->assertions[0]->value)->toBe('hello');
+    expect($testCase->build()->assertions())->toHaveCount(1)
+        ->and($testCase->build()->assertions()[0]->value)->toBe('hello');
 });
 
 test('assertion group throws exception for missing required parameter', function () {
@@ -126,9 +126,9 @@ test('assertion group supports positional arguments', function () {
 
     $group->apply($testCase, ['hello', 'world']);
 
-    expect($testCase->build()->assertions)->toHaveCount(2)
-        ->and($testCase->build()->assertions[0]->value)->toBe('hello')
-        ->and($testCase->build()->assertions[1]->value)->toBe('world');
+    expect($testCase->build()->assertions())->toHaveCount(2)
+        ->and($testCase->build()->assertions()[0]->value)->toBe('hello')
+        ->and($testCase->build()->assertions()[1]->value)->toBe('world');
 });
 
 test('assertion group supports optional parameters with defaults', function () {
@@ -141,8 +141,8 @@ test('assertion group supports optional parameters with defaults', function () {
 
     $group->apply($testCase, []);
 
-    expect($testCase->build()->assertions)->toHaveCount(1)
-        ->and($testCase->build()->assertions[0]->value)->toBe('default');
+    expect($testCase->build()->assertions())->toHaveCount(1)
+        ->and($testCase->build()->assertions()[0]->value)->toBe('default');
 });
 
 test('assertion group supports nullable parameters', function () {
@@ -157,7 +157,7 @@ test('assertion group supports nullable parameters', function () {
 
     $group->apply($testCase, []);
 
-    expect($testCase->build()->assertions)->toHaveCount(0);
+    expect($testCase->build()->assertions())->toHaveCount(0);
 });
 
 test('assertion group callback can receive assertion group instance as first parameter', function () {
@@ -173,11 +173,11 @@ test('assertion group callback can receive assertion group instance as first par
 
     $built = $testCase->build();
 
-    expect($built->assertions)->toHaveCount(2)
-        ->and($built->assertions[0]->type)->toBe('icontains')
-        ->and($built->assertions[0]->value)->toBe('hello')
-        ->and($built->assertions[1]->type)->toBe('llm-rubric')
-        ->and($built->assertions[1]->value)->toBe('friendly');
+    expect($built->assertions())->toHaveCount(2)
+        ->and($built->assertions()[0]->type)->toBe('icontains')
+        ->and($built->assertions()[0]->value)->toBe('hello')
+        ->and($built->assertions()[1]->type)->toBe('llm-rubric')
+        ->and($built->assertions()[1]->value)->toBe('friendly');
 });
 
 test('assertion group can use multiple assertion traits', function () {

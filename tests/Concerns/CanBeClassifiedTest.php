@@ -13,9 +13,9 @@ test('toBeClassified creates a classifier assertion', function () {
     $result = $testCase->toBeClassified('huggingface:model', 'positive', threshold: 0.8);
 
     expect($result)->toBe($testCase)
-        ->and($testCase->build()->assertions)->toHaveCount(1);
+        ->and($testCase->build()->assertions())->toHaveCount(1);
 
-    $assertion = $testCase->build()->assertions[0];
+    $assertion = $testCase->build()->assertions()[0];
     expect($assertion)->toBeInstanceOf(Assertion::class)
         ->and($assertion->type)->toBe('classifier')
         ->and($assertion->value)->toBe('positive')
@@ -29,7 +29,7 @@ test('toBeClassified can be called without threshold', function () {
 
     $testCase->toBeClassified('provider', 'class');
 
-    $assertion = $testCase->build()->assertions[0];
+    $assertion = $testCase->build()->assertions()[0];
     expect($assertion->threshold)->toBeNull()
         ->and($assertion->provider)->toBe('provider');
 });

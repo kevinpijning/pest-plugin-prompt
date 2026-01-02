@@ -15,9 +15,9 @@ test('toBeJudged creates an assertion with default parameters', function () {
     $result = $testCase->toBeJudged($rubric);
 
     expect($result)->toBe($testCase)
-        ->and($testCase->build()->assertions)->toHaveCount(1);
+        ->and($testCase->build()->assertions())->toHaveCount(1);
 
-    $assertion = $testCase->build()->assertions[0];
+    $assertion = $testCase->build()->assertions()[0];
     expect($assertion)->toBeInstanceOf(Assertion::class)
         ->and($assertion->type)->toBe('llm-rubric')
         ->and($assertion->value)->toBe($rubric)
@@ -34,8 +34,8 @@ test('toBeJudged accepts a threshold parameter', function () {
 
     $testCase->toBeJudged($rubric, threshold: $threshold);
 
-    expect($testCase->build()->assertions)->toHaveCount(1);
-    $assertion = $testCase->build()->assertions[0];
+    expect($testCase->build()->assertions())->toHaveCount(1);
+    $assertion = $testCase->build()->assertions()[0];
     expect($assertion)->toBeInstanceOf(Assertion::class)
         ->and($assertion->type)->toBe('llm-rubric')
         ->and($assertion->value)->toBe($rubric)
@@ -51,8 +51,8 @@ test('toBeJudged accepts provider parameter', function () {
 
     $testCase->toBeJudged($rubric, provider: $provider);
 
-    expect($testCase->build()->assertions)->toHaveCount(1);
-    $assertion = $testCase->build()->assertions[0];
+    expect($testCase->build()->assertions())->toHaveCount(1);
+    $assertion = $testCase->build()->assertions()[0];
     expect($assertion)->toBeInstanceOf(Assertion::class)
         ->and($assertion->type)->toBe('llm-rubric')
         ->and($assertion->value)->toBe($rubric)
@@ -70,8 +70,8 @@ test('toBeJudged accepts both threshold and provider parameters', function () {
 
     $testCase->toBeJudged($rubric, threshold: $threshold, provider: $provider);
 
-    expect($testCase->build()->assertions)->toHaveCount(1);
-    $assertion = $testCase->build()->assertions[0];
+    expect($testCase->build()->assertions())->toHaveCount(1);
+    $assertion = $testCase->build()->assertions()[0];
     expect($assertion)->toBeInstanceOf(Assertion::class)
         ->and($assertion->type)->toBe('llm-rubric')
         ->and($assertion->value)->toBe($rubric)
@@ -89,9 +89,9 @@ test('toBeJudged can be chained', function () {
         ->toBeJudged('Second rubric criteria');
 
     expect($result)->toBe($testCase)
-        ->and($testCase->build()->assertions)->toHaveCount(2);
+        ->and($testCase->build()->assertions())->toHaveCount(2);
 
-    $assertions = $testCase->build()->assertions;
+    $assertions = $testCase->build()->assertions();
     expect($assertions[0]->value)->toBe('First rubric criteria')
         ->and($assertions[1]->value)->toBe('Second rubric criteria')
         ->and($assertions[0]->type)->toBe('llm-rubric')
@@ -109,9 +109,9 @@ test('toBeJudged can be chained with other assertion methods', function () {
         ->toBeJudged('The response should be accurate', threshold: 0.8);
 
     expect($result)->toBe($testCase)
-        ->and($testCase->build()->assertions)->toHaveCount(3);
+        ->and($testCase->build()->assertions())->toHaveCount(3);
 
-    $assertions = $testCase->build()->assertions;
+    $assertions = $testCase->build()->assertions();
     expect($assertions[0]->type)->toBe('llm-rubric')
         ->and($assertions[0]->value)->toBe('The response should be helpful')
         ->and($assertions[1]->type)->toBe('icontains')

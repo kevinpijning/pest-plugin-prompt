@@ -14,9 +14,9 @@ test('toHaveFinishReason creates a finish-reason assertion', function () {
     $result = $testCase->toHaveFinishReason('stop');
 
     expect($result)->toBe($testCase)
-        ->and($testCase->build()->assertions)->toHaveCount(1);
+        ->and($testCase->build()->assertions())->toHaveCount(1);
 
-    $assertion = $testCase->build()->assertions[0];
+    $assertion = $testCase->build()->assertions()[0];
     expect($assertion)->toBeInstanceOf(Assertion::class)
         ->and($assertion->type)->toBe('finish-reason')
         ->and($assertion->value)->toBe('stop');
@@ -28,7 +28,7 @@ test('toHaveFinishReason accepts FinishReason enum', function () {
 
     $testCase->toHaveFinishReason(FinishReason::Stop);
 
-    $assertion = $testCase->build()->assertions[0];
+    $assertion = $testCase->build()->assertions()[0];
     expect($assertion->value)->toBe('stop');
 });
 
@@ -38,7 +38,7 @@ test('toHaveFinishReason accepts different reason values', function () {
 
     $testCase->toHaveFinishReason('length');
 
-    $assertion = $testCase->build()->assertions[0];
+    $assertion = $testCase->build()->assertions()[0];
     expect($assertion->value)->toBe('length');
 });
 
@@ -49,9 +49,9 @@ test('toHaveFinishReasonStop creates assertion with stop reason', function () {
     $result = $testCase->toHaveFinishReasonStop();
 
     expect($result)->toBe($testCase)
-        ->and($testCase->build()->assertions)->toHaveCount(1);
+        ->and($testCase->build()->assertions())->toHaveCount(1);
 
-    $assertion = $testCase->build()->assertions[0];
+    $assertion = $testCase->build()->assertions()[0];
     expect($assertion->type)->toBe('finish-reason')
         ->and($assertion->value)->toBe('stop');
 });
@@ -63,9 +63,9 @@ test('toHaveFinishReasonLength creates assertion with length reason', function (
     $result = $testCase->toHaveFinishReasonLength();
 
     expect($result)->toBe($testCase)
-        ->and($testCase->build()->assertions)->toHaveCount(1);
+        ->and($testCase->build()->assertions())->toHaveCount(1);
 
-    $assertion = $testCase->build()->assertions[0];
+    $assertion = $testCase->build()->assertions()[0];
     expect($assertion->type)->toBe('finish-reason')
         ->and($assertion->value)->toBe('length');
 });
@@ -77,9 +77,9 @@ test('toHaveFinishReasonContentFilter creates assertion with content_filter reas
     $result = $testCase->toHaveFinishReasonContentFilter();
 
     expect($result)->toBe($testCase)
-        ->and($testCase->build()->assertions)->toHaveCount(1);
+        ->and($testCase->build()->assertions())->toHaveCount(1);
 
-    $assertion = $testCase->build()->assertions[0];
+    $assertion = $testCase->build()->assertions()[0];
     expect($assertion->type)->toBe('finish-reason')
         ->and($assertion->value)->toBe('content_filter');
 });
@@ -91,9 +91,9 @@ test('toHaveFinishReasonToolCalls creates assertion with tool_calls reason', fun
     $result = $testCase->toHaveFinishReasonToolCalls();
 
     expect($result)->toBe($testCase)
-        ->and($testCase->build()->assertions)->toHaveCount(1);
+        ->and($testCase->build()->assertions())->toHaveCount(1);
 
-    $assertion = $testCase->build()->assertions[0];
+    $assertion = $testCase->build()->assertions()[0];
     expect($assertion->type)->toBe('finish-reason')
         ->and($assertion->value)->toBe('tool_calls');
 });

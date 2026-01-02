@@ -13,9 +13,9 @@ test('toBeRefused creates an is-refusal assertion', function () {
     $result = $testCase->toBeRefused();
 
     expect($result)->toBe($testCase)
-        ->and($testCase->build()->assertions)->toHaveCount(1);
+        ->and($testCase->build()->assertions())->toHaveCount(1);
 
-    $assertion = $testCase->build()->assertions[0];
+    $assertion = $testCase->build()->assertions()[0];
     expect($assertion)->toBeInstanceOf(Assertion::class)
         ->and($assertion->type)->toBe('is-refusal')
         ->and($assertion->value)->toBeNull();

@@ -10,39 +10,28 @@ use KevinPijning\Prompt\Internal\AssertionGroupRegistry;
 trait CanEnclose
 {
     /**
-     * @param  callable(self): void|class-string|string  $expect
+     * @param  callable(self): void|string  $expect
      * @param  array<int|string,mixed>  $args  Arguments for named assertion groups only; ignored for callables
      */
     public function to(callable|string $expect, array $args = []): self
     {
         if (is_string($expect)) {
-            // First, try to resolve as a named assertion group
-            if (AssertionGroupRegistry::has($expect)) {
-                AssertionGroupRegistry::get($expect)->apply($this, $args);
-
-                return $this;
+            if (! AssertionGroupRegistry::has($expect)) {
+                throw new InvalidArgumentException("Assertion group '{$expect}' not found. Register it using assertion().");
             }
 
-            // Fallback to existing invokable class FQN behavior
-            if (! class_exists($expect)) {
-                throw new InvalidArgumentException("Class {$expect} does not exist.");
-            }
+            AssertionGroupRegistry::get($expect)->apply($this, $args);
 
-            if (! method_exists($expect, '__invoke')) {
-                throw new InvalidArgumentException("Class {$expect} must be callable or an invokable class.");
-            }
-
-            $expect = new $expect;
+            return $this;
         }
 
-        // For non-string callables, preserve existing behavior and ignore $args
         $expect($this);
 
         return $this;
     }
 
     /**
-     * @param  callable(self): void|class-string|string  $expectations
+     * @param  callable(self): void|string  $expectations
      * @param  array<int|string,mixed>  $args  Arguments for named assertion groups only; ignored for callables
      */
     public function group(callable|string $expectations, array $args = []): self

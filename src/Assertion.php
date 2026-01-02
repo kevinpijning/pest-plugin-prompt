@@ -4,11 +4,6 @@ declare(strict_types=1);
 
 namespace KevinPijning\Prompt;
 
-/**
- * Represents a promptfoo assertion configuration.
- *
- * @see https://www.promptfoo.dev/docs/configuration/expected-outputs/#assertion-properties
- */
 class Assertion
 {
     /**

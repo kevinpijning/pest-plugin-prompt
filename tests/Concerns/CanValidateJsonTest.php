@@ -14,9 +14,9 @@ describe('toEqualJson', function () {
         $result = $testCase->toEqualJson(['name' => 'John', 'age' => 30]);
 
         expect($result)->toBe($testCase)
-            ->and($testCase->build()->assertions)->toHaveCount(1);
+            ->and($testCase->build()->assertions())->toHaveCount(1);
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion)->toBeInstanceOf(Assertion::class)
             ->and($assertion->type)->toBe('javascript')
             ->and($assertion->value)->toContain('deepEqual');
@@ -29,7 +29,7 @@ describe('toEqualJson', function () {
 
         $testCase->toEqualJson($expected);
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion->value)->toContain('"name":"John"')
             ->and($assertion->value)->toContain('"age":30');
     });
@@ -40,7 +40,7 @@ describe('toEqualJson', function () {
 
         $testCase->not->toEqualJson(['name' => 'John']);
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion->type)->toBe('not-javascript');
     });
 
@@ -58,7 +58,7 @@ describe('toEqualJson', function () {
 
         $testCase->toEqualJson($expected);
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion->value)->toContain('Amsterdam')
             ->and($assertion->value)->toContain('address');
     });
@@ -70,7 +70,7 @@ describe('toEqualJson', function () {
 
         $testCase->toEqualJson($expected);
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion->value)->toContain('[1,2,3]');
     });
 
@@ -80,7 +80,7 @@ describe('toEqualJson', function () {
 
         $testCase->toEqualJson(['items' => []]);
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion->value)->toContain('"items":[]');
     });
 });
@@ -93,9 +93,9 @@ describe('toMatchJsonStructure', function () {
         $result = $testCase->toMatchJsonStructure(['name', 'age']);
 
         expect($result)->toBe($testCase)
-            ->and($testCase->build()->assertions)->toHaveCount(1);
+            ->and($testCase->build()->assertions())->toHaveCount(1);
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion)->toBeInstanceOf(Assertion::class)
             ->and($assertion->type)->toBe('javascript')
             ->and($assertion->value)->toContain('checkStructure');
@@ -107,7 +107,7 @@ describe('toMatchJsonStructure', function () {
 
         $testCase->toMatchJsonStructure(['name', 'age', 'email']);
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion->value)->toContain('"name"')
             ->and($assertion->value)->toContain('"age"')
             ->and($assertion->value)->toContain('"email"');
@@ -122,7 +122,7 @@ describe('toMatchJsonStructure', function () {
             'address' => ['city', 'street'],
         ]);
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion->value)->toContain('"address"')
             ->and($assertion->value)->toContain('"city"')
             ->and($assertion->value)->toContain('"street"');
@@ -138,7 +138,7 @@ describe('toMatchJsonStructure', function () {
             ],
         ]);
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion->value)->toContain('"*"')
             ->and($assertion->value)->toContain('"id"')
             ->and($assertion->value)->toContain('"name"');
@@ -150,7 +150,7 @@ describe('toMatchJsonStructure', function () {
 
         $testCase->not->toMatchJsonStructure(['forbidden_key']);
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion->type)->toBe('not-javascript');
     });
 });
@@ -163,9 +163,9 @@ describe('toHaveJsonFragment', function () {
         $result = $testCase->toHaveJsonFragment(['name' => 'John']);
 
         expect($result)->toBe($testCase)
-            ->and($testCase->build()->assertions)->toHaveCount(1);
+            ->and($testCase->build()->assertions())->toHaveCount(1);
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion)->toBeInstanceOf(Assertion::class)
             ->and($assertion->type)->toBe('javascript')
             ->and($assertion->value)->toContain('containsFragment');
@@ -177,7 +177,7 @@ describe('toHaveJsonFragment', function () {
 
         $testCase->toHaveJsonFragment(['name' => 'John', 'active' => true]);
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion->value)->toContain('"name":"John"')
             ->and($assertion->value)->toContain('"active":true');
     });
@@ -188,7 +188,7 @@ describe('toHaveJsonFragment', function () {
 
         $testCase->not->toHaveJsonFragment(['secret' => 'value']);
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion->type)->toBe('not-javascript');
     });
 
@@ -200,7 +200,7 @@ describe('toHaveJsonFragment', function () {
             'address' => ['city' => 'Amsterdam'],
         ]);
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion->value)->toContain('Amsterdam');
     });
 
@@ -210,7 +210,7 @@ describe('toHaveJsonFragment', function () {
 
         $testCase->toHaveJsonFragment(['active' => false]);
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion->value)->toContain('"active":false');
     });
 });
@@ -226,9 +226,9 @@ describe('toHaveJsonFragments', function () {
         ]);
 
         expect($result)->toBe($testCase)
-            ->and($testCase->build()->assertions)->toHaveCount(1);
+            ->and($testCase->build()->assertions())->toHaveCount(1);
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion)->toBeInstanceOf(Assertion::class)
             ->and($assertion->type)->toBe('javascript');
     });
@@ -242,7 +242,7 @@ describe('toHaveJsonFragments', function () {
             ['city' => 'Amsterdam'],
         ]);
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion->value)->toContain('"name":"John"')
             ->and($assertion->value)->toContain('"city":"Amsterdam"');
     });
@@ -255,7 +255,7 @@ describe('toHaveJsonFragments', function () {
             ['secret' => 'value'],
         ]);
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion->type)->toBe('not-javascript');
     });
 });
@@ -268,9 +268,9 @@ describe('toHaveJsonPath', function () {
         $result = $testCase->toHaveJsonPath('name');
 
         expect($result)->toBe($testCase)
-            ->and($testCase->build()->assertions)->toHaveCount(1);
+            ->and($testCase->build()->assertions())->toHaveCount(1);
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion)->toBeInstanceOf(Assertion::class)
             ->and($assertion->type)->toBe('javascript')
             ->and($assertion->value)->toContain('pathParts');
@@ -282,7 +282,7 @@ describe('toHaveJsonPath', function () {
 
         $testCase->toHaveJsonPath('user.name');
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion->value)->toContain('"user"')
             ->and($assertion->value)->toContain('"name"');
     });
@@ -293,7 +293,7 @@ describe('toHaveJsonPath', function () {
 
         $testCase->toHaveJsonPath('name', 'John');
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion->value)->toContain('"John"')
             ->and($assertion->value)->toContain('hasExpected = true');
     });
@@ -304,7 +304,7 @@ describe('toHaveJsonPath', function () {
 
         $testCase->toHaveJsonPath('deletedAt', null);
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion->value)->toContain('hasExpected = true')
             ->and($assertion->value)->toContain('const expected = null');
     });
@@ -315,7 +315,7 @@ describe('toHaveJsonPath', function () {
 
         $testCase->toHaveJsonPath('address.city.name');
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion->value)->toContain('["address","city","name"]');
     });
 
@@ -325,7 +325,7 @@ describe('toHaveJsonPath', function () {
 
         $testCase->not->toHaveJsonPath('secret');
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion->type)->toBe('not-javascript');
     });
 
@@ -335,7 +335,7 @@ describe('toHaveJsonPath', function () {
 
         $testCase->toHaveJsonPath('people.0.name');
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion->value)->toContain('["people","0","name"]')
             ->and($assertion->value)->toContain('parseInt(current, 10)');
     });
@@ -346,7 +346,7 @@ describe('toHaveJsonPath', function () {
 
         $testCase->toHaveJsonPath('people.1.name', 'Jane');
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion->value)->toContain('["people","1","name"]')
             ->and($assertion->value)->toContain('"Jane"');
     });
@@ -357,7 +357,7 @@ describe('toHaveJsonPath', function () {
 
         $testCase->toHaveJsonPath('people.*.name');
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion->value)->toContain('["people","*","name"]')
             ->and($assertion->value)->toContain("current === '*'")
             ->and($assertion->value)->toContain('flatMap');
@@ -369,7 +369,7 @@ describe('toHaveJsonPath', function () {
 
         $testCase->toHaveJsonPath('items.*.status', 'active');
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion->value)->toContain('["items","*","status"]')
             ->and($assertion->value)->toContain('"active"')
             ->and($assertion->value)->toContain('values.every');
@@ -381,7 +381,7 @@ describe('toHaveJsonPath', function () {
 
         $testCase->toHaveJsonPath('data.users.*.addresses.*.city');
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion->value)->toContain('["data","users","*","addresses","*","city"]');
     });
 });
@@ -394,9 +394,9 @@ describe('toHaveJsonPaths', function () {
         $result = $testCase->toHaveJsonPaths(['name', 'age']);
 
         expect($result)->toBe($testCase)
-            ->and($testCase->build()->assertions)->toHaveCount(1);
+            ->and($testCase->build()->assertions())->toHaveCount(1);
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion)->toBeInstanceOf(Assertion::class)
             ->and($assertion->type)->toBe('javascript');
     });
@@ -407,7 +407,7 @@ describe('toHaveJsonPaths', function () {
 
         $testCase->toHaveJsonPaths(['name', 'age', 'address.city']);
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion->value)->toContain('"name"')
             ->and($assertion->value)->toContain('"age"')
             ->and($assertion->value)->toContain('"address.city"')
@@ -423,7 +423,7 @@ describe('toHaveJsonPaths', function () {
             'age' => 30,
         ]);
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion->value)->toContain('"name":"John"')
             ->and($assertion->value)->toContain('"age":30')
             ->and($assertion->value)->toContain('isAssociative = true');
@@ -435,7 +435,7 @@ describe('toHaveJsonPaths', function () {
 
         $testCase->not->toHaveJsonPaths(['secret', 'password']);
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion->type)->toBe('not-javascript');
     });
 
@@ -448,7 +448,7 @@ describe('toHaveJsonPaths', function () {
             'user.address.city' => 'Amsterdam',
         ]);
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion->value)->toContain('"user.name":"John"')
             ->and($assertion->value)->toContain('"user.address.city":"Amsterdam"');
     });
@@ -459,7 +459,7 @@ describe('toHaveJsonPaths', function () {
 
         $testCase->toHaveJsonPaths(['items.*.id', 'items.*.name']);
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion->value)->toContain('"items.*.id"')
             ->and($assertion->value)->toContain('"items.*.name"');
     });
@@ -472,7 +472,7 @@ describe('toHaveJsonPaths', function () {
             'items.*.type' => 'product',
         ]);
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion->value)->toContain('"items.*.type":"product"');
     });
 });
@@ -485,9 +485,9 @@ describe('toHaveJsonType', function () {
         $result = $testCase->toHaveJsonType('name', 'string');
 
         expect($result)->toBe($testCase)
-            ->and($testCase->build()->assertions)->toHaveCount(1);
+            ->and($testCase->build()->assertions())->toHaveCount(1);
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion)->toBeInstanceOf(Assertion::class)
             ->and($assertion->type)->toBe('javascript')
             ->and($assertion->value)->toContain('expectedType');
@@ -499,7 +499,7 @@ describe('toHaveJsonType', function () {
 
         $testCase->toHaveJsonType('name', 'string');
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion->value)->toContain('"string"');
     });
 
@@ -509,7 +509,7 @@ describe('toHaveJsonType', function () {
 
         $testCase->toHaveJsonType('age', 'number');
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion->value)->toContain('"number"');
     });
 
@@ -519,7 +519,7 @@ describe('toHaveJsonType', function () {
 
         $testCase->toHaveJsonType('active', 'boolean');
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion->value)->toContain('"boolean"');
     });
 
@@ -529,7 +529,7 @@ describe('toHaveJsonType', function () {
 
         $testCase->toHaveJsonType('items', 'array');
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion->value)->toContain('"array"');
     });
 
@@ -539,7 +539,7 @@ describe('toHaveJsonType', function () {
 
         $testCase->toHaveJsonType('address', 'object');
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion->value)->toContain('"object"');
     });
 
@@ -549,7 +549,7 @@ describe('toHaveJsonType', function () {
 
         $testCase->toHaveJsonType('deletedAt', 'null');
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion->value)->toContain('"null"');
     });
 
@@ -559,7 +559,7 @@ describe('toHaveJsonType', function () {
 
         $testCase->toHaveJsonType('address.city', 'string');
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion->value)->toContain('["address","city"]');
     });
 
@@ -569,7 +569,7 @@ describe('toHaveJsonType', function () {
 
         $testCase->not->toHaveJsonType('age', 'string');
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion->type)->toBe('not-javascript');
     });
 
@@ -579,7 +579,7 @@ describe('toHaveJsonType', function () {
 
         $testCase->toHaveJsonType('items.0.price', 'number');
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion->value)->toContain('["items","0","price"]')
             ->and($assertion->value)->toContain('"number"');
     });
@@ -590,7 +590,7 @@ describe('toHaveJsonType', function () {
 
         $testCase->toHaveJsonType('people.*.age', 'number');
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion->value)->toContain('["people","*","age"]')
             ->and($assertion->value)->toContain('"number"')
             ->and($assertion->value)->toContain('values.every');
@@ -602,7 +602,7 @@ describe('toHaveJsonType', function () {
 
         $testCase->toHaveJsonType('items.*.value', 'string');
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion->value)->toContain('actualTypes')
             ->and($assertion->value)->toContain('new Set');
     });
@@ -620,9 +620,9 @@ describe('chaining and integration', function () {
             ->toHaveJsonType('name', 'string');
 
         expect($result)->toBe($testCase)
-            ->and($testCase->build()->assertions)->toHaveCount(4);
+            ->and($testCase->build()->assertions())->toHaveCount(4);
 
-        $assertions = $testCase->build()->assertions;
+        $assertions = $testCase->build()->assertions();
         expect($assertions[0]->type)->toBe('javascript')
             ->and($assertions[1]->type)->toBe('javascript')
             ->and($assertions[2]->type)->toBe('javascript')
@@ -639,9 +639,9 @@ describe('chaining and integration', function () {
             ->toContain('John');
 
         expect($result)->toBe($testCase)
-            ->and($testCase->build()->assertions)->toHaveCount(3);
+            ->and($testCase->build()->assertions())->toHaveCount(3);
 
-        $assertions = $testCase->build()->assertions;
+        $assertions = $testCase->build()->assertions();
         expect($assertions[0]->type)->toBe('is-json')
             ->and($assertions[1]->type)->toBe('javascript')
             ->and($assertions[2]->type)->toBe('icontains');
@@ -653,7 +653,7 @@ describe('chaining and integration', function () {
 
         $testCase->toEqualJson(['test' => 'value']);
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion->value)->toContain('```(?:json)?');
     });
 
@@ -663,7 +663,7 @@ describe('chaining and integration', function () {
 
         $testCase->toHaveJsonPath('name');
 
-        $assertion = $testCase->build()->assertions[0];
+        $assertion = $testCase->build()->assertions()[0];
         expect($assertion->value)->toContain('Output is not valid JSON');
     });
 });

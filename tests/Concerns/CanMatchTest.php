@@ -13,9 +13,9 @@ test('startsWith creates a starts-with assertion', function () {
     $result = $testCase->startsWith('Hello');
 
     expect($result)->toBe($testCase)
-        ->and($testCase->build()->assertions)->toHaveCount(1);
+        ->and($testCase->build()->assertions())->toHaveCount(1);
 
-    $assertion = $testCase->build()->assertions[0];
+    $assertion = $testCase->build()->assertions()[0];
     expect($assertion)->toBeInstanceOf(Assertion::class)
         ->and($assertion->type)->toBe('starts-with')
         ->and($assertion->value)->toBe('Hello')
@@ -29,9 +29,9 @@ test('toMatchRegex creates a regex assertion', function () {
     $result = $testCase->toMatchRegex('/\d+/');
 
     expect($result)->toBe($testCase)
-        ->and($testCase->build()->assertions)->toHaveCount(1);
+        ->and($testCase->build()->assertions())->toHaveCount(1);
 
-    $assertion = $testCase->build()->assertions[0];
+    $assertion = $testCase->build()->assertions()[0];
     expect($assertion)->toBeInstanceOf(Assertion::class)
         ->and($assertion->type)->toBe('regex')
         ->and($assertion->value)->toBe('/\d+/')
@@ -47,5 +47,5 @@ test('can chain match methods', function () {
         ->toMatchRegex('/\d+/');
 
     expect($result)->toBe($testCase)
-        ->and($testCase->build()->assertions)->toHaveCount(2);
+        ->and($testCase->build()->assertions())->toHaveCount(2);
 });

@@ -68,7 +68,7 @@ final readonly class ConfigBuilder
 
         return array_map(static fn (BuiltTestCase $testCase): array => array_filter([
             'vars' => $testCase->variables,
-            'assert' => $self->mapAssertions($testCase->assertions),
+            'assert' => $self->mapAssertions($testCase->assertions()),
         ]), $this->evaluation->testCases);
     }
 
@@ -85,7 +85,7 @@ final readonly class ConfigBuilder
 
         return array_filter([
             'vars' => $defaultTestCase->variables,
-            'assert' => $this->mapAssertions($defaultTestCase->assertions),
+            'assert' => $this->mapAssertions($defaultTestCase->assertions()),
         ]);
     }
 

@@ -6,17 +6,25 @@ namespace KevinPijning\Prompt\Internal;
 
 use KevinPijning\Prompt\Assertion;
 
-/**
- * @internal
- */
 final readonly class BuiltTestCase
 {
     /**
      * @param  array<string,mixed>  $variables
-     * @param  Assertion[]  $assertions
+     * @param  TrackedAssertion[]  $trackedAssertions
      */
     public function __construct(
         public array $variables,
-        public array $assertions,
+        public array $trackedAssertions,
     ) {}
+
+    /**
+     * @return Assertion[]
+     */
+    public function assertions(): array
+    {
+        return array_map(
+            static fn (TrackedAssertion $tracked): Assertion => $tracked->assertion,
+            $this->trackedAssertions,
+        );
+    }
 }
