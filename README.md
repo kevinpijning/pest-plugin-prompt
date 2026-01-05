@@ -1444,13 +1444,13 @@ provider('my-provider')
 
 ### Provider Extensions
 
-Register custom methods on all `Provider` instances using `provider()->extend()`. This is similar to Laravel's Macroable trait but uses a Pest-style function-based API.
+Register custom methods on all provider instances using `provider()->extend()`. This is similar to Laravel's Macroable trait but uses a Pest-style function-based API.
 
 ```php
 // Register extensions in Pest.php
-provider()->extend('withApiKey', fn (string $key) => $this->mergeConfig(['apiKey' => $key]));
+provider()->extend('withApiKey', fn (Provider $self, string $key) => $self->mergeConfig(['apiKey' => $key]));
 
-provider()->extend('withVectorStore', fn (string $vectorStoreId) => $this->mergeConfig([
+provider()->extend('withVectorStore', fn (Provider $self, string $vectorStoreId) => $self->mergeConfig([
     'tools' => [['type' => 'file_search']],
     'tool_resources' => ['file_search' => ['vector_store_ids' => [$vectorStoreId]]],
 ]));
@@ -1463,7 +1463,7 @@ provider('rag-assistant')
     ->temperature(0.3);
 
 // Extensions can use closures for complex config merging
-provider()->extend('addHeader', fn (string $name, string $value) => $this->config(
+provider()->extend('addHeader', fn (Provider $self, string $name, string $value) => $self->config(
     fn (array $config) => [
         ...$config,
         'headers' => [...($config['headers'] ?? []), $name => $value],
@@ -1478,8 +1478,8 @@ provider('my-provider')
 
 **Key points:**
 - Call `provider()` without arguments to access extension registration via `ProviderFactory`
-- Extensions are bound to `$this` (the Provider instance) when called
-- Extensions that don't explicitly return a value automatically return `$this` for chaining
+- Extensions receive `$self` (the provider instance) as the first argument, followed by any custom parameters
+- Extensions that don't explicitly return a value automatically return `$self` for chaining
 - Use `provider()->hasExtension('name')` to check if an extension exists
 - Use `provider()->flushExtensions()` to remove all extensions (useful in test teardown)
 
@@ -1580,12 +1580,25 @@ test('creative writing with high temperature', function () {
 });
 
 // Or inline with a closure
-test('creative writing with inline provider', function () {
+test('creative writing with inline provider closure', function () {
     prompt('Write a creative story about {{topic}}.')
-        ->usingProvider(fn (Provider $p) => $p
+        ->usingProvider(fn ($p) => $p
             ->id('openai:gpt-4')
             ->temperature(0.9)
             ->maxTokens(500))
+        ->expect(['topic' => 'space exploration'])
+        ->toContain('space');
+});
+
+// Or inline with a provider
+test('creative writing with inline provider object', function () {
+    prompt('Write a creative story about {{topic}}.')
+        ->usingProvider(
+            provider()
+                ->id('openai:gpt-4')
+                ->temperature(0.9)
+                ->maxTokens(500)
+        )
         ->expect(['topic' => 'space exploration'])
         ->toContain('space');
 });
@@ -1643,7 +1656,7 @@ Test structured JSON outputs from LLMs, particularly useful with OpenAI's Respon
 
 ```php
 // Register a provider with structured output schema
-provider('person-extractor', static fn (Provider $provider): Provider => $provider
+provider('person-extractor', fn ($p) => $p
     ->id('openai:responses:gpt-4o-mini')
     ->config([
         'response_format' => [
@@ -1684,7 +1697,7 @@ test('extracts person info with full validation', function () {
 });
 
 // Testing array outputs with nested structures
-provider('people-extractor', static fn (Provider $provider): Provider => $provider
+provider('people-extractor', fn ($p) => $p
     ->id('openai:responses:gpt-4o-mini')
     ->config([
         'response_format' => [
