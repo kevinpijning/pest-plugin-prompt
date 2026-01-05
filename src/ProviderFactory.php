@@ -14,7 +14,7 @@ use Closure;
 final class ProviderFactory
 {
     /**
-     * Register a custom extension method for all Provider instances.
+     * @param-closure-this Provider $callback
      */
     public function extend(string $name, Closure $callback): self
     {
