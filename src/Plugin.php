@@ -35,17 +35,14 @@ final class Plugin implements Bootable, HandlesArguments, Terminable
 
     public function terminate(): void
     {
-        // Only run in main process, not in workers
-        if (Parallel::isEnabled() && Parallel::isWorker()) {
-            return;
+        if (Parallel::isEnabled() && ! Parallel::isWorker()) {
+            CacheManager::mergeParallelCaches();
         }
-
-        CacheManager::mergeParallelCaches();
     }
 
-    public static function isRunningInParallel(): bool
+    public static function isParallelWorker(): bool
     {
-        return Parallel::isEnabled();
+        return Parallel::isWorker();
     }
 
     /**

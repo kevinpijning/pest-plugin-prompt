@@ -8,6 +8,7 @@ use KevinPijning\Prompt\Contracts\EvaluatorClient;
 use KevinPijning\Prompt\Evaluation;
 use KevinPijning\Prompt\Exceptions\ExecutionException;
 use KevinPijning\Prompt\Internal\EvaluationResult;
+use KevinPijning\Prompt\Plugin;
 use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\Process;
 
@@ -43,6 +44,10 @@ final class PromptfooClient implements EvaluatorClient
      */
     private function execute(array $command): void
     {
+        if (Plugin::isParallelWorker()) {
+            $_ENV['PROMPTFOO_CACHE_PATH'] = CacheManager::initializeParallelCache();
+        }
+
         $process = new Process($command, env: $_ENV);
 
         $process->setTimeout($this->promptfooTimeout);
@@ -88,12 +93,6 @@ final class PromptfooClient implements EvaluatorClient
             '--config', $pendingEvaluation->configPath,
             '--output', $pendingEvaluation->outputPath,
         ];
-
-        $parallelCachePath = CacheManager::getParallelCachePath();
-        if ($parallelCachePath !== null) {
-            $command[] = '--cache-path';
-            $command[] = $parallelCachePath;
-        }
 
         if ($pendingEvaluation->userOutputPath !== null) {
             $command[] = '--output';

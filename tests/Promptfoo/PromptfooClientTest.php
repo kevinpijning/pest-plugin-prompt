@@ -8,7 +8,7 @@ use KevinPijning\Prompt\Promptfoo\PendingEvaluation;
 use KevinPijning\Prompt\Promptfoo\PromptfooClient;
 
 beforeEach(function () {
-    CacheManager::resetParallelCachePath();
+    CacheManager::reset();
 
     $tempDir = sys_get_temp_dir();
     $files = glob($tempDir.'/promptfoo_*');
@@ -22,7 +22,7 @@ beforeEach(function () {
 });
 
 afterEach(function () {
-    CacheManager::resetParallelCachePath();
+    CacheManager::reset();
 });
 
 test('evaluate generates config file', function () {

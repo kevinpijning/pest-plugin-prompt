@@ -4,248 +4,218 @@ declare(strict_types=1);
 
 namespace KevinPijning\Prompt\Promptfoo;
 
-use KevinPijning\Prompt\Plugin;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use SplFileInfo;
 use Throwable;
 
 final class CacheManager
 {
-    private const DEFAULT_CACHE_PATH = '%s/.promptfoo/cache/cache.json';
+    private static ?CachePath $cachePath = null;
 
-    private static ?string $parallelCachePath = null;
-
-    /**
-     * Get the parallel cache path for the current worker process.
-     * Returns null if not running in parallel.
-     * Seeds the cache with main cache contents on first access.
-     */
-    public static function getParallelCachePath(): ?string
+    public static function setCachePath(?CachePath $cachePath): void
     {
-        if (! Plugin::isRunningInParallel()) {
+        self::$cachePath = $cachePath;
+    }
+
+    public static function reset(): void
+    {
+        self::$cachePath = null;
+    }
+
+    public static function initializeParallelCache(): ?string
+    {
+        $cachePath = self::getCachePath();
+        $pid = self::getPid();
+
+        if (! $cachePath->isValid() || $pid === null) {
             return null;
         }
 
-        if (self::$parallelCachePath === null) {
-            self::$parallelCachePath = sprintf(
-                '%s/promptfoo_parallel_cache_%s',
-                sys_get_temp_dir(),
-                getmypid()
-            );
-
-            self::seedParallelCacheIfNeeded();
-        }
-
-        return self::$parallelCachePath;
-    }
-
-    /**
-     * Reset the parallel cache path (useful for testing).
-     */
-    public static function resetParallelCachePath(): void
-    {
-        self::$parallelCachePath = null;
-    }
-
-    /**
-     * Seed the parallel cache with main cache contents if it doesn't exist yet.
-     */
-    private static function seedParallelCacheIfNeeded(): void
-    {
-        if (self::$parallelCachePath === null) {
-            return;
-        }
-
-        $parallelCacheFile = self::$parallelCachePath.'/cache.json';
+        $parallelCacheDir = $cachePath->parallelCacheDir($pid);
+        $parallelCacheFile = $cachePath->parallelCache($pid);
 
         if (file_exists($parallelCacheFile)) {
-            return;
+            return $parallelCacheDir;
         }
 
-        $homeDir = self::getHomeDirectory();
-        if ($homeDir === '') {
-            return;
-        }
-
-        $mainCachePath = sprintf(self::DEFAULT_CACHE_PATH, $homeDir);
+        $mainCachePath = $cachePath->mainCache();
 
         if (! file_exists($mainCachePath)) {
-            return;
+            return $parallelCacheDir;
         }
 
-        if (! is_dir(self::$parallelCachePath)) {
-            mkdir(self::$parallelCachePath, 0755, true);
+        if (! is_dir($parallelCacheDir)) {
+            mkdir($parallelCacheDir, 0755, true);
         }
 
         copy($mainCachePath, $parallelCacheFile);
+
+        return $parallelCacheDir;
     }
 
     public static function mergeParallelCaches(): void
     {
-        $homeDir = self::getHomeDirectory();
-        if ($homeDir === '') {
+        $cachePath = self::getCachePath();
+
+        if (! $cachePath->isValid()) {
             return;
         }
 
-        $tempDir = sys_get_temp_dir();
-        $parallelPattern = $tempDir.'/promptfoo_parallel_cache_*';
-        $parallelDirs = glob($parallelPattern);
+        $parallelDir = $cachePath->parallelDir();
 
-        if ($parallelDirs === [] || $parallelDirs === false) {
+        if (! is_dir($parallelDir)) {
             return;
         }
 
-        $mainCache = self::loadMainCache();
-        /** @var array<string, array<string, mixed>> $mergedEntries */
-        $mergedEntries = $mainCache['entries'];
+        $workerDirs = self::listWorkerDirectories($parallelDir);
 
-        foreach ($parallelDirs as $parallelDir) {
-            $cacheFile = $parallelDir.'/cache.json';
+        if ($workerDirs === []) {
+            return;
+        }
+
+        $mergedEntries = self::loadMainCache($cachePath);
+
+        foreach ($workerDirs as $workerDir) {
+            $cacheFile = $workerDir.'/cache.json';
 
             if (! file_exists($cacheFile)) {
                 continue;
             }
 
             try {
-                $parallelCache = self::parseCacheFile($cacheFile);
-                /** @var array<string, array<string, mixed>> $parallelEntries */
-                $parallelEntries = $parallelCache['entries'];
-                $mergedEntries = self::mergeEntries($mergedEntries, $parallelEntries);
+                $parallelEntries = self::parseCacheFile($cacheFile);
+                $mergedEntries = $parallelEntries + $mergedEntries;
             } catch (Throwable $e) {
                 error_log(sprintf(
                     'Failed to merge cache from %s: %s',
-                    $parallelDir,
+                    $workerDir,
                     $e->getMessage()
                 ));
+            }
+        }
 
+        self::saveMainCache($cachePath, $mergedEntries);
+        self::deleteDirectory($parallelDir);
+    }
+
+    private static function getCachePath(): CachePath
+    {
+        return self::$cachePath ??= CachePath::fromEnvironment();
+    }
+
+    private static function getPid(): ?int
+    {
+        $pid = getmypid();
+
+        return $pid === false ? null : $pid;
+    }
+
+    /**
+     * @return list<string>
+     */
+    private static function listWorkerDirectories(string $parallelDir): array
+    {
+        $entries = scandir($parallelDir);
+
+        if ($entries === false) {
+            return [];
+        }
+
+        $dirs = [];
+        foreach ($entries as $entry) {
+            if ($entry === '.') {
                 continue;
             }
-
-            self::cleanupDirectory($parallelDir);
+            if ($entry === '..') {
+                continue;
+            }
+            $fullPath = $parallelDir.'/'.$entry;
+            if (is_dir($fullPath)) {
+                $dirs[] = $fullPath;
+            }
         }
 
-        self::saveMainCache($mergedEntries);
-    }
-
-    private static function getHomeDirectory(): string
-    {
-        return $_ENV['HOME'] ?? getenv('HOME') ?: $_ENV['USERPROFILE'] ?? getenv('USERPROFILE') ?: '';
+        return $dirs;
     }
 
     /**
-     * Load the main cache file
-     *
-     * @return array{entries: array<string, array<string, mixed>>}
+     * @return array<string, array<string, mixed>>
      */
-    private static function loadMainCache(): array
+    private static function loadMainCache(CachePath $cachePath): array
     {
-        $cachePath = sprintf(self::DEFAULT_CACHE_PATH, self::getHomeDirectory());
+        $mainCachePath = $cachePath->mainCache();
 
-        if (! file_exists($cachePath)) {
-            return ['entries' => []];
+        if (! file_exists($mainCachePath)) {
+            return [];
         }
 
-        return self::parseCacheFile($cachePath);
+        return self::parseCacheFile($mainCachePath);
     }
 
     /**
-     * Parse a cache file into its entries array
-     *
-     * @return array{entries: array<string, array<string, mixed>>}
+     * @return array<string, array<string, mixed>>
      */
     private static function parseCacheFile(string $filePath): array
     {
         $json = file_get_contents($filePath);
         if ($json === false) {
-            return ['entries' => []];
+            return [];
         }
 
         $data = json_decode($json, true);
 
-        if (! is_array($data) || ! isset($data['cache'])) {
-            return ['entries' => []];
+        if (! is_array($data) || ! isset($data['cache']) || ! is_array($data['cache'])) {
+            return [];
         }
 
-        // Keyv cache format: {"cache": [["keyv:...", {"expire": timestamp, "value": "..."}]]}
-        /** @var array<string, array<string, mixed>> $entries */
-        $entries = [];
-        foreach ($data['cache'] as $item) {
-            if (is_array($item) && count($item) === 2) {
-                $key = $item[0];
-                $value = $item[1];
-
-                // Remove 'keyv:' prefix if present
-                if (str_starts_with((string) $key, 'keyv:')) {
-                    $key = substr((string) $key, 5);
-                }
-
-                if (is_string($key) && is_array($value)) {
-                    $entries[$key] = $value;
-                }
-            }
-        }
-
-        return ['entries' => $entries];
+        // Keyv format: {"cache": [["key", {value}], ["key2", {value2}]]}
+        /** @var array<string, array<string, mixed>> */
+        return array_column($data['cache'], 1, 0);
     }
 
     /**
-     * Merge entries from parallel cache into main cache
-     *
-     * @param  array<string, array<string, mixed>>  $mainEntries  The main cache entries
-     * @param  array<string, array<string, mixed>>  $parallelEntries  The parallel cache entries
-     * @return array<string, array<string, mixed>> Merged entries
+     * @param  array<string, array<string, mixed>>  $entries
      */
-    private static function mergeEntries(array $mainEntries, array $parallelEntries): array
+    private static function saveMainCache(CachePath $cachePath, array $entries): void
     {
-        foreach ($parallelEntries as $key => $entry) {
-            if (! isset($mainEntries[$key])) {
-                $mainEntries[$key] = $entry;
-            }
-        }
-
-        return $mainEntries;
-    }
-
-    /**
-     * Save the merged entries to the main cache file
-     *
-     * @param  array<string, array<string, mixed>>  $entries  The merged entries to save
-     */
-    private static function saveMainCache(array $entries): void
-    {
-        $cachePath = sprintf(self::DEFAULT_CACHE_PATH, self::getHomeDirectory());
-        $cacheDir = dirname($cachePath);
+        $mainCachePath = $cachePath->mainCache();
+        $cacheDir = dirname($mainCachePath);
 
         if (! is_dir($cacheDir)) {
             mkdir($cacheDir, 0755, true);
         }
 
-        $cacheData = ['cache' => []];
-        foreach ($entries as $key => $entry) {
-            $cacheData['cache'][] = [$key, $entry];
-        }
+        // Convert to keyv format: [["key", {value}], ...]
+        $cacheData = ['cache' => array_map(
+            static fn (string $key, array $value): array => [$key, $value],
+            array_keys($entries),
+            array_values($entries)
+        )];
 
-        file_put_contents($cachePath, json_encode($cacheData, JSON_PRETTY_PRINT));
+        file_put_contents($mainCachePath, json_encode($cacheData, JSON_PRETTY_PRINT));
     }
 
-    /**
-     * Clean up a directory and its contents
-     */
-    private static function cleanupDirectory(string $dir): void
+    private static function deleteDirectory(string $dir): void
     {
         if (! is_dir($dir)) {
             return;
         }
 
-        $files = glob($dir.'/*');
-        if ($files === false) {
-            $files = [];
-        }
+        $iterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($dir, RecursiveDirectoryIterator::SKIP_DOTS),
+            RecursiveIteratorIterator::CHILD_FIRST
+        );
 
-        foreach ($files as $file) {
-            if (is_file($file)) {
-                unlink($file);
+        /** @var SplFileInfo $file */
+        foreach ($iterator as $file) {
+            if ($file->isDir()) {
+                @rmdir($file->getPathname());
+            } else {
+                @unlink($file->getPathname());
             }
         }
 
-        rmdir($dir);
+        @rmdir($dir);
     }
 }
