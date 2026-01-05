@@ -29,7 +29,7 @@ test('flushExtensions removes all extensions', function (): void {
 });
 
 test('__call invokes registered extension', function (): void {
-    TestExtendableClass::extend('greet', fn (string $name) => "Hello, {$name}!");
+    TestExtendableClass::extend('greet', fn (TestExtendableClass $self, string $name) => "Hello, {$name}!");
 
     $instance = new TestExtendableClass;
     $result = $instance->greet('World');
@@ -38,7 +38,7 @@ test('__call invokes registered extension', function (): void {
 });
 
 test('__call returns $this when extension returns null', function (): void {
-    TestExtendableClass::extend('chainable', function (): void {});
+    TestExtendableClass::extend('chainable', function (TestExtendableClass $self): void {});
 
     $instance = new TestExtendableClass;
     $result = $instance->chainable();
@@ -54,7 +54,7 @@ test('__call throws BadMethodCallException for unknown method', function (): voi
 });
 
 test('extension has access to $this', function (): void {
-    TestExtendableClass::extend('getValue', fn () => $this->value);
+    TestExtendableClass::extend('getValue', fn (TestExtendableClass $self) => $self->value);
 
     $instance = new TestExtendableClass;
     $instance->value = 'test value';
@@ -63,8 +63,8 @@ test('extension has access to $this', function (): void {
 });
 
 test('extension can modify instance properties', function (): void {
-    TestExtendableClass::extend('setValue', function (string $value): void {
-        $this->value = $value;
+    TestExtendableClass::extend('setValue', function (TestExtendableClass $self, string $value): void {
+        $self->value = $value;
     });
 
     $instance = new TestExtendableClass;
@@ -85,7 +85,7 @@ test('extensions are isolated per class', function (): void {
 });
 
 test('extension can accept multiple arguments', function (): void {
-    TestExtendableClass::extend('combine', fn (string $a, string $b, string $c) => "{$a}-{$b}-{$c}");
+    TestExtendableClass::extend('combine', fn (TestExtendableClass $self, string $a, string $b, string $c) => "{$a}-{$b}-{$c}");
 
     $instance = new TestExtendableClass;
 
@@ -93,9 +93,9 @@ test('extension can accept multiple arguments', function (): void {
 });
 
 test('extension can return various types', function (): void {
-    TestExtendableClass::extend('returnArray', fn () => ['a', 'b', 'c']);
-    TestExtendableClass::extend('returnInt', fn () => 42);
-    TestExtendableClass::extend('returnBool', fn () => true);
+    TestExtendableClass::extend('returnArray', fn (TestExtendableClass $self) => ['a', 'b', 'c']);
+    TestExtendableClass::extend('returnInt', fn (TestExtendableClass $self) => 42);
+    TestExtendableClass::extend('returnBool', fn (TestExtendableClass $self) => true);
 
     $instance = new TestExtendableClass;
 
@@ -105,7 +105,7 @@ test('extension can return various types', function (): void {
 });
 
 test('extension can transform array argument', function (): void {
-    TestExtendableClass::extend('appendItems', fn (array $input) => [...$input, 'a', 'b', 'c']);
+    TestExtendableClass::extend('appendItems', fn (TestExtendableClass $self, array $input) => [...$input, 'a', 'b', 'c']);
 
     $instance = new TestExtendableClass;
 

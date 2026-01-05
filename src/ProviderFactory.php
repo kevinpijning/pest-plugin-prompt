@@ -38,4 +38,9 @@ final class ProviderFactory
     {
         Provider::flushExtensions();
     }
+
+    public function id(string $id): Provider
+    {
+        return Provider::create($id);
+    }
 }

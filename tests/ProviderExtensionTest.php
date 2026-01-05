@@ -7,7 +7,7 @@ beforeEach(function () {
 });
 
 test('extension method can be called on provider instance', function () {
-    Provider::extend('withApiKey', fn (string $key) => $this->config(['apiKey' => $key]));
+    Provider::extend('withApiKey', fn (Provider $self, string $key) => $self->config(['apiKey' => $key]));
 
     $provider = Provider::create('openai:gpt-4')
         ->withApiKey('test-key');
@@ -16,7 +16,7 @@ test('extension method can be called on provider instance', function () {
 });
 
 test('extension method returns provider for chaining', function () {
-    Provider::extend('withApiKey', fn (string $key) => $this->config(['apiKey' => $key]));
+    Provider::extend('withApiKey', fn (Provider $self, string $key) => $self->config(['apiKey' => $key]));
 
     $provider = new Provider;
     $result = $provider->withApiKey('test-key');
@@ -25,7 +25,7 @@ test('extension method returns provider for chaining', function () {
 });
 
 test('extension method can access provider properties via $this', function () {
-    Provider::extend('withVectorStore', fn (string $id) => $this->mergeConfig([
+    Provider::extend('withVectorStore', fn (Provider $self, string $id) => $self->mergeConfig([
         'tools' => [['type' => 'file_search']],
         'tool_resources' => ['file_search' => ['vector_store_ids' => [$id]]],
     ]));
@@ -44,7 +44,7 @@ test('extension method can access provider properties via $this', function () {
 });
 
 test('extension method can accept multiple arguments', function () {
-    Provider::extend('withAuth', fn (string $key, string $org) => $this->config([
+    Provider::extend('withAuth', fn (Provider $self, string $key, string $org) => $self->config([
         'apiKey' => $key,
         'organization' => $org,
     ]));
@@ -59,7 +59,7 @@ test('extension method can accept multiple arguments', function () {
 });
 
 test('extension method can use closure with existing config', function () {
-    Provider::extend('addHeader', fn (string $name, string $value) => $this->config(
+    Provider::extend('addHeader', fn (Provider $self, string $name, string $value) => $self->config(
         fn (array $config) => [
             ...$config,
             'headers' => [...($config['headers'] ?? []), $name => $value],
@@ -81,8 +81,8 @@ test('extension method can use closure with existing config', function () {
 });
 
 test('extension without return implicitly returns provider', function () {
-    Provider::extend('setLabel', function (string $label): void {
-        $this->label($label);
+    Provider::extend('setLabel', function (Provider $self, string $label): void {
+        $self->label($label);
     });
 
     $provider = new Provider;
@@ -99,7 +99,7 @@ test('calling undefined extension throws BadMethodCallException', function () {
 })->throws(BadMethodCallException::class, 'Method KevinPijning\Prompt\Provider::undefinedMethod does not exist.');
 
 test('extensions can be chained with built-in methods', function () {
-    Provider::extend('withApiKey', fn (string $key) => $this->mergeConfig(['apiKey' => $key]));
+    Provider::extend('withApiKey', fn (Provider $self, string $key) => $self->mergeConfig(['apiKey' => $key]));
 
     $provider = Provider::create('openai:gpt-4')
         ->temperature(0.7)
@@ -117,7 +117,7 @@ test('extensions can be chained with built-in methods', function () {
 });
 
 test('extensions work with globally registered providers', function () {
-    Provider::extend('withApiKey', fn (string $key) => $this->mergeConfig(['apiKey' => $key]));
+    Provider::extend('withApiKey', fn (Provider $self, string $key) => $self->mergeConfig(['apiKey' => $key]));
 
     $provider = provider('my-provider')
         ->id('openai:gpt-4')
@@ -127,7 +127,7 @@ test('extensions work with globally registered providers', function () {
 });
 
 test('extension method can return custom value', function () {
-    Provider::extend('getConfigValue', fn (string $key) => $this->build()->config[$key] ?? null);
+    Provider::extend('getConfigValue', fn (Provider $self, string $key) => $self->build()->config[$key] ?? null);
 
     $provider = Provider::create('openai:gpt-4')
         ->config(['apiKey' => 'secret-key']);

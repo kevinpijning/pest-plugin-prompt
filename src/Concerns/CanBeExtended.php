@@ -56,10 +56,9 @@ trait CanBeExtended
             ));
         }
 
-        /** @var Closure $callback */
-        $callback = static::$extensions[$method]->bindTo($this, static::class);
+        $callback = static::$extensions[$method];
 
-        $result = $callback(...$parameters);
+        $result = $callback($this, ...$parameters);
 
         return $result ?? $this;
     }

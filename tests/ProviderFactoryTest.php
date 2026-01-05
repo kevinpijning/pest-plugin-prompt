@@ -69,3 +69,33 @@ test('extensions persist across multiple factory instances', function () {
 
     expect($newFactory->hasExtension('globalMethod'))->toBeTrue();
 });
+
+test('id method returns a Provider with the given id', function () {
+    $provider = provider()->id('openai:gpt-4');
+
+    expect($provider)->toBeInstanceOf(Provider::class)
+        ->and($provider->build()->id)->toBe('openai:gpt-4');
+});
+
+test('id method can be chained with provider configuration', function () {
+    $provider = provider()
+        ->id('openai:gpt-4')
+        ->temperature(0.7)
+        ->maxTokens(1000);
+
+    $built = $provider->build();
+
+    expect($built->id)->toBe('openai:gpt-4')
+        ->and($built->temperature)->toBe(0.7)
+        ->and($built->maxTokens)->toBe(1000);
+});
+
+test('id method works with registered extensions', function () {
+    provider()->extend('withApiKey', fn (Provider $self, string $key) => $self->mergeConfig(['apiKey' => $key]));
+
+    $provider = provider()
+        ->id('openai:gpt-4')
+        ->withApiKey('test-key');
+
+    expect($provider->build()->config)->toBe(['apiKey' => 'test-key']);
+});
