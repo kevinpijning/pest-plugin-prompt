@@ -4,11 +4,79 @@ declare(strict_types=1);
 
 namespace KevinPijning\Prompt\Promptfoo;
 
+use KevinPijning\Prompt\Plugin;
 use Throwable;
 
-final class CacheMerger
+final class CacheManager
 {
     private const DEFAULT_CACHE_PATH = '%s/.promptfoo/cache/cache.json';
+
+    private static ?string $parallelCachePath = null;
+
+    /**
+     * Get the parallel cache path for the current worker process.
+     * Returns null if not running in parallel.
+     * Seeds the cache with main cache contents on first access.
+     */
+    public static function getParallelCachePath(): ?string
+    {
+        if (! Plugin::isRunningInParallel()) {
+            return null;
+        }
+
+        if (self::$parallelCachePath === null) {
+            self::$parallelCachePath = sprintf(
+                '%s/promptfoo_parallel_cache_%s',
+                sys_get_temp_dir(),
+                getmypid()
+            );
+
+            self::seedParallelCacheIfNeeded();
+        }
+
+        return self::$parallelCachePath;
+    }
+
+    /**
+     * Reset the parallel cache path (useful for testing).
+     */
+    public static function resetParallelCachePath(): void
+    {
+        self::$parallelCachePath = null;
+    }
+
+    /**
+     * Seed the parallel cache with main cache contents if it doesn't exist yet.
+     */
+    private static function seedParallelCacheIfNeeded(): void
+    {
+        if (self::$parallelCachePath === null) {
+            return;
+        }
+
+        $parallelCacheFile = self::$parallelCachePath.'/cache.json';
+
+        if (file_exists($parallelCacheFile)) {
+            return;
+        }
+
+        $homeDir = self::getHomeDirectory();
+        if ($homeDir === '') {
+            return;
+        }
+
+        $mainCachePath = sprintf(self::DEFAULT_CACHE_PATH, $homeDir);
+
+        if (! file_exists($mainCachePath)) {
+            return;
+        }
+
+        if (! is_dir(self::$parallelCachePath)) {
+            mkdir(self::$parallelCachePath, 0755, true);
+        }
+
+        copy($mainCachePath, $parallelCacheFile);
+    }
 
     public static function mergeParallelCaches(): void
     {

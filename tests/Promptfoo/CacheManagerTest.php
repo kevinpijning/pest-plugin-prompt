@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use KevinPijning\Prompt\Promptfoo\CacheMerger;
+use KevinPijning\Prompt\Promptfoo\CacheManager;
 
 function recursiveCleanup(string $dir): void
 {
@@ -27,6 +27,8 @@ function recursiveCleanup(string $dir): void
 }
 
 beforeEach(function () {
+    CacheManager::resetParallelCachePath();
+
     $tempDir = sys_get_temp_dir();
 
     $cacheTestDirs = glob($tempDir.'/promptfoo_cache_test_*');
@@ -52,6 +54,7 @@ beforeEach(function () {
 });
 
 afterEach(function () {
+    CacheManager::resetParallelCachePath();
     unset($_ENV['HOME'], $_ENV['USERPROFILE']);
 });
 
@@ -59,7 +62,7 @@ test('does nothing when no parallel cache directories exist', function () {
     $_ENV['HOME'] = sys_get_temp_dir().'/promptfoo_home_'.uniqid();
     mkdir($_ENV['HOME'].'/.promptfoo/cache', 0755, true);
 
-    CacheMerger::mergeParallelCaches();
+    CacheManager::mergeParallelCaches();
 
     expect(file_exists($_ENV['HOME'].'/.promptfoo/cache/cache.json'))->toBeFalse();
 
@@ -74,7 +77,7 @@ test('does nothing when home directory is empty', function () {
     $cacheDir = sys_get_temp_dir().'/promptfoo_parallel_cache_test_no_home';
     createParallelCacheDir($cacheDir, ['key' => ['value' => 'test']]);
 
-    CacheMerger::mergeParallelCaches();
+    CacheManager::mergeParallelCaches();
 
     expect(is_dir($cacheDir))->toBeTrue();
 
@@ -91,7 +94,7 @@ test('merges single parallel cache directory', function () {
         'key-1' => ['expire' => 111, 'value' => 'value-1'],
     ]);
 
-    CacheMerger::mergeParallelCaches();
+    CacheManager::mergeParallelCaches();
 
     $mainCache = loadMainCache($_ENV['HOME']);
     expect($mainCache['entries'])->toHaveKey('key-1');
@@ -118,7 +121,7 @@ test('merges multiple parallel cache directories', function () {
         'existing-key' => ['expire' => 999, 'value' => 'existing-value'],
     ]);
 
-    CacheMerger::mergeParallelCaches();
+    CacheManager::mergeParallelCaches();
 
     $mainCache = loadMainCache($_ENV['HOME']);
 
@@ -149,7 +152,7 @@ test('handles duplicate keys by keeping first occurrence', function () {
         'duplicate-key' => ['expire' => 222, 'value' => 'second-value'],
     ]);
 
-    CacheMerger::mergeParallelCaches();
+    CacheManager::mergeParallelCaches();
 
     $mainCache = loadMainCache($_ENV['HOME']);
 
@@ -171,7 +174,7 @@ test('creates main cache if not exists', function () {
         'new-key' => ['expire' => 123, 'value' => 'new-value'],
     ]);
 
-    CacheMerger::mergeParallelCaches();
+    CacheManager::mergeParallelCaches();
 
     $mainCache = loadMainCache($_ENV['HOME']);
 
@@ -193,7 +196,7 @@ test('handles corrupted cache files gracefully', function () {
     mkdir($cacheDir2);
     file_put_contents($cacheDir2.'/cache.json', '{ invalid json');
 
-    CacheMerger::mergeParallelCaches();
+    CacheManager::mergeParallelCaches();
 
     $mainCache = loadMainCache($_ENV['HOME']);
 
@@ -216,7 +219,7 @@ test('handles empty parallel cache', function () {
 
     createParallelCacheDir($cacheDir, []);
 
-    CacheMerger::mergeParallelCaches();
+    CacheManager::mergeParallelCaches();
 
     $mainCache = loadMainCache($_ENV['HOME']);
     expect($mainCache['entries'])->toBeEmpty();
@@ -234,11 +237,21 @@ test('cleans up parallel cache directories after merge', function () {
 
     expect(is_dir($cacheDir))->toBeTrue();
 
-    CacheMerger::mergeParallelCaches();
+    CacheManager::mergeParallelCaches();
 
     expect(is_dir($cacheDir))->toBeFalse();
 
     cleanupDirectory($_ENV['HOME']);
+});
+
+test('getParallelCachePath returns null when not running in parallel', function () {
+    expect(CacheManager::getParallelCachePath())->toBeNull();
+});
+
+test('resetParallelCachePath clears the cached path', function () {
+    CacheManager::resetParallelCachePath();
+
+    expect(CacheManager::getParallelCachePath())->toBeNull();
 });
 
 function createParallelCacheDir(string $dir, array $entries = []): void

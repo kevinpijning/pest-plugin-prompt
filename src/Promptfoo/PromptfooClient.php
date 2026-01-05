@@ -8,31 +8,15 @@ use KevinPijning\Prompt\Contracts\EvaluatorClient;
 use KevinPijning\Prompt\Evaluation;
 use KevinPijning\Prompt\Exceptions\ExecutionException;
 use KevinPijning\Prompt\Internal\EvaluationResult;
-use KevinPijning\Prompt\Plugin;
 use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\Process;
 
 final class PromptfooClient implements EvaluatorClient
 {
-    private ?string $parallelCachePath = null;
-
     public function __construct(
         private readonly string $promptfooCommand,
         private readonly int $promptfooTimeout = 300,
-    ) {
-        $this->initializeParallelCache();
-    }
-
-    private function initializeParallelCache(): void
-    {
-        if (Plugin::isRunningInParallel()) {
-            $this->parallelCachePath = sprintf(
-                '%s/promptfoo_parallel_cache_%s',
-                sys_get_temp_dir(),
-                getmypid()
-            );
-        }
-    }
+    ) {}
 
     public function evaluate(Evaluation $evaluation): EvaluationResult
     {
@@ -105,13 +89,12 @@ final class PromptfooClient implements EvaluatorClient
             '--output', $pendingEvaluation->outputPath,
         ];
 
-        // Add per-process cache path when running in parallel
-        if ($this->parallelCachePath !== null) {
+        $parallelCachePath = CacheManager::getParallelCachePath();
+        if ($parallelCachePath !== null) {
             $command[] = '--cache-path';
-            $command[] = $this->parallelCachePath;
+            $command[] = $parallelCachePath;
         }
 
-        // Add user-specified output path if provided
         if ($pendingEvaluation->userOutputPath !== null) {
             $command[] = '--output';
             $command[] = $pendingEvaluation->userOutputPath;

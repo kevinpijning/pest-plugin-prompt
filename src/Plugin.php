@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace KevinPijning\Prompt;
 
 use KevinPijning\Prompt\Internal\TestLifecycle;
-use KevinPijning\Prompt\Promptfoo\CacheMerger;
+use KevinPijning\Prompt\Promptfoo\CacheManager;
 use KevinPijning\Prompt\Promptfoo\Promptfoo;
 use Pest\Contracts\Plugins\Bootable;
 use Pest\Contracts\Plugins\HandlesArguments;
@@ -40,7 +40,7 @@ final class Plugin implements Bootable, HandlesArguments, Terminable
             return;
         }
 
-        CacheMerger::mergeParallelCaches();
+        CacheManager::mergeParallelCaches();
     }
 
     public static function isRunningInParallel(): bool
