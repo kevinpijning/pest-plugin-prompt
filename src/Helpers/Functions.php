@@ -13,7 +13,7 @@ if (! function_exists('provider')) {
      * @param  (callable(Provider): Provider)|null  $config
      * @return ($name is null ? ProviderFactory : Provider)
      */
-    function provider(?string $name = null, ?callable $config = null): object
+    function provider(?string $name = null, ?callable $config = null): Provider|ProviderFactory
     {
         if (is_null($name)) {
             return new ProviderFactory;
