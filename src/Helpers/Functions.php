@@ -10,12 +10,10 @@ use KevinPijning\Prompt\ProviderFactory;
 
 if (! function_exists('provider')) {
     /**
-     * Create or register a provider.
-     *
-     * When called without arguments, returns a ProviderFactory for extension registration.
-     * When called with a name, registers and returns a Provider instance.
+     * @param  (callable(Provider): Provider)|null  $config
+     * @return ($name is null ? ProviderFactory : Provider)
      */
-    function provider(?string $name = null, ?callable $config = null): Provider|ProviderFactory
+    function provider(?string $name = null, ?callable $config = null): object
     {
         if (is_null($name)) {
             return new ProviderFactory;
