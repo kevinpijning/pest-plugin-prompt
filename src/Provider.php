@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace KevinPijning\Prompt;
 
-use BadMethodCallException;
 use Closure;
+use KevinPijning\Prompt\Concerns\CanBeExtended;
 use KevinPijning\Prompt\Internal\BuiltProvider;
 
 class Provider
 {
-    /** @var array<string, Closure> */
-    protected static array $extensions = [];
+    use CanBeExtended;
 
     private ?string $id = null;
 
@@ -51,42 +50,6 @@ class Provider
 
     /** @var array<string,mixed> */
     private array $config = [];
-
-    public static function extend(string $name, Closure $callback): void
-    {
-        static::$extensions[$name] = $callback;
-    }
-
-    public static function hasExtension(string $name): bool
-    {
-        return isset(static::$extensions[$name]);
-    }
-
-    public static function flushExtensions(): void
-    {
-        static::$extensions = [];
-    }
-
-    /**
-     * @param  array<int, mixed>  $parameters
-     */
-    public function __call(string $method, array $parameters): mixed
-    {
-        if (! static::hasExtension($method)) {
-            throw new BadMethodCallException(sprintf(
-                'Method %s::%s does not exist.',
-                static::class,
-                $method
-            ));
-        }
-
-        /** @var Closure $callback */
-        $callback = static::$extensions[$method]->bindTo($this, static::class);
-
-        $result = $callback(...$parameters);
-
-        return $result ?? $this;
-    }
 
     public static function create(string $id): self
     {
