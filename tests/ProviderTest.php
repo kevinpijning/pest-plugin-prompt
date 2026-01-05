@@ -107,3 +107,75 @@ test('id method can be called multiple times to update the id', function () {
     $provider->id('anthropic:claude-3');
     expect($provider->build()->id)->toBe('anthropic:claude-3');
 });
+
+test('config accepts closure to merge with existing config', function () {
+    $provider = Provider::create('openai:gpt-4')
+        ->config(['existing' => 'value'])
+        ->config(fn (array $config) => [...$config, 'new' => 'value']);
+
+    expect($provider->build()->config)->toBe([
+        'existing' => 'value',
+        'new' => 'value',
+    ]);
+});
+
+test('config closure receives current config state', function () {
+    $provider = Provider::create('openai:gpt-4')
+        ->config(['a' => 1])
+        ->config(fn (array $config) => [...$config, 'b' => 2])
+        ->config(fn (array $config) => [...$config, 'c' => 3]);
+
+    expect($provider->build()->config)->toBe(['a' => 1, 'b' => 2, 'c' => 3]);
+});
+
+test('config closure can transform existing config', function () {
+    $provider = Provider::create('openai:gpt-4')
+        ->config(['tools' => [['type' => 'web_search']]])
+        ->config(fn (array $config) => [
+            ...$config,
+            'tools' => [...$config['tools'], ['type' => 'file_search']],
+        ]);
+
+    expect($provider->build()->config)->toBe([
+        'tools' => [
+            ['type' => 'web_search'],
+            ['type' => 'file_search'],
+        ],
+    ]);
+});
+
+test('mergeConfig merges array with existing config', function () {
+    $provider = Provider::create('openai:gpt-4')
+        ->config(['existing' => 'value'])
+        ->mergeConfig(['new' => 'value']);
+
+    expect($provider->build()->config)->toBe([
+        'existing' => 'value',
+        'new' => 'value',
+    ]);
+});
+
+test('mergeConfig can be chained multiple times', function () {
+    $provider = Provider::create('openai:gpt-4')
+        ->mergeConfig(['a' => 1])
+        ->mergeConfig(['b' => 2])
+        ->mergeConfig(['c' => 3]);
+
+    expect($provider->build()->config)->toBe(['a' => 1, 'b' => 2, 'c' => 3]);
+});
+
+test('mergeConfig overwrites existing keys', function () {
+    $provider = Provider::create('openai:gpt-4')
+        ->config(['key' => 'old'])
+        ->mergeConfig(['key' => 'new']);
+
+    expect($provider->build()->config)->toBe(['key' => 'new']);
+});
+
+test('mergeConfig returns self for chaining', function () {
+    $provider = new Provider;
+
+    $result = $provider->mergeConfig(['key' => 'value']);
+
+    expect($result)->toBe($provider);
+});

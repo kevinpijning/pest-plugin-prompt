@@ -4,10 +4,15 @@ declare(strict_types=1);
 
 namespace KevinPijning\Prompt;
 
+use BadMethodCallException;
+use Closure;
 use KevinPijning\Prompt\Internal\BuiltProvider;
 
 class Provider
 {
+    /** @var array<string, Closure> */
+    protected static array $extensions = [];
+
     private ?string $id = null;
 
     private ?string $label = null;
@@ -46,6 +51,42 @@ class Provider
 
     /** @var array<string,mixed> */
     private array $config = [];
+
+    public static function extend(string $name, Closure $callback): void
+    {
+        static::$extensions[$name] = $callback;
+    }
+
+    public static function hasExtension(string $name): bool
+    {
+        return isset(static::$extensions[$name]);
+    }
+
+    public static function flushExtensions(): void
+    {
+        static::$extensions = [];
+    }
+
+    /**
+     * @param  array<int, mixed>  $parameters
+     */
+    public function __call(string $method, array $parameters): mixed
+    {
+        if (! static::hasExtension($method)) {
+            throw new BadMethodCallException(sprintf(
+                'Method %s::%s does not exist.',
+                static::class,
+                $method
+            ));
+        }
+
+        /** @var Closure $callback */
+        $callback = static::$extensions[$method]->bindTo($this, static::class);
+
+        $result = $callback(...$parameters);
+
+        return $result ?? $this;
+    }
 
     public static function create(string $id): self
     {
@@ -112,12 +153,21 @@ class Provider
     }
 
     /**
-     * @param  array<string,mixed>  $array
-     * @return $this
+     * @param  array<string,mixed>|Closure(array<string,mixed>): array<string,mixed>  $config
      */
-    public function config(array $array): self
+    public function config(array|Closure $config): self
     {
-        $this->config = $array;
+        $this->config = $config instanceof Closure ? $config($this->config) : $config;
+
+        return $this;
+    }
+
+    /**
+     * @param  array<string,mixed>  $config
+     */
+    public function mergeConfig(array $config): self
+    {
+        $this->config = [...$this->config, ...$config];
 
         return $this;
     }

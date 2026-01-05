@@ -187,7 +187,7 @@ prompt('Extract person info from: \{\{text\}\}')
 
 ### Provider Configuration
 
-Chain methods: `id()`, `label()`, `temperature()`, `maxTokens()`, `topP()`, `frequencyPenalty()`, `presencePenalty()`, `stop()`, `config()`.
+Chain methods: `id()`, `label()`, `temperature()`, `maxTokens()`, `topP()`, `frequencyPenalty()`, `presencePenalty()`, `stop()`, `config()`, `mergeConfig()`.
 
 @verbatim
 <code-snippet name="Provider config" lang="php">
@@ -196,6 +196,45 @@ use \KevinPijning\Prompt\Provider;
 $provider = Provider::create('openai:gpt-4')
     ->temperature(0.7)
     ->maxTokens(2000);
+</code-snippet>
+@endverbatim
+
+**`config()`** accepts arrays or closures for merging:
+
+@verbatim
+<code-snippet name="Config with closure" lang="php">
+// Use closure to merge with existing config
+Provider::create('openai:gpt-4')
+    ->config(['existing' => 'value'])
+    ->config(fn (array $config) => [...$config, 'new' => 'value']);
+
+// Or use mergeConfig shorthand
+Provider::create('openai:gpt-4')
+    ->config(['existing' => 'value'])
+    ->mergeConfig(['new' => 'value']);
+</code-snippet>
+@endverbatim
+
+### Provider Extensions
+
+Register custom methods on all `Provider` instances using `provider()->extend()`:
+
+@verbatim
+<code-snippet name="Provider extensions" lang="php">
+// Register extensions in Pest.php
+provider()->extend('withApiKey', fn (string $key) => $this->mergeConfig(['apiKey' => $key]));
+
+provider()->extend('withVectorStore', fn (string $vectorStoreId) => $this->mergeConfig([
+    'tools' => [['type' => 'file_search']],
+    'tool_resources' => ['file_search' => ['vector_store_ids' => [$vectorStoreId]]],
+]));
+
+// Use extensions on any provider
+provider('rag-assistant')
+    ->id('openai:responses:gpt-4o-mini')
+    ->withVectorStore('vs_abc123')
+    ->withApiKey('custom-key')
+    ->temperature(0.3);
 </code-snippet>
 @endverbatim
 

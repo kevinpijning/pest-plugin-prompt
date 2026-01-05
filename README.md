@@ -83,6 +83,8 @@ This plugin brings LLM prompt testing to your Pest test suite, powered by [promp
     - [`presencePenalty()`](#presencepenalty)
     - [`stop()`](#stop)
     - [`config()`](#config)
+    - [`mergeConfig()`](#mergeconfig)
+  - [Provider Extensions](#provider-extensions)
   - [Usage Examples](#usage-examples)
     - [Basic Example](#basic-example)
     - [Multiple Prompts](#multiple-prompts)
@@ -1387,15 +1389,86 @@ Provider::create('openai:gpt-4')
 
 #### `config()`
 
-Set custom configuration options for the provider.
+Set custom configuration options for the provider. Accepts either an array or a closure for merging with existing config.
 
 ```php
+// Set config directly (replaces existing)
 Provider::create('openai:gpt-4')
     ->config([
         'apiKey' => 'custom-key',
         'baseURL' => 'https://api.example.com',
     ]);
+
+// Use closure to merge with existing config
+Provider::create('openai:gpt-4')
+    ->config(['existing' => 'value'])
+    ->config(fn (array $config) => [...$config, 'new' => 'value']);
+
+// Closure receives current config state
+Provider::create('openai:gpt-4')
+    ->config(['tools' => [['type' => 'web_search']]])
+    ->config(fn (array $config) => [
+        ...$config,
+        'tools' => [...$config['tools'], ['type' => 'file_search']],
+    ]);
 ```
+
+#### `mergeConfig()`
+
+Shorthand for merging additional config with existing config. Equivalent to `config(fn ($c) => [...$c, ...$newConfig])`.
+
+```php
+Provider::create('openai:gpt-4')
+    ->config(['existing' => 'value'])
+    ->mergeConfig(['new' => 'value']);
+
+// Chain multiple merges
+Provider::create('openai:gpt-4')
+    ->mergeConfig(['a' => 1])
+    ->mergeConfig(['b' => 2])
+    ->mergeConfig(['c' => 3]);
+```
+
+### Provider Extensions
+
+Register custom methods on all `Provider` instances using `provider()->extend()`. This is similar to Laravel's Macroable trait but uses a Pest-style function-based API.
+
+```php
+// Register extensions in Pest.php
+provider()->extend('withApiKey', fn (string $key) => $this->mergeConfig(['apiKey' => $key]));
+
+provider()->extend('withVectorStore', fn (string $vectorStoreId) => $this->mergeConfig([
+    'tools' => [['type' => 'file_search']],
+    'tool_resources' => ['file_search' => ['vector_store_ids' => [$vectorStoreId]]],
+]));
+
+// Use extensions on any provider
+provider('rag-assistant')
+    ->id('openai:responses:gpt-4o-mini')
+    ->withVectorStore('vs_abc123')
+    ->withApiKey('custom-key')
+    ->temperature(0.3);
+
+// Extensions can use closures for complex config merging
+provider()->extend('addHeader', fn (string $name, string $value) => $this->config(
+    fn (array $config) => [
+        ...$config,
+        'headers' => [...($config['headers'] ?? []), $name => $value],
+    ]
+));
+
+// Extensions persist globally across tests
+provider('my-provider')
+    ->id('openai:gpt-4')
+    ->addHeader('X-Custom', 'value');
+```
+
+**Key points:**
+- Call `provider()` without arguments to access extension registration via `ProviderFactory`
+- Extensions are bound to `$this` (the Provider instance) when called
+- Extensions that don't explicitly return a value automatically return `$this` for chaining
+- Use `provider()->hasExtension('name')` to check if an extension exists
+- Use `provider()->flushExtensions()` to remove all extensions (useful in test teardown)
 
 ### Usage Examples
 
