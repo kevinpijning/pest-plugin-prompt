@@ -191,9 +191,8 @@ Chain methods: `id()`, `label()`, `temperature()`, `maxTokens()`, `topP()`, `fre
 
 @verbatim
 <code-snippet name="Provider config" lang="php">
-use \KevinPijning\Prompt\Provider;
-
-$provider = Provider::create('openai:gpt-4')
+provider('my-provider')
+    ->id('openai:gpt-4')
     ->temperature(0.7)
     ->maxTokens(2000);
 </code-snippet>
@@ -204,12 +203,14 @@ $provider = Provider::create('openai:gpt-4')
 @verbatim
 <code-snippet name="Config with closure" lang="php">
 // Use closure to merge with existing config
-Provider::create('openai:gpt-4')
+provider('my-provider')
+    ->id('openai:gpt-4')
     ->config(['existing' => 'value'])
     ->config(fn (array $config) => [...$config, 'new' => 'value']);
 
 // Or use mergeConfig shorthand
-Provider::create('openai:gpt-4')
+provider('my-provider')
+    ->id('openai:gpt-4')
     ->config(['existing' => 'value'])
     ->mergeConfig(['new' => 'value']);
 </code-snippet>

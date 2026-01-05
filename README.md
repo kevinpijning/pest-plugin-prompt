@@ -274,12 +274,13 @@ prompt('What is 2+2?')
     ->expect()
     ->toContain('4');
 
-// Provider instance
-$provider = Provider::create('openai:gpt-4')
+// Registered provider with configuration
+provider('my-gpt4')
+    ->id('openai:gpt-4')
     ->temperature(0.7);
 
 prompt('Hello')
-    ->usingProvider($provider)
+    ->usingProvider('my-gpt4')
     ->expect()
     ->toContain('Hi');
 
@@ -1320,7 +1321,7 @@ When creating or configuring providers, you can use these methods:
 Set the provider identifier (e.g., `'openai:gpt-4'`, `'anthropic:claude-3'`).
 
 ```php
-Provider::create('openai:gpt-4')
+provider('my-provider')
     ->id('openai:gpt-4o-mini');
 ```
 
@@ -1329,7 +1330,8 @@ Provider::create('openai:gpt-4')
 Set a custom label for the provider (useful in test output).
 
 ```php
-Provider::create('openai:gpt-4')
+provider('my-provider')
+    ->id('openai:gpt-4')
     ->label('OpenAI GPT-4 Production');
 ```
 
@@ -1338,7 +1340,8 @@ Provider::create('openai:gpt-4')
 Control randomness in responses (0.0 to 1.0). Lower values make responses more deterministic.
 
 ```php
-Provider::create('openai:gpt-4')
+provider('my-provider')
+    ->id('openai:gpt-4')
     ->temperature(0.7);
 ```
 
@@ -1347,7 +1350,8 @@ Provider::create('openai:gpt-4')
 Set the maximum number of tokens to generate.
 
 ```php
-Provider::create('openai:gpt-4')
+provider('my-provider')
+    ->id('openai:gpt-4')
     ->maxTokens(2000);
 ```
 
@@ -1356,7 +1360,8 @@ Provider::create('openai:gpt-4')
 Set nucleus sampling parameter (0.0 to 1.0).
 
 ```php
-Provider::create('openai:gpt-4')
+provider('my-provider')
+    ->id('openai:gpt-4')
     ->topP(0.9);
 ```
 
@@ -1365,7 +1370,8 @@ Provider::create('openai:gpt-4')
 Penalize frequent tokens (-2.0 to 2.0).
 
 ```php
-Provider::create('openai:gpt-4')
+provider('my-provider')
+    ->id('openai:gpt-4')
     ->frequencyPenalty(0.5);
 ```
 
@@ -1374,7 +1380,8 @@ Provider::create('openai:gpt-4')
 Penalize new tokens based on presence in text (-2.0 to 2.0).
 
 ```php
-Provider::create('openai:gpt-4')
+provider('my-provider')
+    ->id('openai:gpt-4')
     ->presencePenalty(0.3);
 ```
 
@@ -1383,7 +1390,8 @@ Provider::create('openai:gpt-4')
 Set stop sequences where generation should stop.
 
 ```php
-Provider::create('openai:gpt-4')
+provider('my-provider')
+    ->id('openai:gpt-4')
     ->stop(['\n', 'Human:', 'AI:']);
 ```
 
@@ -1393,19 +1401,22 @@ Set custom configuration options for the provider. Accepts either an array or a 
 
 ```php
 // Set config directly (replaces existing)
-Provider::create('openai:gpt-4')
+provider('my-provider')
+    ->id('openai:gpt-4')
     ->config([
         'apiKey' => 'custom-key',
         'baseURL' => 'https://api.example.com',
     ]);
 
 // Use closure to merge with existing config
-Provider::create('openai:gpt-4')
+provider('my-provider')
+    ->id('openai:gpt-4')
     ->config(['existing' => 'value'])
     ->config(fn (array $config) => [...$config, 'new' => 'value']);
 
 // Closure receives current config state
-Provider::create('openai:gpt-4')
+provider('my-provider')
+    ->id('openai:gpt-4')
     ->config(['tools' => [['type' => 'web_search']]])
     ->config(fn (array $config) => [
         ...$config,
@@ -1418,12 +1429,14 @@ Provider::create('openai:gpt-4')
 Shorthand for merging additional config with existing config. Equivalent to `config(fn ($c) => [...$c, ...$newConfig])`.
 
 ```php
-Provider::create('openai:gpt-4')
+provider('my-provider')
+    ->id('openai:gpt-4')
     ->config(['existing' => 'value'])
     ->mergeConfig(['new' => 'value']);
 
 // Chain multiple merges
-Provider::create('openai:gpt-4')
+provider('my-provider')
+    ->id('openai:gpt-4')
     ->mergeConfig(['a' => 1])
     ->mergeConfig(['b' => 2])
     ->mergeConfig(['c' => 3]);
@@ -1550,16 +1563,29 @@ test('all translations meet quality standards', function () {
 
 #### Provider Configuration
 
-Configure providers with specific parameters.
+Configure providers with specific parameters using the `provider()` function or inline with a closure.
 
 ```php
-test('creative writing with high temperature', function () {
-    $creativeProvider = Provider::create('openai:gpt-4')
-        ->temperature(0.9)
-        ->maxTokens(500);
+// Using global provider registration
+provider('creative-writer')
+    ->id('openai:gpt-4')
+    ->temperature(0.9)
+    ->maxTokens(500);
 
+test('creative writing with high temperature', function () {
     prompt('Write a creative story about {{topic}}.')
-        ->usingProvider($creativeProvider)
+        ->usingProvider('creative-writer')
+        ->expect(['topic' => 'space exploration'])
+        ->toContain('space');
+});
+
+// Or inline with a closure
+test('creative writing with inline provider', function () {
+    prompt('Write a creative story about {{topic}}.')
+        ->usingProvider(fn (Provider $p) => $p
+            ->id('openai:gpt-4')
+            ->temperature(0.9)
+            ->maxTokens(500))
         ->expect(['topic' => 'space exploration'])
         ->toContain('space');
 });
