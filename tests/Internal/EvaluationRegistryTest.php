@@ -7,7 +7,6 @@ use KevinPijning\Prompt\Evaluation;
 use KevinPijning\Prompt\Internal\AssertionGroupRegistry;
 use KevinPijning\Prompt\Internal\EvaluationRegistry;
 use KevinPijning\Prompt\Internal\ProviderRegistry;
-use KevinPijning\Prompt\Provider;
 
 beforeEach(function () {
     EvaluationRegistry::clear();

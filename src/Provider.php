@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace KevinPijning\Prompt;
 
+use BadMethodCallException;
 use Closure;
 use KevinPijning\Prompt\Internal\BuiltProvider;
 use Pest\Concerns\Extendable;
@@ -106,7 +107,7 @@ class Provider
     }
 
     /**
-     * @param string[] $stop
+     * @param  string[]  $stop
      */
     public function stop(?array $stop): self
     {
@@ -116,7 +117,7 @@ class Provider
     }
 
     /**
-     * @param array<string,mixed>|Closure(array<string,mixed>): array<string,mixed> $config
+     * @param  array<string,mixed>|Closure(array<string,mixed>): array<string,mixed>  $config
      */
     public function config(array|Closure $config): self
     {
@@ -126,7 +127,7 @@ class Provider
     }
 
     /**
-     * @param array<int, mixed> $arguments
+     * @param  array<int, mixed>  $arguments
      */
     public function __call(string $name, array $arguments): self
     {
@@ -140,7 +141,7 @@ class Provider
             return $this;
         }
 
-        throw new \BadMethodCallException("Method {$name} does not exist on " . static::class);
+        throw new BadMethodCallException("Method {$name} does not exist on ".static::class);
     }
 
     public function build(): BuiltProvider
