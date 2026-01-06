@@ -7,7 +7,6 @@ use KevinPijning\Prompt\Evaluation;
 use KevinPijning\Prompt\Internal\AssertionGroupRegistry;
 use KevinPijning\Prompt\Internal\EvaluationRegistry;
 use KevinPijning\Prompt\Internal\ProviderRegistry;
-use KevinPijning\Prompt\Provider;
 
 beforeEach(function () {
     EvaluationRegistry::clear();
@@ -110,7 +109,7 @@ test('prompt function can add multiple evaluations to TestContext', function () 
 });
 
 test('clear does not remove providers, only evaluations', function () {
-    $provider = Provider::create('openai:gpt-4');
+    $provider = provider()->id('openai:gpt-4');
     $evaluation = new Evaluation(['test prompt']);
 
     ProviderRegistry::add('my-provider', $provider);

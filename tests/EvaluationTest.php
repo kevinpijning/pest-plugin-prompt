@@ -199,7 +199,7 @@ test('usingProvider method can use global provider from TestContext', function (
     EvaluationRegistry::clear();
     $evaluation = new Evaluation(['prompt1']);
 
-    $globalProvider = Provider::create('openai:gpt-4')
+    $globalProvider = provider()->id('openai:gpt-4')
         ->label('Global Provider')
         ->temperature(0.8);
     ProviderRegistry::add('my-global-provider', $globalProvider);
@@ -217,7 +217,7 @@ test('usingProvider method can mix global providers, callables, and direct provi
     EvaluationRegistry::clear();
     $evaluation = new Evaluation(['prompt1']);
 
-    $globalProvider = Provider::create('openai:gpt-4');
+    $globalProvider = provider()->id('openai:gpt-4');
     ProviderRegistry::add('global', $globalProvider);
 
     $directProvider = Provider::create('anthropic:claude-3');
