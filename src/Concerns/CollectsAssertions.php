@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace KevinPijning\Prompt\Concerns;
 
 use BadMethodCallException;
+use InvalidArgumentException;
 use KevinPijning\Prompt\Assertion;
 use KevinPijning\Prompt\Helpers\AssertionGroupName;
 use KevinPijning\Prompt\Internal\AssertionGroupRegistry;
@@ -56,7 +57,15 @@ trait CollectsAssertions
         $groupName = AssertionGroupName::fromMethodName($name);
 
         if ($groupName !== null && AssertionGroupRegistry::has($groupName)) {
-            AssertionGroupRegistry::get($groupName)->apply($this, ...array_values($arguments));
+            $args = $arguments[0] ?? [];
+
+            if (! is_array($args)) {
+                throw new InvalidArgumentException(
+                    sprintf("Assertion group '%s' expects an array argument, got %s", $groupName, gettype($args))
+                );
+            }
+
+            AssertionGroupRegistry::get($groupName)->apply($this, $args);
 
             return $this;
         }

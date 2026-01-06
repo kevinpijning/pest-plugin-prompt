@@ -318,7 +318,7 @@ test('magic toXxx method expects at most one array argument', function () {
     $testCase = new TestCase([], $evaluation);
 
     $testCase->toBeKind('gentle');
-})->throws(TypeError::class);
+})->throws(InvalidArgumentException::class, "Assertion group 'be kind' expects an array argument, got string");
 
 test('magic toXxx method throws for unknown assertion group', function () {
     EvaluationRegistry::clear();

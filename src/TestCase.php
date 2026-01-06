@@ -14,8 +14,8 @@ use KevinPijning\Prompt\Internal\BuiltTestCase;
  */
 class TestCase implements AssertsPrompts
 {
-    use CollectsAssertions;
     use CanUseAssertions;
+    use CollectsAssertions;
 
     /**
      * @param  array<string,mixed>  $variables

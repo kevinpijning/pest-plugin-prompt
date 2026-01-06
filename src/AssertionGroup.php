@@ -7,14 +7,15 @@ namespace KevinPijning\Prompt;
 use KevinPijning\Prompt\Concerns\CanUseAssertions;
 use KevinPijning\Prompt\Concerns\CollectsAssertions;
 use KevinPijning\Prompt\Contracts\AssertsPrompts;
+use KevinPijning\Prompt\Helpers\ArgumentBinder;
 
 /**
  * @property-read AssertionGroup $not
  */
 final class AssertionGroup implements AssertsPrompts
 {
-    use CollectsAssertions;
     use CanUseAssertions;
+    use CollectsAssertions;
 
     /**
      * @var callable|null
@@ -33,7 +34,8 @@ final class AssertionGroup implements AssertsPrompts
     public function apply(AssertsPrompts $target, array $args = []): void
     {
         if ($this->callback !== null) {
-            ($this->callback)($target, ...array_values($args));
+            $bound = ArgumentBinder::bind($this->callback, $args);
+            ($this->callback)($target, ...$bound);
 
             return;
         }
