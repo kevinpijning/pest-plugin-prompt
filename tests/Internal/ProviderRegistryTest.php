@@ -10,7 +10,7 @@ beforeEach(function () {
 });
 
 test('ProviderRegistry can add and retrieve a provider', function () {
-    $provider = Provider::create('openai:gpt-4');
+    $provider = provider();
 
     $result = ProviderRegistry::add('openai', $provider);
 
@@ -20,7 +20,7 @@ test('ProviderRegistry can add and retrieve a provider', function () {
 });
 
 test('ProviderRegistry can store multiple providers with different names', function () {
-    $provider1 = Provider::create('openai:gpt-4');
+    $provider1 = provider()->id('openai:gpt-4');
     $provider2 = Provider::create('anthropic:claude-3');
 
     ProviderRegistry::add('openai', $provider1);
@@ -33,7 +33,7 @@ test('ProviderRegistry can store multiple providers with different names', funct
 });
 
 test('ProviderRegistry overwrites providers with the same name', function () {
-    $provider1 = Provider::create('openai:gpt-4');
+    $provider1 = provider()->id('openai:gpt-4');
     $provider2 = Provider::create('anthropic:claude-3');
 
     ProviderRegistry::add('my-provider', $provider1);

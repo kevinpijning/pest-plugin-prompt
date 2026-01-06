@@ -273,7 +273,8 @@ prompt('What is 2+2?')
     ->toContain('4');
 
 // Provider instance
-$provider = Provider::create('openai:gpt-4')
+$provider = provider()
+    ->id('openai:gpt-4')
     ->temperature(0.7);
 
 prompt('Hello')
@@ -1318,7 +1319,7 @@ When creating or configuring providers, you can use these methods:
 Set the provider identifier (e.g., `'openai:gpt-4'`, `'anthropic:claude-3'`).
 
 ```php
-Provider::create('openai:gpt-4')
+provider()
     ->id('openai:gpt-4o-mini');
 ```
 
@@ -1327,7 +1328,8 @@ Provider::create('openai:gpt-4')
 Set a custom label for the provider (useful in test output).
 
 ```php
-Provider::create('openai:gpt-4')
+provider()
+    ->id('openai:gpt-4')
     ->label('OpenAI GPT-4 Production');
 ```
 
@@ -1336,7 +1338,8 @@ Provider::create('openai:gpt-4')
 Control randomness in responses (0.0 to 1.0). Lower values make responses more deterministic.
 
 ```php
-Provider::create('openai:gpt-4')
+provider()
+    ->id('openai:gpt-4')
     ->temperature(0.7);
 ```
 
@@ -1345,7 +1348,8 @@ Provider::create('openai:gpt-4')
 Set the maximum number of tokens to generate.
 
 ```php
-Provider::create('openai:gpt-4')
+provider()
+    ->id('openai:gpt-4')
     ->maxTokens(2000);
 ```
 
@@ -1354,7 +1358,8 @@ Provider::create('openai:gpt-4')
 Set nucleus sampling parameter (0.0 to 1.0).
 
 ```php
-Provider::create('openai:gpt-4')
+provider()
+    ->id('openai:gpt-4')
     ->topP(0.9);
 ```
 
@@ -1363,7 +1368,8 @@ Provider::create('openai:gpt-4')
 Penalize frequent tokens (-2.0 to 2.0).
 
 ```php
-Provider::create('openai:gpt-4')
+provider()
+    ->id('openai:gpt-4')
     ->frequencyPenalty(0.5);
 ```
 
@@ -1372,7 +1378,8 @@ Provider::create('openai:gpt-4')
 Penalize new tokens based on presence in text (-2.0 to 2.0).
 
 ```php
-Provider::create('openai:gpt-4')
+provider()
+    ->id('openai:gpt-4')
     ->presencePenalty(0.3);
 ```
 
@@ -1381,7 +1388,8 @@ Provider::create('openai:gpt-4')
 Set stop sequences where generation should stop.
 
 ```php
-Provider::create('openai:gpt-4')
+provider()
+    ->id('openai:gpt-4')
     ->stop(['\n', 'Human:', 'AI:']);
 ```
 
@@ -1391,14 +1399,16 @@ Set custom configuration options for the provider. Accepts either an array (repl
 
 ```php
 // Replace config with array
-Provider::create('openai:gpt-4')
+provider()
+    ->id('openai:gpt-4')
     ->config([
         'apiKey' => 'custom-key',
         'baseURL' => 'https://api.example.com',
     ]);
 
 // Merge config with closure
-Provider::create('openai:gpt-4')
+provider()
+    ->id('openai:gpt-4')
     ->config(['existing' => 'value'])
     ->config(fn (array $config) => [...$config, 'apiKey' => 'custom-key']);
 ```
@@ -1409,7 +1419,7 @@ The `Provider` class uses Pest's `Extendable` trait, allowing you to add custom 
 
 ```php
 // Register a custom extension
-(new Provider)->extend('withJsonMode', function (Provider $provider): void {
+provider()->extend('withJsonMode', function (Provider $provider): void {
     $provider->config(fn (array $config) => [
         ...$config,
         'response_format' => ['type' => 'json_object'],
@@ -1417,12 +1427,13 @@ The `Provider` class uses Pest's `Extendable` trait, allowing you to add custom 
 });
 
 // Use the extension
-Provider::create('openai:gpt-4')
+provider()
+    ->id('openai:gpt-4')
     ->withJsonMode()
     ->temperature(0.7);
 
 // Create presets
-(new Provider)->extend('preset', function (Provider $provider, string $name): void {
+provider()->extend('preset', function (Provider $provider, string $name): void {
     match ($name) {
         'creative' => $provider->temperature(0.9)->topP(0.95),
         'precise' => $provider->temperature(0.1)->topP(0.1),
@@ -1430,7 +1441,8 @@ Provider::create('openai:gpt-4')
     };
 });
 
-Provider::create('openai:gpt-4')
+provider()
+    ->id('openai:gpt-4')
     ->preset('creative')
     ->maxTokens(1000);
 ```
@@ -1519,7 +1531,8 @@ Configure providers with specific parameters.
 
 ```php
 test('creative writing with high temperature', function () {
-    $creativeProvider = Provider::create('openai:gpt-4')
+    $creativeProvider = provider()
+        ->id('openai:gpt-4')
         ->temperature(0.9)
         ->maxTokens(500);
 
