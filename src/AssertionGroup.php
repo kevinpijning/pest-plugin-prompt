@@ -5,20 +5,20 @@ declare(strict_types=1);
 namespace KevinPijning\Prompt;
 
 use KevinPijning\Prompt\Concerns\CanUseAssertions;
+use KevinPijning\Prompt\Concerns\CollectsAssertions;
 
+/**
+ * @property-read AssertionGroup $not
+ */
 final class AssertionGroup
 {
     use CanUseAssertions;
+    use CollectsAssertions;
 
     /**
      * @var callable|null
      */
     private readonly mixed $callback;
-
-    /**
-     * @var Assertion[]
-     */
-    private array $assertions = [];
 
     public function __construct(
         ?callable $callback = null,
@@ -26,11 +26,12 @@ final class AssertionGroup
         $this->callback = $callback;
     }
 
-    public function assert(Assertion $assertion): self
+    /**
+     * @return Assertion[]
+     */
+    public function getAssertions(): array
     {
-        $this->assertions[] = $assertion;
-
-        return $this;
+        return $this->assertions;
     }
 
     /**
