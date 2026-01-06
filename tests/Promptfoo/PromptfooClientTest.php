@@ -3,10 +3,13 @@
 declare(strict_types=1);
 
 use KevinPijning\Prompt\Evaluation;
+use KevinPijning\Prompt\Promptfoo\CacheManager;
 use KevinPijning\Prompt\Promptfoo\PendingEvaluation;
 use KevinPijning\Prompt\Promptfoo\PromptfooClient;
 
 beforeEach(function () {
+    CacheManager::reset();
+
     $tempDir = sys_get_temp_dir();
     $files = glob($tempDir.'/promptfoo_*');
     if ($files !== false) {
@@ -16,6 +19,10 @@ beforeEach(function () {
             }
         }
     }
+});
+
+afterEach(function () {
+    CacheManager::reset();
 });
 
 test('evaluate generates config file', function () {
@@ -110,16 +117,6 @@ test('cleanup handles non-existent files gracefully', function () {
     $method->invoke($client, $pending);
 
     expect(true)->toBeTrue();
-});
-
-test('parallelCachePath is null when not running in parallel', function () {
-    $client = new PromptfooClient('test-command');
-    $reflection = new ReflectionClass(PromptfooClient::class);
-    $property = $reflection->getProperty('parallelCachePath');
-
-    $cachePath = $property->getValue($client);
-
-    expect($cachePath)->toBeNull();
 });
 
 test('generateCommand does not include cache path when not running in parallel', function () {

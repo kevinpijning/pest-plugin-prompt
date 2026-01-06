@@ -14,25 +14,10 @@ use Symfony\Component\Process\Process;
 
 final class PromptfooClient implements EvaluatorClient
 {
-    private ?string $parallelCachePath = null;
-
     public function __construct(
         private readonly string $promptfooCommand,
         private readonly int $promptfooTimeout = 300,
-    ) {
-        $this->initializeParallelCache();
-    }
-
-    private function initializeParallelCache(): void
-    {
-        if (Plugin::isRunningInParallel()) {
-            $this->parallelCachePath = sprintf(
-                '%s/promptfoo_parallel_cache_%s',
-                sys_get_temp_dir(),
-                getmypid()
-            );
-        }
-    }
+    ) {}
 
     public function evaluate(Evaluation $evaluation): EvaluationResult
     {
@@ -59,6 +44,10 @@ final class PromptfooClient implements EvaluatorClient
      */
     private function execute(array $command): void
     {
+        if (Plugin::isParallelWorker()) {
+            $_ENV['PROMPTFOO_CACHE_PATH'] = CacheManager::initializeParallelCache();
+        }
+
         $process = new Process($command, env: $_ENV);
 
         $process->setTimeout($this->promptfooTimeout);
@@ -105,13 +94,6 @@ final class PromptfooClient implements EvaluatorClient
             '--output', $pendingEvaluation->outputPath,
         ];
 
-        // Add per-process cache path when running in parallel
-        if ($this->parallelCachePath !== null) {
-            $command[] = '--cache-path';
-            $command[] = $this->parallelCachePath;
-        }
-
-        // Add user-specified output path if provided
         if ($pendingEvaluation->userOutputPath !== null) {
             $command[] = '--output';
             $command[] = $pendingEvaluation->userOutputPath;

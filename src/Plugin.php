@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace KevinPijning\Prompt;
 
 use KevinPijning\Prompt\Internal\TestLifecycle;
-use KevinPijning\Prompt\Promptfoo\CacheMerger;
+use KevinPijning\Prompt\Promptfoo\CacheManager;
 use KevinPijning\Prompt\Promptfoo\Promptfoo;
 use Pest\Contracts\Plugins\Bootable;
 use Pest\Contracts\Plugins\HandlesArguments;
@@ -35,17 +35,14 @@ final class Plugin implements Bootable, HandlesArguments, Terminable
 
     public function terminate(): void
     {
-        // Only run in main process, not in workers
-        if (Parallel::isEnabled() && Parallel::isWorker()) {
-            return;
+        if (Parallel::isEnabled() && ! Parallel::isWorker()) {
+            CacheManager::mergeParallelCaches();
         }
-
-        CacheMerger::mergeParallelCaches();
     }
 
-    public static function isRunningInParallel(): bool
+    public static function isParallelWorker(): bool
     {
-        return Parallel::isEnabled();
+        return Parallel::isWorker();
     }
 
     /**

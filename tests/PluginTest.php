@@ -71,5 +71,5 @@ test('in method returns correct path', function () {
 });
 
 test('isRunningInParallel delegates to Pest Parallel class', function () {
-    expect(Plugin::isRunningInParallel())->toBeBool();
+    expect(Plugin::isParallelWorker())->toBeBool();
 });
