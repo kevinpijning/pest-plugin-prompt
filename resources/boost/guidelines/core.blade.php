@@ -189,6 +189,8 @@ prompt('Extract person info from: \{\{text\}\}')
 
 Chain methods: `id()`, `label()`, `temperature()`, `maxTokens()`, `topP()`, `frequencyPenalty()`, `presencePenalty()`, `stop()`, `config()`.
 
+The `config()` method accepts either an array (replaces config) or a closure (receives current config for merging).
+
 @verbatim
 <code-snippet name="Provider config" lang="php">
 use \KevinPijning\Prompt\Provider;
@@ -196,6 +198,46 @@ use \KevinPijning\Prompt\Provider;
 $provider = Provider::create('openai:gpt-4')
     ->temperature(0.7)
     ->maxTokens(2000);
+
+// Config with array (replaces)
+$provider->config(['apiKey' => 'custom-key']);
+
+// Config with closure (merges)
+$provider->config(fn (array $config) => [...$config, 'baseURL' => 'https://api.example.com']);
+</code-snippet>
+@endverbatim
+
+### Extending Provider
+
+The `Provider` class uses Pest's `Extendable` trait for custom methods:
+
+@verbatim
+<code-snippet name="Provider extensions" lang="php">
+use \KevinPijning\Prompt\Provider;
+
+// Register extension
+(new Provider)->extend('withJsonMode', function (Provider $provider): void {
+    $provider->config(fn (array $config) => [
+        ...$config,
+        'response_format' => ['type' => 'json_object'],
+    ]);
+});
+
+// Use extension
+Provider::create('openai:gpt-4')
+    ->withJsonMode()
+    ->temperature(0.7);
+
+// Create presets
+(new Provider)->extend('preset', function (Provider $provider, string $name): void {
+    match ($name) {
+        'creative' => $provider->temperature(0.9)->topP(0.95),
+        'precise' => $provider->temperature(0.1)->topP(0.1),
+        default => null,
+    };
+});
+
+Provider::create('openai:gpt-4')->preset('creative');
 </code-snippet>
 @endverbatim
 

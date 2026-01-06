@@ -1387,14 +1387,52 @@ Provider::create('openai:gpt-4')
 
 #### `config()`
 
-Set custom configuration options for the provider.
+Set custom configuration options for the provider. Accepts either an array (replaces config) or a closure (receives current config for merging).
 
 ```php
+// Replace config with array
 Provider::create('openai:gpt-4')
     ->config([
         'apiKey' => 'custom-key',
         'baseURL' => 'https://api.example.com',
     ]);
+
+// Merge config with closure
+Provider::create('openai:gpt-4')
+    ->config(['existing' => 'value'])
+    ->config(fn (array $config) => [...$config, 'apiKey' => 'custom-key']);
+```
+
+#### Extending Provider
+
+The `Provider` class uses Pest's `Extendable` trait, allowing you to add custom methods:
+
+```php
+// Register a custom extension
+(new Provider)->extend('withJsonMode', function (Provider $provider): void {
+    $provider->config(fn (array $config) => [
+        ...$config,
+        'response_format' => ['type' => 'json_object'],
+    ]);
+});
+
+// Use the extension
+Provider::create('openai:gpt-4')
+    ->withJsonMode()
+    ->temperature(0.7);
+
+// Create presets
+(new Provider)->extend('preset', function (Provider $provider, string $name): void {
+    match ($name) {
+        'creative' => $provider->temperature(0.9)->topP(0.95),
+        'precise' => $provider->temperature(0.1)->topP(0.1),
+        default => null,
+    };
+});
+
+Provider::create('openai:gpt-4')
+    ->preset('creative')
+    ->maxTokens(1000);
 ```
 
 ### Usage Examples
