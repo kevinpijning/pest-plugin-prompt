@@ -14,9 +14,9 @@ test('toPassJavascript creates a javascript assertion', function () {
     $result = $testCase->toPassJavascript($code);
 
     expect($result)->toBe($testCase)
-        ->and($testCase->build()->assertions)->toHaveCount(1);
+        ->and($testCase->build()->assertions())->toHaveCount(1);
 
-    $assertion = $testCase->build()->assertions[0];
+    $assertion = $testCase->build()->assertions()[0];
     expect($assertion)->toBeInstanceOf(Assertion::class)
         ->and($assertion->type)->toBe('javascript')
         ->and($assertion->value)->toBe($code);
@@ -29,7 +29,7 @@ test('toPassJavascript accepts threshold parameter', function () {
 
     $testCase->toPassJavascript($code, threshold: 0.5);
 
-    $assertion = $testCase->build()->assertions[0];
+    $assertion = $testCase->build()->assertions()[0];
     expect($assertion->threshold)->toBe(0.5);
 });
 
@@ -41,8 +41,11 @@ test('toPassJavascript accepts config parameter', function () {
 
     $testCase->toPassJavascript($code, config: $config);
 
-    $assertion = $testCase->build()->assertions[0];
-    expect($assertion->config)->toBe($config);
+    $assertion = $testCase->build()->assertions()[0];
+    // User config is preserved alongside internal assertion_id
+    expect($assertion->config)->toHaveKey('minLength')
+        ->and($assertion->config['minLength'])->toBe(10)
+        ->and($assertion->config)->toHaveKey(Assertion::INTERNAL_CONFIG_KEY);
 });
 
 test('toPassPython creates a python assertion', function () {
@@ -53,9 +56,9 @@ test('toPassPython creates a python assertion', function () {
     $result = $testCase->toPassPython($code);
 
     expect($result)->toBe($testCase)
-        ->and($testCase->build()->assertions)->toHaveCount(1);
+        ->and($testCase->build()->assertions())->toHaveCount(1);
 
-    $assertion = $testCase->build()->assertions[0];
+    $assertion = $testCase->build()->assertions()[0];
     expect($assertion)->toBeInstanceOf(Assertion::class)
         ->and($assertion->type)->toBe('python')
         ->and($assertion->value)->toBe($code);
@@ -68,7 +71,7 @@ test('toPassPython accepts threshold parameter', function () {
 
     $testCase->toPassPython($code, threshold: 0.5);
 
-    $assertion = $testCase->build()->assertions[0];
+    $assertion = $testCase->build()->assertions()[0];
     expect($assertion->threshold)->toBe(0.5);
 });
 
@@ -80,8 +83,11 @@ test('toPassPython accepts config parameter', function () {
 
     $testCase->toPassPython($code, config: $config);
 
-    $assertion = $testCase->build()->assertions[0];
-    expect($assertion->config)->toBe($config);
+    $assertion = $testCase->build()->assertions()[0];
+    // User config is preserved alongside internal assertion_id
+    expect($assertion->config)->toHaveKey('minLength')
+        ->and($assertion->config['minLength'])->toBe(10)
+        ->and($assertion->config)->toHaveKey(Assertion::INTERNAL_CONFIG_KEY);
 });
 
 test('toPassWebhook creates a webhook assertion', function () {
@@ -92,9 +98,9 @@ test('toPassWebhook creates a webhook assertion', function () {
     $result = $testCase->toPassWebhook($url);
 
     expect($result)->toBe($testCase)
-        ->and($testCase->build()->assertions)->toHaveCount(1);
+        ->and($testCase->build()->assertions())->toHaveCount(1);
 
-    $assertion = $testCase->build()->assertions[0];
+    $assertion = $testCase->build()->assertions()[0];
     expect($assertion)->toBeInstanceOf(Assertion::class)
         ->and($assertion->type)->toBe('webhook')
         ->and($assertion->value)->toBe($url);

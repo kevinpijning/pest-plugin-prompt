@@ -28,7 +28,7 @@ test('it returns an empty array of assertions initially', function () {
     $variables = ['key1' => 'value1', 'key2' => 'value2'];
     $testCase = new TestCase($variables, $evaluation);
 
-    expect($testCase->build()->assertions)->toBe([]);
+    expect($testCase->build()->assertions())->toBe([]);
 });
 
 test('it can add an assertion', function () {
@@ -39,9 +39,12 @@ test('it can add an assertion', function () {
 
     $result = $testCase->assert($assertion);
 
+    // The stored assertion is a new instance with internal ID attached
     expect($result)->toBe($testCase)
-        ->and($testCase->build()->assertions)->toHaveCount(1)
-        ->and($testCase->build()->assertions[0])->toBe($assertion);
+        ->and($testCase->build()->assertions())->toHaveCount(1)
+        ->and($testCase->build()->assertions()[0]->type)->toBe($assertion->type)
+        ->and($testCase->build()->assertions()[0]->value)->toBe($assertion->value)
+        ->and($testCase->build()->assertions()[0]->getInternalId())->not->toBeNull();
 });
 
 test('it can add multiple assertions', function () {
@@ -54,9 +57,12 @@ test('it can add multiple assertions', function () {
     $testCase->assert($assertion1);
     $testCase->assert($assertion2);
 
-    expect($testCase->build()->assertions)->toHaveCount(2)
-        ->and($testCase->build()->assertions[0])->toBe($assertion1)
-        ->and($testCase->build()->assertions[1])->toBe($assertion2);
+    // Each stored assertion is a new instance with internal ID attached
+    expect($testCase->build()->assertions())->toHaveCount(2)
+        ->and($testCase->build()->assertions()[0]->type)->toBe($assertion1->type)
+        ->and($testCase->build()->assertions()[0]->value)->toBe($assertion1->value)
+        ->and($testCase->build()->assertions()[1]->type)->toBe($assertion2->type)
+        ->and($testCase->build()->assertions()[1]->value)->toBe($assertion2->value);
 });
 
 test('and method returns a new TestCase from evaluation', function () {
@@ -85,8 +91,8 @@ test('and method can be chained with assertions', function () {
 
     expect($result)->toBeInstanceOf(TestCase::class)
         ->and($result)->not->toBe($testCase)
-        ->and($testCase->build()->assertions)->toHaveCount(1)
-        ->and($result->build()->assertions)->toHaveCount(1);
+        ->and($testCase->build()->assertions())->toHaveCount(1)
+        ->and($result->build()->assertions())->toHaveCount(1);
 });
 
 test('expect method returns a new TestCase from evaluation', function () {
@@ -115,8 +121,8 @@ test('expect method can be chained with assertions', function () {
 
     expect($result)->toBeInstanceOf(TestCase::class)
         ->and($result)->not->toBe($testCase)
-        ->and($testCase->build()->assertions)->toHaveCount(1)
-        ->and($result->build()->assertions)->toHaveCount(1);
+        ->and($testCase->build()->assertions())->toHaveCount(1)
+        ->and($result->build()->assertions())->toHaveCount(1);
 });
 
 test('expect method can be called with empty variables array', function () {
@@ -178,8 +184,8 @@ test('expect method callback can be used to add assertions', function () {
             ->toContain('value');
     });
 
-    expect($result->build()->assertions)->toHaveCount(2)
-        ->and($testCase->build()->assertions)->toHaveCount(0);
+    expect($result->build()->assertions())->toHaveCount(2)
+        ->and($testCase->build()->assertions())->toHaveCount(0);
 });
 
 test('expect method works without callback', function () {
@@ -236,8 +242,8 @@ test('and method callback can be used to add assertions', function () {
             ->toContain('value');
     });
 
-    expect($result->build()->assertions)->toHaveCount(2)
-        ->and($testCase->build()->assertions)->toHaveCount(0);
+    expect($result->build()->assertions())->toHaveCount(2)
+        ->and($testCase->build()->assertions())->toHaveCount(0);
 });
 
 test('and method works without callback', function () {
@@ -279,11 +285,11 @@ test('magic toXxx method applies named assertion group without arguments', funct
     $built = $testCase->build();
 
     expect($result)->toBe($testCase)
-        ->and($built->assertions)->toHaveCount(2)
-        ->and($built->assertions[0]->type)->toBe('icontains')
-        ->and($built->assertions[0]->value)->toBe('hello')
-        ->and($built->assertions[1]->type)->toBe('llm-rubric')
-        ->and($built->assertions[1]->value)->toBe('friendly');
+        ->and($built->assertions())->toHaveCount(2)
+        ->and($built->assertions()[0]->type)->toBe('icontains')
+        ->and($built->assertions()[0]->value)->toBe('hello')
+        ->and($built->assertions()[1]->type)->toBe('llm-rubric')
+        ->and($built->assertions()[1]->value)->toBe('friendly');
 });
 
 test('magic toXxx method applies named assertion group with arguments', function () {
@@ -302,9 +308,9 @@ test('magic toXxx method applies named assertion group with arguments', function
     $built = $testCase->build();
 
     expect($result)->toBe($testCase)
-        ->and($built->assertions)->toHaveCount(2)
-        ->and($built->assertions[0]->value)->toBe('gentle')
-        ->and($built->assertions[1]->value)->toBe('be gentle');
+        ->and($built->assertions())->toHaveCount(2)
+        ->and($built->assertions()[0]->value)->toBe('gentle')
+        ->and($built->assertions()[1]->value)->toBe('be gentle');
 });
 
 test('magic toXxx method expects at most one array argument', function () {

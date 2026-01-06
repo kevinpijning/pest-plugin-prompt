@@ -396,3 +396,164 @@ test('encodeOutput returns string as-is', function () {
     expect($result)->toBeString()
         ->and($result)->toBe($string);
 });
+
+test('findSourceLocation maps duplicate assertions to correct source locations via ID', function () {
+    // Arrange: two tracked assertions with same type/value but different IDs/locations
+    $location1 = new KevinPijning\Prompt\Helpers\SourceLocation('/path/to/Test.php', 10);
+    $location2 = new KevinPijning\Prompt\Helpers\SourceLocation('/path/to/Test.php', 20);
+
+    $assertion1 = new Assertion(
+        type: 'contains',
+        value: 'hello',
+        config: [Assertion::INTERNAL_CONFIG_KEY => [Assertion::INTERNAL_ASSERTION_ID_KEY => 'id-1']],
+    );
+    $assertion2 = new Assertion(
+        type: 'contains',
+        value: 'hello', // Same type/value!
+        config: [Assertion::INTERNAL_CONFIG_KEY => [Assertion::INTERNAL_ASSERTION_ID_KEY => 'id-2']],
+    );
+
+    $tracked1 = new KevinPijning\Prompt\Internal\TrackedAssertion($assertion1, $location1);
+    $tracked2 = new KevinPijning\Prompt\Internal\TrackedAssertion($assertion2, $location2);
+
+    // Set up TestLifecycle with both tracked assertions via reflection
+    $reflection = new ReflectionClass(TestLifecycle::class);
+    $property = $reflection->getProperty('currentTrackedAssertions');
+    $property->setValue(null, [$tracked1, $tracked2]);
+
+    $method = $reflection->getMethod('findSourceLocation');
+
+    // Act: simulate promptfoo returning a failure for the SECOND assertion (id-2)
+    $returnedAssertion = new Assertion(
+        type: 'contains',
+        value: 'hello',
+        config: [Assertion::INTERNAL_CONFIG_KEY => [Assertion::INTERNAL_ASSERTION_ID_KEY => 'id-2']],
+    );
+
+    $result = $method->invoke(null, $returnedAssertion);
+
+    // Assert: should map to location2 (line 20), NOT location1 (line 10)
+    expect($result->file)->toBe('/path/to/Test.php')
+        ->and($result->line)->toBe(20);
+
+    // Cleanup
+    $property->setValue(null, []);
+});
+
+test('findSourceLocation falls back to type+value when no ID present', function () {
+    // Arrange: tracked assertion without ID
+    $location = new KevinPijning\Prompt\Helpers\SourceLocation('/path/to/Test.php', 15);
+    $assertion = new Assertion(type: 'contains', value: 'test');
+    $tracked = new KevinPijning\Prompt\Internal\TrackedAssertion($assertion, $location);
+
+    $reflection = new ReflectionClass(TestLifecycle::class);
+    $property = $reflection->getProperty('currentTrackedAssertions');
+    $property->setValue(null, [$tracked]);
+
+    $method = $reflection->getMethod('findSourceLocation');
+
+    // Act: returned assertion without ID
+    $returnedAssertion = new Assertion(type: 'contains', value: 'test');
+    $result = $method->invoke(null, $returnedAssertion);
+
+    // Assert: should match by type+value
+    expect($result->file)->toBe('/path/to/Test.php')
+        ->and($result->line)->toBe(15);
+
+    // Cleanup
+    $property->setValue(null, []);
+});
+
+test('findSourceLocation returns fallback when no match found', function () {
+    $reflection = new ReflectionClass(TestLifecycle::class);
+    $property = $reflection->getProperty('currentTrackedAssertions');
+    $property->setValue(null, []);
+
+    $method = $reflection->getMethod('findSourceLocation');
+
+    $returnedAssertion = new Assertion(type: 'contains', value: 'nonexistent');
+    $result = $method->invoke(null, $returnedAssertion);
+
+    // Assert: should return fallback location (TestLifecycle.php)
+    expect($result->file)->toContain('TestLifecycle.php');
+
+    // Cleanup
+    $property->setValue(null, []);
+});
+
+test('collectTrackedAssertions includes default test case assertions', function () {
+    $reflection = new ReflectionClass(TestLifecycle::class);
+    $method = $reflection->getMethod('collectTrackedAssertions');
+
+    // Create tracked assertions for default test case
+    $defaultAssertion = new Assertion(type: 'llm-rubric', value: 'default assertion');
+    $defaultTracked = new KevinPijning\Prompt\Internal\TrackedAssertion(
+        $defaultAssertion,
+        new KevinPijning\Prompt\Helpers\SourceLocation('/path/to/Test.php', 5)
+    );
+
+    // Create tracked assertions for regular test case
+    $regularAssertion = new Assertion(type: 'contains', value: 'regular assertion');
+    $regularTracked = new KevinPijning\Prompt\Internal\TrackedAssertion(
+        $regularAssertion,
+        new KevinPijning\Prompt\Helpers\SourceLocation('/path/to/Test.php', 10)
+    );
+
+    // Build test cases
+    $defaultTestCase = new KevinPijning\Prompt\Internal\BuiltTestCase(
+        variables: ['default' => 'value'],
+        trackedAssertions: [$defaultTracked]
+    );
+
+    $regularTestCase = new KevinPijning\Prompt\Internal\BuiltTestCase(
+        variables: ['key' => 'value'],
+        trackedAssertions: [$regularTracked]
+    );
+
+    // Build evaluation with both default and regular test cases
+    $builtEvaluation = new KevinPijning\Prompt\Internal\BuiltEvaluation(
+        description: 'Test',
+        prompts: ['test prompt'],
+        providers: [],
+        testCases: [$regularTestCase],
+        defaultTestCase: $defaultTestCase
+    );
+
+    $result = $method->invoke(null, $builtEvaluation);
+
+    // Should include both default and regular assertions
+    expect($result)->toHaveCount(2)
+        ->and($result[0]->assertion->type)->toBe('llm-rubric')
+        ->and($result[0]->assertion->value)->toBe('default assertion')
+        ->and($result[1]->assertion->type)->toBe('contains')
+        ->and($result[1]->assertion->value)->toBe('regular assertion');
+});
+
+test('collectTrackedAssertions works without default test case', function () {
+    $reflection = new ReflectionClass(TestLifecycle::class);
+    $method = $reflection->getMethod('collectTrackedAssertions');
+
+    $regularAssertion = new Assertion(type: 'contains', value: 'test');
+    $regularTracked = new KevinPijning\Prompt\Internal\TrackedAssertion(
+        $regularAssertion,
+        new KevinPijning\Prompt\Helpers\SourceLocation('/path/to/Test.php', 10)
+    );
+
+    $regularTestCase = new KevinPijning\Prompt\Internal\BuiltTestCase(
+        variables: ['key' => 'value'],
+        trackedAssertions: [$regularTracked]
+    );
+
+    $builtEvaluation = new KevinPijning\Prompt\Internal\BuiltEvaluation(
+        description: 'Test',
+        prompts: ['test prompt'],
+        providers: [],
+        testCases: [$regularTestCase],
+        defaultTestCase: null
+    );
+
+    $result = $method->invoke(null, $builtEvaluation);
+
+    expect($result)->toHaveCount(1)
+        ->and($result[0]->assertion->type)->toBe('contains');
+});

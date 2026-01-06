@@ -13,9 +13,9 @@ test('toBeScoredByPi creates a pi assertion', function () {
     $result = $testCase->toBeScoredByPi('Is the response helpful?', threshold: 0.8);
 
     expect($result)->toBe($testCase)
-        ->and($testCase->build()->assertions)->toHaveCount(1);
+        ->and($testCase->build()->assertions())->toHaveCount(1);
 
-    $assertion = $testCase->build()->assertions[0];
+    $assertion = $testCase->build()->assertions()[0];
     expect($assertion)->toBeInstanceOf(Assertion::class)
         ->and($assertion->type)->toBe('pi')
         ->and($assertion->value)->toBe('Is the response helpful?')
@@ -28,6 +28,6 @@ test('toBeScoredByPi can be called without threshold', function () {
 
     $testCase->toBeScoredByPi('Is the response helpful?');
 
-    $assertion = $testCase->build()->assertions[0];
+    $assertion = $testCase->build()->assertions()[0];
     expect($assertion->threshold)->toBeNull();
 });

@@ -15,9 +15,9 @@ test('toEqual creates an assertion with default parameters', function () {
     $result = $testCase->toEqual($expectedValue);
 
     expect($result)->toBe($testCase)
-        ->and($testCase->build()->assertions)->toHaveCount(1);
+        ->and($testCase->build()->assertions())->toHaveCount(1);
 
-    $assertion = $testCase->build()->assertions[0];
+    $assertion = $testCase->build()->assertions()[0];
 
     expect($assertion)->toBeInstanceOf(Assertion::class)
         ->and($assertion->type)->toBe('equals')
@@ -35,9 +35,9 @@ test('toEqual can be chained', function () {
         ->toEqual('second value');
 
     expect($result)->toBe($testCase)
-        ->and($testCase->build()->assertions)->toHaveCount(2);
+        ->and($testCase->build()->assertions())->toHaveCount(2);
 
-    $assertions = $testCase->build()->assertions;
+    $assertions = $testCase->build()->assertions();
 
     expect($assertions[0]->value)->toBe('first value')
         ->and($assertions[1]->value)->toBe('second value')
@@ -51,8 +51,8 @@ test('toEqual accepts integer values', function () {
 
     $testCase->toEqual(42);
 
-    expect($testCase->build()->assertions)->toHaveCount(1);
-    $assertion = $testCase->build()->assertions[0];
+    expect($testCase->build()->assertions())->toHaveCount(1);
+    $assertion = $testCase->build()->assertions()[0];
     expect($assertion->type)->toBe('equals')
         ->and($assertion->value)->toBe(42);
 });
@@ -63,8 +63,8 @@ test('toEqual accepts float values', function () {
 
     $testCase->toEqual(3.14);
 
-    expect($testCase->build()->assertions)->toHaveCount(1);
-    $assertion = $testCase->build()->assertions[0];
+    expect($testCase->build()->assertions())->toHaveCount(1);
+    $assertion = $testCase->build()->assertions()[0];
     expect($assertion->type)->toBe('equals')
         ->and($assertion->value)->toBe(3.14);
 });
@@ -75,8 +75,8 @@ test('toEqual accepts boolean values', function () {
 
     $testCase->toEqual(true);
 
-    expect($testCase->build()->assertions)->toHaveCount(1);
-    $assertion = $testCase->build()->assertions[0];
+    expect($testCase->build()->assertions())->toHaveCount(1);
+    $assertion = $testCase->build()->assertions()[0];
     expect($assertion->type)->toBe('equals')
         ->and($assertion->value)->toBe(true);
 });
@@ -88,8 +88,8 @@ test('toEqual accepts array values', function () {
 
     $testCase->toEqual($expectedArray);
 
-    expect($testCase->build()->assertions)->toHaveCount(1);
-    $assertion = $testCase->build()->assertions[0];
+    expect($testCase->build()->assertions())->toHaveCount(1);
+    $assertion = $testCase->build()->assertions()[0];
     expect($assertion->type)->toBe('equals')
         ->and($assertion->value)->toBe($expectedArray);
 });
@@ -100,8 +100,8 @@ test('toEqual accepts null values', function () {
 
     $testCase->toEqual(null);
 
-    expect($testCase->build()->assertions)->toHaveCount(1);
-    $assertion = $testCase->build()->assertions[0];
+    expect($testCase->build()->assertions())->toHaveCount(1);
+    $assertion = $testCase->build()->assertions()[0];
     expect($assertion->type)->toBe('equals')
         ->and($assertion->value)->toBeNull();
 });
@@ -112,8 +112,8 @@ test('toBe is an alias for toEqual', function () {
 
     $testCase->toBe('first value');
 
-    expect($testCase->build()->assertions)->toHaveCount(1);
-    $assertion = $testCase->build()->assertions[0];
+    expect($testCase->build()->assertions())->toHaveCount(1);
+    $assertion = $testCase->build()->assertions()[0];
     expect($assertion->type)->toBe('equals')
         ->and($assertion->value)->toBe('first value');
 });

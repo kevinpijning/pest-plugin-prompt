@@ -13,9 +13,9 @@ test('toBeJson creates an is-json assertion', function () {
     $result = $testCase->toBeJson();
 
     expect($result)->toBe($testCase)
-        ->and($testCase->build()->assertions)->toHaveCount(1);
+        ->and($testCase->build()->assertions())->toHaveCount(1);
 
-    $assertion = $testCase->build()->assertions[0];
+    $assertion = $testCase->build()->assertions()[0];
     expect($assertion)->toBeInstanceOf(Assertion::class)
         ->and($assertion->type)->toBe('is-json')
         ->and($assertion->value)->toBeNull();
@@ -28,7 +28,7 @@ test('toBeJson accepts schema parameter', function () {
 
     $testCase->toBeJson($schema);
 
-    $assertion = $testCase->build()->assertions[0];
+    $assertion = $testCase->build()->assertions()[0];
     expect($assertion->value)->toBe($schema);
 });
 
@@ -39,9 +39,9 @@ test('toBeHtml creates an is-html assertion', function () {
     $result = $testCase->toBeHtml();
 
     expect($result)->toBe($testCase)
-        ->and($testCase->build()->assertions)->toHaveCount(1);
+        ->and($testCase->build()->assertions())->toHaveCount(1);
 
-    $assertion = $testCase->build()->assertions[0];
+    $assertion = $testCase->build()->assertions()[0];
     expect($assertion->type)->toBe('is-html');
 });
 
@@ -52,9 +52,9 @@ test('toBeSql creates an is-sql assertion', function () {
     $result = $testCase->toBeSql();
 
     expect($result)->toBe($testCase)
-        ->and($testCase->build()->assertions)->toHaveCount(1);
+        ->and($testCase->build()->assertions())->toHaveCount(1);
 
-    $assertion = $testCase->build()->assertions[0];
+    $assertion = $testCase->build()->assertions()[0];
     expect($assertion->type)->toBe('is-sql');
 });
 
@@ -65,7 +65,7 @@ test('toBeSql accepts config parameter with databaseType', function () {
 
     $testCase->toBeSql($config);
 
-    $assertion = $testCase->build()->assertions[0];
+    $assertion = $testCase->build()->assertions()[0];
     expect($assertion->value)->toBe($config);
 });
 
@@ -76,9 +76,9 @@ test('toBeXml creates an is-xml assertion', function () {
     $result = $testCase->toBeXml();
 
     expect($result)->toBe($testCase)
-        ->and($testCase->build()->assertions)->toHaveCount(1);
+        ->and($testCase->build()->assertions())->toHaveCount(1);
 
-    $assertion = $testCase->build()->assertions[0];
+    $assertion = $testCase->build()->assertions()[0];
     expect($assertion->type)->toBe('is-xml');
 });
 
@@ -89,7 +89,7 @@ test('toBeXml accepts config parameter with requiredElements', function () {
 
     $testCase->toBeXml($config);
 
-    $assertion = $testCase->build()->assertions[0];
+    $assertion = $testCase->build()->assertions()[0];
     expect($assertion->value)->toBe($config);
 });
 
@@ -104,5 +104,5 @@ test('can chain validation methods', function () {
         ->toBeXml();
 
     expect($result)->toBe($testCase)
-        ->and($testCase->build()->assertions)->toHaveCount(4);
+        ->and($testCase->build()->assertions())->toHaveCount(4);
 });

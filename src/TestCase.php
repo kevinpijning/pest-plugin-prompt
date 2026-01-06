@@ -9,8 +9,10 @@ use InvalidArgumentException;
 use KevinPijning\Prompt\Concerns\CanEnclose;
 use KevinPijning\Prompt\Concerns\CanUseAssertions;
 use KevinPijning\Prompt\Helpers\AssertionGroupName;
+use KevinPijning\Prompt\Helpers\SourceLocation;
 use KevinPijning\Prompt\Internal\AssertionGroupRegistry;
 use KevinPijning\Prompt\Internal\BuiltTestCase;
+use KevinPijning\Prompt\Internal\TrackedAssertion;
 use RuntimeException;
 
 /**
@@ -21,8 +23,8 @@ class TestCase
     use CanEnclose;
     use CanUseAssertions;
 
-    /** @var Assertion[] */
-    private array $assertions = [];
+    /** @var TrackedAssertion[] */
+    private array $trackedAssertions = [];
 
     private bool $shouldNegateNextAssertion = false;
 
@@ -36,14 +38,24 @@ class TestCase
 
     public function assert(Assertion $assertion): self
     {
-        if (! $this->shouldNegateNextAssertion) {
-            $this->assertions[] = $assertion;
-
-            return $this;
-        }
+        $finalAssertion = $this->shouldNegateNextAssertion
+            ? $assertion->negate()
+            : $assertion;
 
         $this->shouldNegateNextAssertion = false;
-        $this->assertions[] = $assertion->negate();
+
+        $sourceLocation = SourceLocation::capture();
+        $assertionIndex = count($this->trackedAssertions);
+
+        // Attach internal ID for unambiguous source location mapping
+        $assertionWithId = $sourceLocation instanceof SourceLocation
+            ? $finalAssertion->withInternalId($sourceLocation->file, $sourceLocation->line, $assertionIndex)
+            : $finalAssertion;
+
+        $this->trackedAssertions[] = new TrackedAssertion(
+            assertion: $assertionWithId,
+            sourceLocation: $sourceLocation,
+        );
 
         return $this;
     }
@@ -117,7 +129,7 @@ class TestCase
     {
         return new BuiltTestCase(
             variables: $this->variables,
-            assertions: $this->assertions,
+            trackedAssertions: $this->trackedAssertions,
         );
     }
 }

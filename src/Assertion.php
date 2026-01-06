@@ -12,6 +12,16 @@ namespace KevinPijning\Prompt;
 class Assertion
 {
     /**
+     * Internal config key namespace for pest-plugin-prompt metadata.
+     */
+    public const string INTERNAL_CONFIG_KEY = '__pest_plugin_prompt';
+
+    /**
+     * Key for the unique assertion ID within the internal config namespace.
+     */
+    public const string INTERNAL_ASSERTION_ID_KEY = 'assertion_id';
+
+    /**
      * @param  string  $type  Type of assertion
      * @param  mixed  $value  The expected value, if applicable
      * @param  float|null  $threshold  Threshold value for similar, cost, javascript, python assertions
@@ -58,5 +68,40 @@ class Assertion
         }
 
         return $prefix.$type;
+    }
+
+    /**
+     * Create a new Assertion with an internal assertion ID embedded in config.
+     *
+     * @param  string  $file  The source file path
+     * @param  int  $line  The source line number
+     * @param  int  $index  The assertion index within the test case
+     */
+    public function withInternalId(string $file, int $line, int $index): self
+    {
+        $assertionId = sha1(sprintf('%s:%d:%d', $file, $line, $index));
+
+        return new self(
+            type: $this->type,
+            value: $this->value,
+            threshold: $this->threshold,
+            weight: $this->weight,
+            provider: $this->provider,
+            rubricPrompt: $this->rubricPrompt,
+            config: array_merge(
+                $this->config ?? [],
+                [self::INTERNAL_CONFIG_KEY => [self::INTERNAL_ASSERTION_ID_KEY => $assertionId]],
+            ),
+            transform: $this->transform,
+            metric: $this->metric,
+        );
+    }
+
+    /**
+     * Get the internal assertion ID if present.
+     */
+    public function getInternalId(): ?string
+    {
+        return $this->config[self::INTERNAL_CONFIG_KEY][self::INTERNAL_ASSERTION_ID_KEY] ?? null;
     }
 }

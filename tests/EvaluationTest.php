@@ -293,7 +293,7 @@ test('alwaysExpect method can be chained with assertion methods', function () {
         ->toBeJudged('the source and output language are always mentioned');
 
     expect($result)->toBeInstanceOf(TestCase::class)
-        ->and($result->build()->assertions)->toHaveCount(2);
+        ->and($result->build()->assertions())->toHaveCount(2);
 });
 
 test('default test case is NOT added to testCases array', function () {
@@ -345,7 +345,7 @@ test('expect method callback can be used to add assertions', function () {
             ->toContain('value');
     });
 
-    expect($testCase->build()->assertions)->toHaveCount(2);
+    expect($testCase->build()->assertions())->toHaveCount(2);
 });
 
 test('expect method works without callback', function () {
@@ -393,7 +393,7 @@ test('alwaysExpect method callback can be used to add assertions', function () {
             ->toBeJudged('should be professional');
     });
 
-    expect($testCase->build()->assertions)->toHaveCount(2);
+    expect($testCase->build()->assertions())->toHaveCount(2);
 });
 
 test('alwaysExpect method callback is called on subsequent calls with existing test case', function () {
@@ -413,7 +413,7 @@ test('alwaysExpect method callback is called on subsequent calls with existing t
 
     expect($testCase1)->toBe($testCase2)
         ->and($callbackCount)->toBe(2)
-        ->and($testCase1->build()->assertions)->toHaveCount(2);
+        ->and($testCase1->build()->assertions())->toHaveCount(2);
 });
 
 test('alwaysExpect method works without callback', function () {
