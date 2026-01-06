@@ -6,14 +6,15 @@ namespace KevinPijning\Prompt;
 
 use KevinPijning\Prompt\Concerns\CanUseAssertions;
 use KevinPijning\Prompt\Concerns\CollectsAssertions;
+use KevinPijning\Prompt\Contracts\AssertsPrompts;
 
 /**
  * @property-read AssertionGroup $not
  */
-final class AssertionGroup
+final class AssertionGroup implements AssertsPrompts
 {
-    use CanUseAssertions;
     use CollectsAssertions;
+    use CanUseAssertions;
 
     /**
      * @var callable|null
@@ -27,26 +28,18 @@ final class AssertionGroup
     }
 
     /**
-     * @return Assertion[]
-     */
-    public function getAssertions(): array
-    {
-        return $this->assertions;
-    }
-
-    /**
      * @param  array<int|string,mixed>  $args
      */
-    public function apply(TestCase $testCase, array $args = []): void
+    public function apply(AssertsPrompts $target, array $args = []): void
     {
         if ($this->callback !== null) {
-            ($this->callback)($testCase, ...array_values($args));
+            ($this->callback)($target, ...array_values($args));
 
             return;
         }
 
         foreach ($this->assertions as $assertion) {
-            $testCase->assert($assertion);
+            $target->assert($assertion);
         }
     }
 }

@@ -4,20 +4,18 @@ declare(strict_types=1);
 
 namespace KevinPijning\Prompt;
 
-use BadMethodCallException;
 use KevinPijning\Prompt\Concerns\CanUseAssertions;
 use KevinPijning\Prompt\Concerns\CollectsAssertions;
-use KevinPijning\Prompt\Helpers\AssertionGroupName;
-use KevinPijning\Prompt\Internal\AssertionGroupRegistry;
+use KevinPijning\Prompt\Contracts\AssertsPrompts;
 use KevinPijning\Prompt\Internal\BuiltTestCase;
 
 /**
  * @property-read TestCase $not
  */
-class TestCase
+class TestCase implements AssertsPrompts
 {
-    use CanUseAssertions;
     use CollectsAssertions;
+    use CanUseAssertions;
 
     /**
      * @param  array<string,mixed>  $variables
@@ -26,28 +24,6 @@ class TestCase
         private readonly array $variables,
         private readonly Evaluation $evaluation,
     ) {}
-
-    /**
-     * @param  array<int,mixed>  $arguments
-     */
-    public function __call(string $name, array $arguments): self
-    {
-        $groupName = AssertionGroupName::fromMethodName($name);
-
-        if ($groupName !== null && AssertionGroupRegistry::has($groupName)) {
-            $args = $this->resolveAssertionGroupArguments($groupName, $arguments);
-
-            AssertionGroupRegistry::get($groupName)->apply($this, $args);
-
-            return $this;
-        }
-
-        throw new BadMethodCallException(sprintf(
-            'Call to undefined method %s::%s()',
-            static::class,
-            $name
-        ));
-    }
 
     /**
      * @param  array<string,mixed>  $variables
