@@ -6,23 +6,21 @@ use KevinPijning\Prompt\AssertionGroup;
 use KevinPijning\Prompt\Evaluation;
 use KevinPijning\Prompt\TestCase;
 
-test('assertion group can be instantiated with name only', function () {
-    $group = new AssertionGroup('be nice');
+test('assertion group can be instantiated without callback', function () {
+    $group = new AssertionGroup;
 
-    expect($group)->toBeInstanceOf(AssertionGroup::class)
-        ->and($group->name)->toBe('be nice');
+    expect($group)->toBeInstanceOf(AssertionGroup::class);
 });
 
-test('assertion group can be instantiated with name and callback', function () {
+test('assertion group can be instantiated with callback', function () {
     $callback = fn (TestCase $tc) => $tc->toContain('hello');
-    $group = new AssertionGroup('be nice', $callback);
+    $group = new AssertionGroup($callback);
 
-    expect($group)->toBeInstanceOf(AssertionGroup::class)
-        ->and($group->name)->toBe('be nice');
+    expect($group)->toBeInstanceOf(AssertionGroup::class);
 });
 
 test('assertion group can collect assertions via fluent methods', function () {
-    $group = new AssertionGroup('be nice');
+    $group = new AssertionGroup;
 
     $group->toContain('hello')
         ->toContain('world');
@@ -34,7 +32,7 @@ test('assertion group applies fluent assertions to test case', function () {
     $evaluation = new Evaluation(['prompt']);
     $testCase = $evaluation->expect();
 
-    $group = new AssertionGroup('be nice');
+    $group = new AssertionGroup;
     $group->toContain('hello')
         ->toContain('world');
 
@@ -51,7 +49,7 @@ test('assertion group applies callback to test case', function () {
     $evaluation = new Evaluation(['prompt']);
     $testCase = $evaluation->expect();
 
-    $group = new AssertionGroup('be nice', function (TestCase $tc) {
+    $group = new AssertionGroup(function (TestCase $tc) {
         $tc->toContain('hello')
             ->toBeJudged('friendly');
     });
@@ -70,7 +68,7 @@ test('assertion group callback receives test case as first parameter', function 
     $testCase = $evaluation->expect();
     $receivedTestCase = null;
 
-    $group = new AssertionGroup('be nice', function (TestCase $tc) use (&$receivedTestCase) {
+    $group = new AssertionGroup(function (TestCase $tc) use (&$receivedTestCase) {
         $receivedTestCase = $tc;
     });
 
@@ -83,7 +81,7 @@ test('assertion group with callback and extra parameters', function () {
     $evaluation = new Evaluation(['prompt']);
     $testCase = $evaluation->expect();
 
-    $group = new AssertionGroup('be nice', function (TestCase $tc, string $word) {
+    $group = new AssertionGroup(function (TestCase $tc, string $word) {
         $tc->toContain($word);
     });
 
@@ -93,33 +91,11 @@ test('assertion group with callback and extra parameters', function () {
         ->and($testCase->build()->assertions[0]->value)->toBe('hello');
 });
 
-test('assertion group throws exception for missing required parameter', function () {
-    $evaluation = new Evaluation(['prompt']);
-    $testCase = $evaluation->expect();
-
-    $group = new AssertionGroup('be nice', function (TestCase $tc, string $word) {
-        $tc->toContain($word);
-    });
-
-    $group->apply($testCase, []);
-})->throws(InvalidArgumentException::class, 'Missing required argument "word" for assertion group "be nice"');
-
-test('assertion group throws exception for extra parameters', function () {
-    $evaluation = new Evaluation(['prompt']);
-    $testCase = $evaluation->expect();
-
-    $group = new AssertionGroup('be nice', function (TestCase $tc) {
-        $tc->toContain('hello');
-    });
-
-    $group->apply($testCase, ['extra' => 'value']);
-})->throws(InvalidArgumentException::class, 'Unknown argument(s) for assertion group "be nice": extra');
-
 test('assertion group supports positional arguments', function () {
     $evaluation = new Evaluation(['prompt']);
     $testCase = $evaluation->expect();
 
-    $group = new AssertionGroup('be nice', function (TestCase $tc, string $first, string $second) {
+    $group = new AssertionGroup(function (TestCase $tc, string $first, string $second) {
         $tc->toContain($first)
             ->toContain($second);
     });
@@ -135,7 +111,7 @@ test('assertion group supports optional parameters with defaults', function () {
     $evaluation = new Evaluation(['prompt']);
     $testCase = $evaluation->expect();
 
-    $group = new AssertionGroup('be nice', function (TestCase $tc, string $word = 'default') {
+    $group = new AssertionGroup(function (TestCase $tc, string $word = 'default') {
         $tc->toContain($word);
     });
 
@@ -149,39 +125,19 @@ test('assertion group supports nullable parameters', function () {
     $evaluation = new Evaluation(['prompt']);
     $testCase = $evaluation->expect();
 
-    $group = new AssertionGroup('be nice', function (TestCase $tc, ?string $word) {
+    $group = new AssertionGroup(function (TestCase $tc, ?string $word) {
         if ($word !== null) {
             $tc->toContain($word);
         }
     });
 
-    $group->apply($testCase, []);
+    $group->apply($testCase, [null]);
 
     expect($testCase->build()->assertions)->toHaveCount(0);
 });
 
-test('assertion group callback can receive assertion group instance as first parameter', function () {
-    $evaluation = new Evaluation(['prompt']);
-    $testCase = $evaluation->expect();
-
-    $group = new AssertionGroup('be nice', function (AssertionGroup $group, string $word): void {
-        $group->toContain($word)
-            ->toBeJudged('friendly');
-    });
-
-    $group->apply($testCase, ['word' => 'hello']);
-
-    $built = $testCase->build();
-
-    expect($built->assertions)->toHaveCount(2)
-        ->and($built->assertions[0]->type)->toBe('icontains')
-        ->and($built->assertions[0]->value)->toBe('hello')
-        ->and($built->assertions[1]->type)->toBe('llm-rubric')
-        ->and($built->assertions[1]->value)->toBe('friendly');
-});
-
 test('assertion group can use multiple assertion traits', function () {
-    $group = new AssertionGroup('comprehensive');
+    $group = new AssertionGroup;
 
     $group->toContain('hello')
         ->toBeJudged('friendly')
