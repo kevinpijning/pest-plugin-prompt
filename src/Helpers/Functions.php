@@ -8,13 +8,18 @@ use KevinPijning\Prompt\Internal\ProviderRegistry;
 use KevinPijning\Prompt\Provider;
 
 if (! function_exists('provider')) {
-    function provider(string $name, ?callable $config = null): Provider
+    function provider(?string $name = null, ?callable $config = null): Provider
     {
-        if (is_null($config)) {
-            return ProviderRegistry::add($name, new Provider);
+        if (is_null($name)) {
+            return is_null($config)
+                ? new Provider
+                : $config(new Provider);
         }
 
-        return ProviderRegistry::add($name, $config(new Provider));
+        return ProviderRegistry::add(
+            $name,
+            is_null($config) ? new Provider : $config(new Provider)
+        );
     }
 }
 

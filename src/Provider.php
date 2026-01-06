@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 namespace KevinPijning\Prompt;
 
+use Closure;
 use KevinPijning\Prompt\Internal\BuiltProvider;
+use Pest\Concerns\Extendable;
 
 class Provider
 {
+    use Extendable;
+
     private ?string $id = null;
 
     private ?string $label = null;
@@ -102,7 +106,7 @@ class Provider
     }
 
     /**
-     * @param  string[]  $stop
+     * @param string[] $stop
      */
     public function stop(?array $stop): self
     {
@@ -112,14 +116,31 @@ class Provider
     }
 
     /**
-     * @param  array<string,mixed>  $array
-     * @return $this
+     * @param array<string,mixed>|Closure(array<string,mixed>): array<string,mixed> $config
      */
-    public function config(array $array): self
+    public function config(array|Closure $config): self
     {
-        $this->config = $array;
+        $this->config = $config instanceof Closure ? $config($this->config) : $config;
 
         return $this;
+    }
+
+    /**
+     * @param array<int, mixed> $arguments
+     */
+    public function __call(string $name, array $arguments): self
+    {
+        if (self::hasExtend($name)) {
+            $closure = self::$extends[$name]->bindTo($this, Provider::class);
+
+            if ($closure) {
+                $closure($this, ...$arguments);
+            }
+
+            return $this;
+        }
+
+        throw new \BadMethodCallException("Method {$name} does not exist on " . static::class);
     }
 
     public function build(): BuiltProvider
