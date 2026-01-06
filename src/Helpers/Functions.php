@@ -24,7 +24,7 @@ if (! function_exists('assertion')) {
      */
     function assertion(string $name, ?callable $config = null): AssertionGroup
     {
-        $group = new AssertionGroup($name, $config);
+        $group = new AssertionGroup($config);
 
         return AssertionGroupRegistry::add($name, $group);
     }

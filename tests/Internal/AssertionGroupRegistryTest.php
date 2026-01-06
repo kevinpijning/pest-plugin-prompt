@@ -10,7 +10,7 @@ beforeEach(function () {
 });
 
 test('AssertionGroupRegistry can add and retrieve an assertion group', function () {
-    $group = new AssertionGroup('be nice');
+    $group = new AssertionGroup;
 
     $result = AssertionGroupRegistry::add('be nice', $group);
 
@@ -20,8 +20,8 @@ test('AssertionGroupRegistry can add and retrieve an assertion group', function 
 });
 
 test('AssertionGroupRegistry can store multiple assertion groups with different names', function () {
-    $group1 = new AssertionGroup('be nice');
-    $group2 = new AssertionGroup('be professional');
+    $group1 = new AssertionGroup;
+    $group2 = new AssertionGroup;
 
     AssertionGroupRegistry::add('be nice', $group1);
     AssertionGroupRegistry::add('be professional', $group2);
@@ -33,8 +33,8 @@ test('AssertionGroupRegistry can store multiple assertion groups with different 
 });
 
 test('AssertionGroupRegistry overwrites assertion groups with the same name', function () {
-    $group1 = new AssertionGroup('be nice');
-    $group2 = new AssertionGroup('be nice');
+    $group1 = new AssertionGroup;
+    $group2 = new AssertionGroup;
 
     AssertionGroupRegistry::add('be nice', $group1);
     expect(AssertionGroupRegistry::get('be nice'))->toBe($group1);

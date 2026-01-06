@@ -13,6 +13,7 @@ trait CanUseAssertions
     use CanBeSimilar;
     use CanBeValid;
     use CanContain;
+    use CanEnclose;
     use CanEqual;
     use CanHaveCustomValidation;
     use CanHaveFinishReason;

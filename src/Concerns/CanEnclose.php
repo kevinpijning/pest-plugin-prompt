@@ -18,6 +18,7 @@ trait CanEnclose
         if (is_string($expect)) {
             // First, try to resolve as a named assertion group
             if (AssertionGroupRegistry::has($expect)) {
+                /** @phpstan-ignore argument.type (trait used by both TestCase and AssertionGroup) */
                 AssertionGroupRegistry::get($expect)->apply($this, $args);
 
                 return $this;

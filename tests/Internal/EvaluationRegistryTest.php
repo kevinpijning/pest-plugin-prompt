@@ -127,7 +127,7 @@ test('clear does not remove providers, only evaluations', function () {
 });
 
 test('clear does not remove assertion groups, only evaluations', function () {
-    $group = new AssertionGroup('be nice');
+    $group = new AssertionGroup;
     $evaluation = new Evaluation(['test prompt']);
 
     AssertionGroupRegistry::add('be nice', $group);
